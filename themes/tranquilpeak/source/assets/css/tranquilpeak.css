@@ -1605,7 +1605,7 @@ a.link-unstyled a.link:active {
 
 .main-content-wrap {
   display: block;
-  max-width: 750px;
+  max-width: 920px;
   margin: 0 auto;
   padding-right: 20px;
   padding-left: 20px; }
@@ -1800,7 +1800,7 @@ a.link-unstyled a.link:active {
     display: table-cell;
     vertical-align: middle; }
     .post-header-cover .post-header .post-title {
-      max-width: 750px;
+      max-width: 920px;
       margin: 0 auto;
       color: white;
       text-shadow: 0 2px 0 rgba(0, 0, 0, 0.9);
@@ -1808,7 +1808,7 @@ a.link-unstyled a.link:active {
       .post-header-cover .post-header .post-title:hover {
         text-decoration: none; }
     .post-header-cover .post-header .post-meta {
-      max-width: 750px;
+      max-width: 920px;
       font-family: 'Merriweather', serif;
       font-size: 1.5rem;
       color: white !important;
