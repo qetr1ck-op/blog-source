@@ -12,6 +12,7 @@ date: 2015-09-23 18:40:03
 tags:
 ---
 
+<!-- toc -->
 
 *   [link](#1. MVC directory structure)1. MVC directory structure
 *   [](#2\. Modules or lack of them)2. Modules (or lack of them)
@@ -29,9 +30,7 @@ tags:
 
 [ff](#1. MVC directory structure)
 <!-- <a href="" name="1. MVC directory structure">aa</a> -->
-<div class="title-block">
-    1\. MVC directory structure
-</div>
+<div class="title-block">1. MVC directory structure</div>
 
 When you work with MVC / MVW frameworks it's convenience to structure code by `MVC components` using the following template:
 
