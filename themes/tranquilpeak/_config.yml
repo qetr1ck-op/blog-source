@@ -58,6 +58,10 @@ sidebar:
             title: global.github
             url: https://github.com/qetr1ck-op
             icon: github
+        linked_in:
+            title: global.linked_in
+            url: https://www.linkedin.com/profile/preview?locale=ru_RU&trk=prof-0-sb-preview-primary-button
+            icon: linkedin
         # stack_overflow:
         #     title: global.stack_overflow
         #     url: http://stackoverflow.com/users
@@ -74,10 +78,6 @@ sidebar:
         #     title: global.google_plus
         #     url: https://plus.google.com/
         #     icon: google-plus
-        # linked_in:
-        #     title: global.linked_in
-        #     url: https://www.linkedin.com/profile/
-        #     icon: linkedin
         # mail:
         #     title: global.mail
         #     url: mailto:
@@ -140,9 +140,9 @@ go_to_message: Go to the website
 # Otherwise put your image in folder `source/_images/` (development)  or in `source/assets/images/` if you can't or don't want to build the theme,
 # and use relative url : `/assets/images/your-image.png`
 # cover_image: http://res.cloudinary.com/tranquilpeak-hexo-theme/image/upload/v1438975482/v1.3.0-cover.jpg
-cover_image: /assets/images/cover.jpg
+cover_image: cover.jpg
 # Your favicon located in folder `source/_images/` (development) or in `source/assets/images/` (production)
-favicon: /assets/images/favicon.ico
+favicon: favicon.ico
 # Display an image gallery at the end of a post which have photos variables (false: disabled, true: enabled)
 image_gallery: true
 # Pagination behavior of archive, category and tag pages (false: pagination disabled, true: pagination enabled)
@@ -153,7 +153,7 @@ tag_pagination: true
 
 # Integrated services
 # Your Disqus shortname
-disqus_shortname: orestprustayko
+disqus_shortname: qetr1ck-op
 # Your Google analystics web property ID : UA-XXXXX-X
 google_analytics_id:
 # Your Gravatar email. Overwrite `author.picture` everywhere in the blog

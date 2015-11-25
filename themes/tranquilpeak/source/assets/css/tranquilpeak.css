@@ -1953,7 +1953,7 @@ a.link-unstyled a.link:active {
     .postShorten.postShorten--thumbnailimg .postShorten-thumbnailimg img {
       display: block;
       width: 140px;
-      height: 140px;
+      /*height:        $post-thumbnail-image-width;*/
       border-radius: 3px; }
   .postShorten.postShorten--thumbnailimg .postShorten-wrap {
     display: inline-block;
@@ -2324,4 +2324,9 @@ a.tag--small,
   border: 1px solid #eee;
   border-left-width: 5px;
   border-radius: 3px;
+  color: black;
   border-left-color: #5bc0de; }
+
+img[alt="post-img"] {
+  height: 400px;
+  margin: 0 auto; }

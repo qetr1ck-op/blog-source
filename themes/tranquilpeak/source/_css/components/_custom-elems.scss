@@ -1,0 +1,14 @@
+.title-block {
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 3px;
+  	color: black;
+    border-left-color: map-get($custom-highlight, light-blue);
+}
+
+img[alt="post-img"] {
+  height: 400px;
+  margin: 0 auto;
+}

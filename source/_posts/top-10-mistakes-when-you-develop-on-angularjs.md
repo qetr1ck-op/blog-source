@@ -1,35 +1,36 @@
 title: TOP 10 mistakes when you develop on AngularJS
-thumbnailImage: http://savemyday.in/source/images/TOP 10 mistakes when you develop on AngularJS/img.jpg
-coverSize: partial
-metaAlignment: center
-coverMeta: out
-comments: true
+thumbnailImage: img.jpg
 categories:
+  - Javascript
+  - Angular
+date: 2015-09-23 18:40:03
+tags:
   - Angular
   - Javascript
   - Web
-date: 2015-09-23 18:40:03
-tags:
 ---
 
-<!-- toc -->
-
-*   [link](#1. MVC directory structure)1. MVC directory structure
-*   [](#2\. Modules or lack of them)2. Modules (or lack of them)
-*   [](#3\. Dependency Injection)3\. Dependency Injection
-*   [](#3.1\. Global Dependencies)3.1\. Global Dependencies
-*   [](#4\. Fat controllers)4\. Fat controllers
-*   [](#5\. Service vs Factory vs Provider)5\. Service vs Factory vs Provider
-*   [](#6\. Always dot in VM $scope)6\. Always dot in VM $scope's
-*   [](#7\. Unit testing AngularJS apps)7\. Unit testing AngularJS apps
-*   [](#8\. Not to do an end-to-end testing with Protractor)8\. Not to do an end-to-end testing with Protractor
-*   [](#9\. Full-Spectrum Testing with Karma)9\. Full-Spectrum Testing with Karma
-*   [](#10\. Using jQuery)10\. Using jQuery
+The top 10 mistakes when beginners start to develop on Angular 1.x
 
 <!--more-->
 
-[ff](#1. MVC directory structure)
-<!-- <a href="" name="1. MVC directory structure">aa</a> -->
+<!-- toc -->
+
+*   [1. MVC directory structure](#1. MVC directory structure)
+*   [2. Not scalable Modules](#2 Not scalable Modules)
+*   [3. Minification with Dependency Injection](#3. Minification with Dependency Injection)
+*   [3.1. Global Dependencies](#3.1. Global Dependencies)
+*   [4. Fat controllers](#4. Fat controllers)
+*   [5. Service vs Factory vs Provider](#5. Service vs Factory vs Provider)
+*   [6. Always dot in VM $scope's](#6. Always dot in VM $scope)
+*   [7. Unit testing AngularJS apps](#7. Unit testing AngularJS apps)
+*   [8. Not to do an end-to-end testing with ](#8. Not to do an end-to-end testing with Protractor)
+*   [9. Full-Spectrum Testing with Karma](#9. Full-Spectrum Testing with Karma)
+*   [10. Using jQuery](#10. Using jQuery)
+
+View code app [Demo app](https://github.com/qetr1ck-op/angular-skeleton) <i class="fa fa-github"></i>
+
+<a href="" name="1. MVC directory structure"></a>
 <div class="title-block">1. MVC directory structure</div>
 
 When you work with MVC / MVW frameworks it's convenience to structure code by `MVC components` using the following template:
@@ -44,27 +45,23 @@ To avoid this this developers often use grouping by `functionality type`:
 
 The structure allows more faster search for files which are related to the same feature. It may puzzled at the beginning to share js with html or even with test files. But it saves a lot of time, because it's more natural.
 
-[](#2\. Modules (or lack of them))
-<div class="title-block">
-     2\. Modules (or lack of them)
-</div>
+<a href="" name="2. Not scalable Modules"></a>
+<div class="title-block"> 2. Not scalable Modules</div>
 
-At the beginning of development all functionalities include in a single module. But manage a such type of code is inconvenient:
+At the beginning of development all functionalities include in a **single module**. But manage a such type of code is inconvenient:
 
 <script src="https://gist.github.com/qetr1ck-op/f91462f76a1ca37f3232.js"></script>
 
-The next most common approach is grouping objects by type:
+The next most common approach is grouping objects **by type**:
 
 <script src="https://gist.github.com/qetr1ck-op/3912656b35c16c50bce3.js"></script>
 
-For better scalability and future re-usability - split code by feature:
+For better scalability and future re-usability - split code **by feature**:
 
 <script src="https://gist.github.com/qetr1ck-op/2b390ced242af620f214.js"></script>
 
-[](#3\. Dependency Injection)
-<div class="title-block">
-    3\. Dependency Injection
-</div>
+<a href="" name="3.Minification with Dependency Injection"></a>
+<div class="title-block">3. Minification with Dependency Injection</div>
 
 Pattern DI in AngularJS uses out of box. DI helps to keep code clean and helps with testing process.
 
@@ -74,23 +71,25 @@ Now AngularJS can't resolve minificated variables. Easiest solution is:
 
 <script src="https://gist.github.com/qetr1ck-op/01721016841fc0760acd.js"></script>
 
+Now Angular can resolve dependency.
+
 Another way to handle DI with minification is [ng-annotate](https://github.com/olov/ng-annotate) module. More information on official [AngularJS docs](https://docs.angularjs.org/tutorial/step_05#a-note-on-minification)
 
-<a href name="3.1\. Global Dependencies"></a>
-<div class="title-block">
-    3.1\. Global Dependencies
-</div>
+<a href="" name="3.1. Global Dependencies"></a>
+<div class="title-block">3.1. Global Dependencies</div>
 
 Often when writing AngularJS apps there will be a dependency on an object that binds itself to the global scope. This means it's available in any AngularJS code, but this breaks the dependency injection model.
 
-AngularJS makes it simple to encapsulate these globals into modules so they can be injected like standard AngularJS modules.
+AngularJS makes it simple to encapsulate these globals into modules so they can be injected like standard AngularJS modules:
 
 <script src="https://gist.github.com/qetr1ck-op/641f588b6820a1f3de81.js"></script>
 
-[](#4\. Fat controllers)
-<div class="title-block">
-    4\. Fat controllers
-</div>
+Less elegant way to define angular-global variable is to do it on <code>$rootScope</code>:
+
+<script src="https://gist.github.com/qetr1ck-op/366e94376e0e493743a4.js"></script>
+
+<a href="" name="4. Fat controllers"></a>
+<div class="title-block">4. Fat controllers</div>
 
 It's easy, especially when starting out, to put to much logic in the controller. Controller should **never** do DOM manipulation. That's work for directives! Likewise business logic should live in services.
 
@@ -98,10 +97,8 @@ App data should be also stored and fetched in services, except when we need boun
 
 AngularJS works best when following the Single Responsibility Principle (SRP). If the controller is a coordinator between the view and the model, then the amount of logic it has should be minimal. This will also make testing much simpler.
 
-[](#5\. Service vs Factory vs Provider)
-<div class="title-block">
-    5\. Service vs Factory vs Provider
-</div>
+<a href="" name="5. Service vs Factory vs Provider"></a>
+<div class="title-block">5. Service vs Factory vs Provider</div>
 
 What is service:
 
@@ -117,7 +114,7 @@ An Angular service can be created in five different ways:
 4.  value
 5.  constant
 
-The most verbose, but also the most comprehensive one is a `Provider` recipe. The remaining four recipe types — Value, Factory, Service and Constant — are just syntactic sugar on top of a provider recipe.
+The most verbose, but also the most comprehensive one is a **Provider** recipe. The remaining four recipe types — Value, Factory, Service and Constant — are just syntactic sugar on top of a provider recipe.
 
 Here is a great examples by Misko:
 
@@ -127,55 +124,46 @@ In this case the injectors simply return the value. But what if you want to comp
 
 <script src="https://gist.github.com/qetr1ck-op/1a02d77c585f4ed31397.js"></script>
 
-So `factory` is a function which responsible to creating or/and modifying the value. Notice that the the factory function can ask for other `dependencies`
+So **factory** is a function which responsible to creating or/and modifying the value. Notice that the the factory function can ask for other **dependencies**
 
 If you want to be more OO and have a class?
 
 <script src="https://gist.github.com/qetr1ck-op/8ef78320b0af84631e00.js"></script>
 
-But if we want to configure function `before injection`?
+But if we want to configure service function before injection? Use **provider**:
 
 <script src="https://gist.github.com/qetr1ck-op/e98dbc733fb7be97877b.js"></script>
 
-As a side `note`, `service`, `factory`, and value are all derived from provider:
-
+As a side note, **service**, **factory**, and **value** are all derived from provider:
 <script src="https://gist.github.com/qetr1ck-op/586b2f682b2aed2039e9.js"></script>
 
-[](6\. Always dot in VM $scope)
-<div class="title-block">
-    6\. Always dot in VM $scope's
-</div>
+<a href="" name="6. Always dot in VM $scope"></a>
+<div class="title-block">6. Always dot in VM $scope's</div>
 
 In AngularJS every `$scope` prototypical inherits from its parent `$scope` till the highest level `$rootScope`.
 
 <script src="https://gist.github.com/qetr1ck-op/35a0dd1b8e16ff0bec4b.js"></script>
 
-When looking up `primitive`, the prototype chain is not consulted. If `navCtrl` is to be updated simultaneously then a prototype chain lookup is required; this will happen when the value is an `object`:
+When looking up for `primitive` value, the prototype chain is not consulted. If `navCtrl` updated simultaneously then a prototype chain lookup is required, this won't happen when the value is an **object**:
 
 <script src="https://gist.github.com/qetr1ck-op/763543e38942e2e38c1b.js"></script>
 
-[](#7\. Unit testing AngularJS apps)
-<div class="title-block">
-    7\. Unit testing AngularJS apps
-</div>
+<a href="" name="7. Unit testing AngularJS apps"></a>
+<div class="title-block">7. Unit testing AngularJS apps</div>
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also comes with almost no help from the compiler.
 For this reason we feel very strongly that any code written in JavaScript needs to come with a strong [set of tests](https://docs.angularjs.org/guide/unit-testing).
 
-<a href name="8\. Not to do an end-to-end testing with Protractor"></a>
-<div class="title-block">
-    8\. Not to do an end-to-end testing with Protractor
-</div>
+<a href name="8. Not to do an end-to-end testing with Protractor"></a>
+<div class="title-block">8. Not to do an end-to-end testing with Protractor</div>
 
 [Protractor](https://github.com/angular/protractor) uses the [Jasmine](http://jasmine.github.io/1.3/introduction.html) test framework for defining tests. Protractor has a very robust API for different page interactions.
 There are other end to end test tools, but Protractor has the advantage of understanding how to work with AngularJS code, especially when it comes to `$digest` cycles and more.
 
-[](#9\. Full-Spectrum Testing with Karma)
-<div class="title-block">
-    9\. Full-Spectrum Testing with Karma
-</div>
+<a href name="9. Full-Spectrum Testing with Karma"></a>
+<div class="title-block">9. Full-Spectrum Testing with Karma</div>
 
-[Awesome post](http://www.yearofmoo.com/2013/01/full-spectrum-testing-with-angularjs-and-karma.html) about testing AngularJS with `Karma`, passage form the post:
+[Awesome post](http://www.yearofmoo.com/2013/01/full-spectrum-testing-with-angularjs-and-karma.html) about testing AngularJS with `Karma`, passage from the post:
 
 Karma is an amazing testing tool which is designed to take all the frustration out of setting up a working test runner when testing JavaScript code.
 Karma works by spawning up each browser that is specified within its configuration file and then running JavaScript code against those browsers to see if they pass certain tests.
@@ -185,10 +173,8 @@ This makes each test work 100% natively in each browser without the need to test
 Also, since the Karma service runs on a port and keeps track of browsers by itself, you can easily hook up other browsers and devices to it just by visiting its broadcasting port.
 Oh and did I mention that Karma is fast? Yeah it's really fast...
 
-[](#10\. Using jQuery)
-<div class="title-block">
-    10\. Using jQuery
-</div>
+<a href name="10. Using jQuery"></a>
+<div class="title-block">10. Using jQuery</div>
 
 AngularJS is a framework for building scalable apps. jQuery is a famous library for simplifying DOM manipulation, event handling, AJAX operation.
 
@@ -198,6 +184,8 @@ Try to stop using jQuery and imperative paradigm, just let your code to extend H
 
 DOM manipulation should only be done in directives, but this doesn't mean they have to be jQuery wrappers. Always consider what features AngularJS already provides before reaching for jQuery.
 
+View code app [Demo app](https://github.com/qetr1ck-op/angular-skeleton) <i class="fa fa-github"></i>
+
 Article which saves my day:
 
-*   on [Original post](https://www.airpair.com/angularjs/posts/top-10-mistakes-angularjs-developers-make)
+*	[Original post](https://www.airpair.com/angularjs/posts/top-10-mistakes-angularjs-developers-make)

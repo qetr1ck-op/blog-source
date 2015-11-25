@@ -1,1 +1,2 @@
-<div id="cover" style="background-image:url('<%- url_for(theme.cover_image) %>');"></div>
+<% var coverPath = theme.image_dir + '/' + theme.cover_image; %>
+<div id="cover" style="background-image:url('<%= url_for(coverPath) %>');"></div>
