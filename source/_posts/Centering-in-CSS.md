@@ -1,4 +1,5 @@
 title: Centering in CSS
+thumbnailImage: title.jpg
 categories:
   - CSS
 date: 2014-09-08 22:54:09
@@ -133,40 +134,28 @@ Surprise-surprise with this technique it's so ease:
 You can combine the tehnique above in any order to get perfectly centered elements. But you can next grouped tehniques:
 
 <a href name="Is the element of fixed width and height?"></a>
-<div class="title-block">
-	Is the element of fixed width and height?
-</div>
+<div class="title-block">Is the element of fixed width and height?</div>
 
 Using negative margins equels to half of width and heigh. After you get absolutely positioned it at 50% / 50%:
 
-See the Pen [Center Block with Fixed Height and Width](http://codepen.io/qetr1ck-op/pen/jIfuD/) by qetr1ck-op ([@qetr1ck-op](http://codepen.io/qetr1ck-op)) on [CodePen](http://codepen.io).
-
-<script async src="//codepen.io/assets/embed/ei.js"></script>
+<p data-height="315" data-theme-id="10606" data-slug-hash="jIfuD" data-default-tab="result" data-user="qetr1ck-op" class='codepen'>See the Pen <a href='http://codepen.io/qetr1ck-op/pen/jIfuD/'>Center Block with Fixed Height and Width</a> by qetr1ck-op (<a href='http://codepen.io/qetr1ck-op'>@qetr1ck-op</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
 <a href name="Is the element of unknown width and height?"></a>
-<div class="title-block">
-	Is the element of unknown width and height?
-</div>
+<div class="title-block">Is the element of unknown width and height?</div>
 
 If you don't know  the width and height - you can the `tranform` property with negative `translate` of 50% in both directions:
 
-See the Pen [Center Block with Unknown Height and Width](http://codepen.io/qetr1ck-op/pen/zqyma/) by qetr1ck-op ([@qetr1ck-op](http://codepen.io/qetr1ck-op)) on [CodePen](http://codepen.io).
-
-<script async src="//codepen.io/assets/embed/ei.js"></script>
+<p data-height="318" data-theme-id="10606" data-slug-hash="zqyma" data-default-tab="result" data-user="qetr1ck-op" class='codepen'>See the Pen <a href='http://codepen.io/qetr1ck-op/pen/zqyma/'>Center Block with Unknown Height and Width</a> by qetr1ck-op (<a href='http://codepen.io/qetr1ck-op'>@qetr1ck-op</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
 <a href name="Can you use flexbox?"></a>
-<div class="title-block">
-	Can you use flexbox?
-</div>
+<div class="title-block">Can you use flexbox?</div>
 
 To center in both directions with flexbox, you need to use two centering properties:
 
-See the Pen [Center Block with Unknown Height and Width with Flexbox](http://codepen.io/qetr1ck-op/pen/yxqFf/) by qetr1ck-op ([@qetr1ck-op](http://codepen.io/qetr1ck-op)) on [CodePen](http://codepen.io).
+<p data-height="317" data-theme-id="10606" data-slug-hash="yxqFf" data-default-tab="result" data-user="qetr1ck-op" class='codepen'>See the Pen <a href='http://codepen.io/qetr1ck-op/pen/yxqFf/'>Center Block with Unknown Height and Width with Flexbox</a> by qetr1ck-op (<a href='http://codepen.io/qetr1ck-op'>@qetr1ck-op</a>) on <a href='http://codepen.io'>CodePen</a>.</p>
 
-<script async src="//codepen.io/assets/embed/ei.js"></script>
+So now you can easy to say, that centering in CSS isn't a big deal. 
 
-So know you can easiely to say, that centering in CSS isn't a big deal. 
+Save My Day:
 
-SaveMyDay:
-
-*   on [pluralsight.com](http://css-tricks.com/centering-css-complete-guide/) css-tricks
+*   on [Css tricks](http://css-tricks.com/centering-css-complete-guide/) css-tricks
