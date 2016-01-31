@@ -3,9 +3,6 @@ thumbnailImage: git-github.png
 tags:
   - Git
   - GitHub
-categories:
-  - Git
-  - Web
 date: 2014-03-29 17:24:17
 ---
 
