@@ -1,9 +1,7 @@
 title: Original effects with CSS transition
-id: 183
 categories:
   - CSS
 date: 2014-04-01 14:48:05
-tags:
 ---
 
 The power of CSS3 is enormous and in this post I create appearing effect of "Sign In Form" using differn style in each example.
