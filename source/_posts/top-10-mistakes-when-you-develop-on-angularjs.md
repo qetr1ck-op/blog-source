@@ -16,22 +16,9 @@ The top 10 mistakes when beginners start to develop on Angular 1.x
 
 <!-- toc -->
 
-*   [1. MVC directory structure](#1. MVC directory structure)
-*   [2. Not scalable Modules](#2 Not scalable Modules)
-*   [3. Minification with Dependency Injection](#3. Minification with Dependency Injection)
-*   [3.1. Global Dependencies](#3.1. Global Dependencies)
-*   [4. Fat controllers](#4. Fat controllers)
-*   [5. Service vs Factory vs Provider](#5. Service vs Factory vs Provider)
-*   [6. Always dot in VM $scope's](#6. Always dot in VM $scope)
-*   [7. Unit testing AngularJS apps](#7. Unit testing AngularJS apps)
-*   [8. Not to do an end-to-end testing with ](#8. Not to do an end-to-end testing with Protractor)
-*   [9. Full-Spectrum Testing with Karma](#9. Full-Spectrum Testing with Karma)
-*   [10. Using jQuery](#10. Using jQuery)
-
 View code app [Demo app](https://github.com/qetr1ck-op/angular-skeleton) <i class="fa fa-github"></i>
 
-<a href="" name="1. MVC directory structure"></a>
-<div class="title-block">1. MVC directory structure</div>
+# MVC directory structure
 
 When you work with MVC / MVW frameworks it's convenience to structure code by `MVC components` using the following template:
 
@@ -45,8 +32,7 @@ To avoid this this developers often use grouping by `functionality type`:
 
 The structure allows more faster search for files which are related to the same feature. It may puzzled at the beginning to share js with html or even with test files. But it saves a lot of time, because it's more natural.
 
-<a href="" name="2. Not scalable Modules"></a>
-<div class="title-block"> 2. Not scalable Modules</div>
+#  Not scalable Modules
 
 At the beginning of development all functionalities include in a **single module**. But manage a such type of code is inconvenient:
 
@@ -60,8 +46,7 @@ For better scalability and future re-usability - split code **by feature**:
 
 <script src="https://gist.github.com/qetr1ck-op/2b390ced242af620f214.js"></script>
 
-<a href="" name="3.Minification with Dependency Injection"></a>
-<div class="title-block">3. Minification with Dependency Injection</div>
+# Minification with Dependency Injection
 
 Pattern DI in AngularJS uses out of box. DI helps to keep code clean and helps with testing process.
 
@@ -75,8 +60,7 @@ Now Angular can resolve dependency.
 
 Another way to handle DI with minification is [ng-annotate](https://github.com/olov/ng-annotate) module. More information on official [AngularJS docs](https://docs.angularjs.org/tutorial/step_05#a-note-on-minification)
 
-<a href="" name="3.1. Global Dependencies"></a>
-<div class="title-block">3.1. Global Dependencies</div>
+#  Global Dependencies
 
 Often when writing AngularJS apps there will be a dependency on an object that binds itself to the global scope. This means it's available in any AngularJS code, but this breaks the dependency injection model.
 
@@ -88,8 +72,7 @@ Less elegant way to define angular-global variable is to do it on <code>$rootSco
 
 <script src="https://gist.github.com/qetr1ck-op/366e94376e0e493743a4.js"></script>
 
-<a href="" name="4. Fat controllers"></a>
-<div class="title-block">4. Fat controllers</div>
+# Fat controllers
 
 It's easy, especially when starting out, to put to much logic in the controller. Controller should **never** do DOM manipulation. That's work for directives! Likewise business logic should live in services.
 
@@ -97,8 +80,7 @@ App data should be also stored and fetched in services, except when we need boun
 
 AngularJS works best when following the Single Responsibility Principle (SRP). If the controller is a coordinator between the view and the model, then the amount of logic it has should be minimal. This will also make testing much simpler.
 
-<a href="" name="5. Service vs Factory vs Provider"></a>
-<div class="title-block">5. Service vs Factory vs Provider</div>
+# Service vs Factory vs Provider
 
 What is service:
 
@@ -137,8 +119,7 @@ But if we want to configure service function before injection? Use **provider**:
 As a side note, **service**, **factory**, and **value** are all derived from provider:
 <script src="https://gist.github.com/qetr1ck-op/586b2f682b2aed2039e9.js"></script>
 
-<a href="" name="6. Always dot in VM $scope"></a>
-<div class="title-block">6. Always dot in VM $scope's</div>
+# Always dot in VM $scope's
 
 In AngularJS every `$scope` prototypical inherits from its parent `$scope` till the highest level `$rootScope`.
 
@@ -148,20 +129,17 @@ When looking up for `primitive` value, the prototype chain is not consulted. If 
 
 <script src="https://gist.github.com/qetr1ck-op/763543e38942e2e38c1b.js"></script>
 
-<a href="" name="7. Unit testing AngularJS apps"></a>
-<div class="title-block">7. Unit testing AngularJS apps</div>
+# Unit testing AngularJS apps
 
 JavaScript is a dynamically typed language which comes with great power of expression, but it also comes with almost no help from the compiler.
 For this reason we feel very strongly that any code written in JavaScript needs to come with a strong [set of tests](https://docs.angularjs.org/guide/unit-testing).
 
-<a href name="8. Not to do an end-to-end testing with Protractor"></a>
-<div class="title-block">8. Not to do an end-to-end testing with Protractor</div>
+# Not to do an end-to-end testing with Protractor
 
 [Protractor](https://github.com/angular/protractor) uses the [Jasmine](http://jasmine.github.io/1.3/introduction.html) test framework for defining tests. Protractor has a very robust API for different page interactions.
 There are other end to end test tools, but Protractor has the advantage of understanding how to work with AngularJS code, especially when it comes to `$digest` cycles and more.
 
-<a href name="9. Full-Spectrum Testing with Karma"></a>
-<div class="title-block">9. Full-Spectrum Testing with Karma</div>
+# Full-Spectrum Testing with Karma
 
 [Awesome post](http://www.yearofmoo.com/2013/01/full-spectrum-testing-with-angularjs-and-karma.html) about testing AngularJS with `Karma`, passage from the post:
 
@@ -173,8 +151,7 @@ This makes each test work 100% natively in each browser without the need to test
 Also, since the Karma service runs on a port and keeps track of browsers by itself, you can easily hook up other browsers and devices to it just by visiting its broadcasting port.
 Oh and did I mention that Karma is fast? Yeah it's really fast...
 
-<a href name="10. Using jQuery"></a>
-<div class="title-block">10. Using jQuery</div>
+#  Using jQuery
 
 AngularJS is a framework for building scalable apps. jQuery is a famous library for simplifying DOM manipulation, event handling, AJAX operation.
 
