@@ -1,4 +1,5 @@
 title: Practical design patterns in JavaScript
+thumbnailImage: title.gif
 date: 2016-02-03 12:43:26
 categoris:
     - Javascript
@@ -76,7 +77,7 @@ var newObject = new Object();
 
 Where the `Object` constructor in the final example creates an object wrapper for a specific value, or where no value is passed, it will create an empty object and return it.
 
-##Basic Constructors
+### Basic Constructors
 
 By simply prefixing a call to a constructor function with the keyword `new`, we can tell JavaScript we would like the function to behave like a constructor and instantiate a new object with the members defined by that function.
 
@@ -105,7 +106,7 @@ console.log( civic.toString() );
 console.log( mondeo.toString() );
 ```
 
-## Constructors With Prototypes
+### Constructors With Prototypes
 
 Functions, like almost all objects in JavaScript, contain a `prototype` object. When we call a JavaScript constructor to create an object, all the properties of the constructor's prototype are then made available to the new object:
 
@@ -132,7 +133,7 @@ console.log( civic.toString() );
 console.log( mondeo.toString() );
 ```
 
-## Constructors with ES6 class
+### Constructors with ES6 class
 
 ```
 const Car = class {
@@ -154,14 +155,14 @@ console.log( civic.toString() );
 console.log( mondeo.toString() );
 ```
 
-## Constructors with ES6 class for Node.js
+### Constructors with ES6 class for Node.js
 
 ```
 // in the end/or better on the beginning share you constructor
 module.exports = Car;
 ```
 
-## Constructors in Angular1.x
+### Constructors in Angular1.x
 
 ```
 //Task.factory.js
@@ -209,7 +210,7 @@ module.exports = Car;
 }
 ```
 
-# The Module Pattern
+## The Module Pattern
 
 Modules are an integral piece of any robust application's architecture and typically help in keeping the units of code for a project both cleanly separated and organized.
 
@@ -221,7 +222,7 @@ In JavaScript, there are several options for implementing modules. These include
 * CommonJS modules
 * ES6 modules
 
-## The Revealing Module Pattern
+### The Revealing Module Pattern
 
 We would simply define all of our functions and variables in the private scope and return an anonymous object with pointers to the private functionality we wished to reveal as public:
 
@@ -258,7 +259,7 @@ var myRevealingModule = (function () {
 myRevealingModule.setName( "Paul Kinlan" );
 ```
 
-## The Module Pattern for Node.js
+### The Module Pattern for Node.js
 
 ```
 // just export what you need
@@ -273,7 +274,7 @@ var myModule = require('./myRevealingModule');
 //module.setName...
 ```
 
-## The Module Pattern for Angular1.x
+### The Module Pattern for Angular1.x
 
 ```
 //taskRepo.service.js
@@ -299,7 +300,7 @@ var myModule = require('./myRevealingModule');
 }
 ```
 
-# The Singleton Pattern
+## The Singleton Pattern
 
 In JavaScript, Singletons serve as a shared resource namespace which isolate implementation code from the global namespace so as to provide a single point of access for functions:
 
@@ -361,7 +362,7 @@ var singleB = mySingleton.getInstance();
 console.log( singleA.getRandomNumber() === singleB.getRandomNumber() ); // true
 ```
 
-## The Singleton Pattern for Node.js
+### The Singleton Pattern for Node.js
 
 From *Node.js* docs information about [caching modules](https://nodejs.org/dist/latest-v5.x/docs/api/modules.html#modules_caching):
 
@@ -382,11 +383,11 @@ module.exports = repo();
 var require = repo();
 ```
 
-## The Singleton Pattern for Angular1.x
+### The Singleton Pattern for Angular1.x
 
 By default all service all singleton, because they are providers, more info [here](2015/09/23/top-10-mistakes-when-you-develop-on-angularjs/#Service_vs_Factory_vs_Provider)
 
-# The Factory Pattern
+## The Factory Pattern
 
 Factory provide a generic interface for creating objects, where we can specify the type of factory object we wish to be created.
 
@@ -457,7 +458,7 @@ console.log( car instanceof Car );
 console.log( car );
 ```
 
-## Abstract Factories
+### Abstract Factories
 
 It is also useful to be aware of the Abstract Factory pattern, which aims to encapsulate a group of individual factories with a common goal. 
 
@@ -564,7 +565,7 @@ myAnimator.stop();
 // stop! in the name of love!
 ```
 
-## Mixins with ES6
+### Mixins with ES6
 
 ```
 Object.assign( CarAnimator.prototype, myMixins );
@@ -670,7 +671,7 @@ console.log( mb.cost() );
 console.log( mb.screenSize() );
 ```
 
-## The Decorator Pattern in Angular1.x
+### The Decorator Pattern in Angular1.x
 
 More information about `decorator` method in [off documentation](https://docs.angularjs.org/api/auto/service/$provide#decorator) or [here](http://www.bennadel.com/blog/2870-using-module-decorator-in-angularjs-1-4.htm)
 
@@ -775,7 +776,7 @@ bindReady: function() {
                ...
 ```
 
-# Flyweight
+## Flyweight
 
 The Flyweight pattern is a classical structural solution for optimizing code that is repetitive, slow and inefficiently shares data. It aims to minimize the use of memory in an application by sharing as much data as possible with related objects
 
@@ -783,4 +784,358 @@ There are two ways in which the Flyweight pattern can be applied. The first is a
 
 The second is at the *DOM-layer* where the Flyweight can be used as a central event-manager to avoid attaching event handlers to every child element in a parent container we wish to have some similar behavior.
 
-## Flyweights and sharing data
+### Flyweights and sharing data
+
+Each book would thus be represented as follows, prior to any optimization using the Flyweight pattern:
+
+```
+var Book = function( id, title, author, genre, pageCount,publisherID, ISBN, checkoutDate, checkoutMember, dueReturnDate,availability ){
+ 
+   this.id = id;
+   this.title = title;
+   this.author = author;
+   this.genre = genre;
+   this.pageCount = pageCount;
+   this.publisherID = publisherID;
+   this.ISBN = ISBN;
+   this.checkoutDate = checkoutDate;
+   this.checkoutMember = checkoutMember;
+   this.dueReturnDate = dueReturnDate;
+   this.availability = availability;
+ 
+};
+ 
+Book.prototype = {
+ 
+  getTitle: function () {
+     return this.title;
+  },
+ 
+  getAuthor: function () {
+     return this.author;
+  },
+ 
+  getISBN: function (){
+     return this.ISBN;
+  },
+ 
+  // For brevity, other getters are not shown
+  updateCheckoutStatus: function( bookID, newStatus, checkoutDate, checkoutMember, newReturnDate ){
+ 
+     this.id = bookID;
+     this.availability = newStatus;
+     this.checkoutDate = checkoutDate;
+     this.checkoutMember = checkoutMember;
+     this.dueReturnDate = newReturnDate;
+ 
+  },
+ 
+  extendCheckoutPeriod: function( bookID, newReturnDate ){
+ 
+      this.id = bookID;
+      this.dueReturnDate = newReturnDate;
+ 
+  },
+ 
+  isPastDue: function(bookID){
+ 
+     var currentDate = new Date();
+     return currentDate.getTime() > Date.parse( this.dueReturnDate );
+ 
+   }
+};
+
+```
+
+Using thousands of book objects may overwhelm the available memory, but we can optimize our system using the Flyweight pattern to improve this.
+
+We can now separate our data into intrinsic and extrinsic states as follows: data relevant to the book object (`title`, `author` etc) is *intrinsic* whilst the checkout data (`checkoutMember`, dueReturnDate etc) is *considered* extrinsic. Effectively this means that only one Book object is required for each combination of book properties. it's still a considerable quantity of objects, but significantly fewer than we had previously.
+
+The following single instance of our book meta-data combinations will be shared among all of the copies of a book with a particular title. As we can see, the extrinsic states have been removed:
+
+```
+// Flyweight optimized version
+var Book = function ( title, author, genre, pageCount, publisherID, ISBN ) {
+ 
+    this.title = title;
+    this.author = author;
+    this.genre = genre;
+    this.pageCount = pageCount;
+    this.publisherID = publisherID;
+    this.ISBN = ISBN;
+ 
+};
+```
+
+Let's now define a very *basic factory*. This makes sure that we only create a single copy of each unique intrinsic piece of data:
+
+```
+// Book Factory singleton
+var BookFactory = (function () {
+  var existingBooks = {}, existingBook;
+ 
+  return {
+    createBook: function ( title, author, genre, pageCount, publisherID, ISBN ) {
+ 
+      // Find out if a particular book meta-data combination has been created before
+      // !! or (bang bang) forces a boolean to be returned
+      existingBook = existingBooks[ISBN];
+      if ( !!existingBook ) {
+        return existingBook;
+      } else {
+ 
+        // if not, let's create a new instance of the book and store it
+        var book = new Book( title, author, genre, pageCount, publisherID, ISBN );
+        existingBooks[ISBN] = book;
+        return book;
+ 
+      }
+    }
+  };
+ 
+})();
+```
+
+Next, we need to store the states that were removed from the Book objects somewhere - luckily a manager (which we'll be defining as a Singleton) can be used to encapsulate them:
+
+```
+// BookRecordManager singleton
+var BookRecordManager = (function () {
+ 
+  var bookRecordDatabase = {};
+ 
+  return {
+    // add a new book into the library system
+    addBookRecord: function ( id, title, author, genre, pageCount, publisherID, ISBN, checkoutDate, checkoutMember, dueReturnDate, availability ) {
+ 
+      var book = bookFactory.createBook( title, author, genre, pageCount, publisherID, ISBN );
+ 
+      bookRecordDatabase[id] = {
+        checkoutMember: checkoutMember,
+        checkoutDate: checkoutDate,
+        dueReturnDate: dueReturnDate,
+        availability: availability,
+        book: book
+      };
+    },
+    updateCheckoutStatus: function ( bookID, newStatus, checkoutDate, checkoutMember, newReturnDate ) {
+ 
+      var record = bookRecordDatabase[bookID];
+      record.availability = newStatus;
+      record.checkoutDate = checkoutDate;
+      record.checkoutMember = checkoutMember;
+      record.dueReturnDate = newReturnDate;
+    },
+ 
+    extendCheckoutPeriod: function ( bookID, newReturnDate ) {
+      bookRecordDatabase[bookID].dueReturnDate = newReturnDate;
+    },
+ 
+    isPastDue: function ( bookID ) {
+      var currentDate = new Date();
+      return currentDate.getTime() > Date.parse( bookRecordDatabase[bookID].dueReturnDate );
+    }
+  };
+ 
+})();
+```
+
+### Flyweights and the DOM
+
+Flyweights can be used to tweak the event bubbling process further, as we will see shortly.
+
+#### Example 1: Centralized event handling
+
+A stateManager name-space is used here to encapsulate our flyweight logic whilst jQuery is used to bind the initial click to a container div.
+
+The child element in the container is clicked, we make use of a target check which provides a reference to the element that was clicked, regardless of its parent. We then use this information to handle the click event without actually needing to bind the event to specific children when our page loads.
+
+```
+<div id="container">
+   <div class="toggle" href="#">More Info (Address)
+       <span class="info">
+           This is more information
+       </span></div>
+   <div class="toggle" href="#">Even More Info (Map)
+       <span class="info">
+          <iframe src="http://www.map-generator.net/extmap.php?name=London&amp;address=london%2C%20england&amp;width=500...gt;"</iframe>
+       </span>
+   </div>
+</div>
+```
+
+```
+var stateManager = {
+  fly: function () {
+ 
+    var self = this;
+ 
+    $( "#container" )
+          .unbind()
+          .on( "click", "div.toggle", function ( e ) {
+            self.handleClick( e.target );
+          });
+  },
+ 
+  handleClick: function ( elem ) {
+    elem.find( "span" ).toggle( "slow" );
+  }
+};
+```
+
+#### Example 2: For performance optimization
+
+Unfortunately, many of us have become used to the idea of wrapping this in $() or jQuery(), which means that a new instance of jQuery is unnecessarily constructed every time, rather than simply doing this:
+
+```
+$("div").on( "click", function () {
+  console.log( "You clicked: " + $( this ).attr( "id" ));
+});
+ 
+// we should avoid using the DOM element to create a
+// jQuery object (with the overhead that comes with it)
+// and just use the DOM element itself like this:
+ 
+$( "div" ).on( "click", function () {
+  console.log( "You clicked:"  + this.id );
+});
+```
+
+# Behavior Design Patterns in depth
+
+## The observer
+
+The Observer is a design pattern where an object (known as a subject) maintains a list of objects depending on it (observers), automatically notifying them of any changes to state.
+
+We can now expand on what we've learned to implement the Observer pattern with the following components:
+
+* Subject: maintains a list of observers, facilitates adding or removing observers
+* Observer: provides a update interface for objects that need to be notified of a Subject's changes of state
+* ConcreteSubject: broadcasts notifications to observers on changes of state, stores the state of ConcreteObservers
+* ConcreteObserver: stores a reference to the ConcreteSubject, implements an update interface for the Observer to ensure state is consistent with the Subject's
+* 
+First, let's model the list of dependent Observers a subject may have:
+
+```
+function ObserverList(){
+  this.observerList = [];
+}
+ 
+ObserverList.prototype.add = function( obj ){
+  return this.observerList.push( obj );
+};
+ 
+ObserverList.prototype.count = function(){
+  return this.observerList.length;
+};
+ 
+ObserverList.prototype.get = function( index ){
+  if( index > -1 && index < this.observerList.length ){
+    return this.observerList[ index ];
+  }
+};
+ 
+ObserverList.prototype.indexOf = function( obj, startIndex ){
+  var i = startIndex;
+ 
+  while( i < this.observerList.length ){
+    if( this.observerList[i] === obj ){
+      return i;
+    }
+    i++;
+  }
+ 
+  return -1;
+};
+ 
+ObserverList.prototype.removeAt = function( index ){
+  this.observerList.splice( index, 1 );
+};
+```
+
+The Subject and the ability to add, remove or notify observers on the observer list:
+
+```
+function Subject(){
+  this.observers = new ObserverList();
+}
+ 
+Subject.prototype.addObserver = function( observer ){
+  this.observers.add( observer );
+};
+ 
+Subject.prototype.removeObserver = function( observer ){
+  this.observers.removeAt( this.observers.indexOf( observer, 0 ) );
+};
+ 
+Subject.prototype.notify = function( context ){
+  var observerCount = this.observers.count();
+  for(var i=0; i < observerCount; i++){
+    this.observers.get(i).update( context );
+  }
+};
+```
+
+Full example [here](http://plnkr.co/edit/w0wkN2BPIWK1PF3Nt8ZD)
+
+## Differences Between The Observer And Publish/Subscribe Pattern
+
+Whilst the *Observer* pattern is useful to be aware of, quite often in the JavaScript world, we'll find it commonly implemented using a variation known as the *Publish/Subscribe* pattern.
+
+The Publish/Subscribe pattern however uses a topic/event channel which sits between the objects wishing to receive notifications (subscribers) and the object firing the event (the publisher). 
+
+This event system allows code to define application specific events which can pass custom arguments containing values needed by the subscriber. The idea here is to avoid dependencies between the subscriber and publisher.
+
+Here is an example of how one might use the Publish/Subscribe if provided with a functional implementation powering `publish()`,`subscribe()` and `unsubscribe()` behind the scenes:
+
+```
+var eventBus = (function(){
+  var topics = Object.create({});
+  
+  return {
+    subscribe: function(topic, listener) {
+      // Create the topic's object if not yet created
+      if(!topics[topic]) topics[topic] = [];
+
+      // Add the listener to queue
+      var index = topics[topic].push(listener) -1;
+
+      // Provide handle back for removal of topic
+      return {
+        unsubscribe: function() {
+          delete topics[topic][index];
+        }
+      };
+    },
+    publish: function(topic, info) {
+      // If the topic doesn't exist, or there's no listeners in queue, just leave
+      if(!topics[topic]) return;
+
+      // Cycle through topics queue, fire!
+      topics[topic].forEach(function(item) {
+            item(info != undefined ? info : {});
+      });
+    }
+  };
+})();
+```
+
+Subscribe in order to be notified for events:
+```
+var subscription = events.subscribe('/page/load', function(obj) {
+    // Do something now that the event has occurred
+});
+
+// ...sometime later where I no longer want subscription...
+subscription.unsubscribe();
+```
+
+Publishing: 
+
+```
+events.publish('/page/load', {
+    url: '/some/url/path' // any arguments
+});
+
+```
+

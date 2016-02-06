@@ -7,7 +7,6 @@ date: 2015-09-23 18:40:03
 tags:
   - Angular
   - Javascript
-  - Web
 ---
 
 The top 10 mistakes when beginners start to develop on Angular 1.x
