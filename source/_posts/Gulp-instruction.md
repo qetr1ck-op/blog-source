@@ -508,3 +508,98 @@ gulp.task('styles', function() {
 ```
 
 ## add source maps
+
+Basically it's a way to map a combined/minified file back to an unbuilt state.
+
+```
+const sourcemaps = require('gulp-sourcemaps')
+
+gulp.task('styles', function() {
+	return gulp.src('src/sass/main.sass')
+	  .pipe(sourcemaps.init()) // create file.sourceMap, and after, all rest of plugin know about source maps
+		.pipe(sass().on('error', sass.logError))
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest('public'));
+})
+```
+
+## process.env.NODE_ENV
+
+What if you want add source maps only in development stage:
+
+```
+const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+
+gulp.task('styles', function() {
+	let pipeline = gulp.src('sass/main.sass');
+
+	if (isDevelopment) {
+		pipeline = pipeline.pipe(sourcemaps.init());
+	}
+
+	pipeline = pipeline
+		.pipe(sass().on('error', sass.logError));
+
+	if (isDevelopment) {
+		pipeline = pipeline.pipe(sourcemaps.write());
+	}
+
+	return pipeline
+		.pipe(gulp.dest('public'));
+})
+```
+
+How to set `NODE_ENV` [here](http://stackoverflow.com/questions/9198310/how-to-set-node-env-to-production-development-in-os-x).
+
+Other approach, more elegant with [gulp-if](https://github.com/robrich/gulp-if):
+
+```
+const gulpIf = require('gulp-if')
+const isDevelopment = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+
+gulp.task('styles', function() {
+	return gulp.src('sass/main.sass')
+		.pipe(gulpIf(isDevelopment, sourcemaps.init()))
+		.pipe(sass().on('error', sass.logError));
+		.pipe(gulpIf(isDevelopment, sourcemaps.write()))
+		.pipe(gulp.dest('public'));
+})
+```
+
+Module has a lot of option:
+
+```
+	//...stream
+		.pipe(gulpIf(function(file) {
+			return file.extname === 'js';
+		}, callSmts() )) 
+
+```
+
+## Clean directory and separate other tasks
+
+We will use `del` plugin:
+
+```
+const del = require('del')
+
+gulp.task('styles', function() {
+	return gulp.src('sass/main.sass')
+		.pipe(gulpIf(isDevelopment, sourcemaps.init()))
+		.pipe(sass().on('error', sass.logError));
+		.pipe(gulpIf(isDevelopment, sourcemaps.write()))
+		.pipe(gulp.dest('public'));
+})
+
+gulp.task('clean', function() {
+	return del('public');
+})
+
+gulp.task('assets', function() {
+	return gulp.src('src/assets/**')
+		.pipe(gulp.dest('public'));
+})
+
+gulp.task('build', gulp.series('clean', ['styles', 'assets']))
+```
+
