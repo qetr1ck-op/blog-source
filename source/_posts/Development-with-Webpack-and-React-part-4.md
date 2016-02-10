@@ -219,4 +219,4 @@ class NoteStore {
 export default alt.createStore(NoteStore, 'NoteStore');
 ```
 
-TODO..
+TODO....
