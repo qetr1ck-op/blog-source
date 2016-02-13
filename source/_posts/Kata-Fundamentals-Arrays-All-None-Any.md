@@ -1,4 +1,4 @@
-title: 'Kata (Fundamentals, Arrays): All, None & Any'
+title: 'Kata (Arrays): All, None & Any'
 date: 2016-02-10 20:58:59
 tags:
     - Kata
