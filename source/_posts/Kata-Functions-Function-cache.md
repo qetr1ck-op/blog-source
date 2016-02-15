@@ -20,6 +20,8 @@ cachedFunction('foo', 'bar'); // complex function should not be invoked again, i
 cachedFunction('foo', 'baz'); // should be executed, because the method wasn't invoked before with these arguments
 ```
 
+Result:
+
 ```
 const cache = fn => {
   const calls = {};

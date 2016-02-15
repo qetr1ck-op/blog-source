@@ -1,6 +1,10 @@
 title: 'Kata (Array): Are they square?'
 date: 2016-02-09 23:54:01
-
+tags:
+    - Kata
+    - Arrays
+categories: 
+    - Javascript
 ---
 
 Write a function that checks whether all elements in an array are square numbers. The function should be able to take any number of array elements.
