@@ -26,9 +26,9 @@ const cache = fn => {
   
   return function(...args) {
     if (!calls[args]) {
-      calls[args] = fn;
+      calls[args] = fn(...args);
     }
-    return fn(...args);
+    return calls[args];
   }
 }
 ```
