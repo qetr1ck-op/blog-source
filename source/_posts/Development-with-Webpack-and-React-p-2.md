@@ -1,7 +1,12 @@
 title: Development with Webpack and React part 2
 date: 2016-02-07 16:13:20
+thumbnailImage: title.jpg
 tags:
-    - Webpack
+  - Webpack
+  - Babel
+  - ES6 
+  - React
+  - Alt 
 categories:
     - Javascript
 ---
@@ -230,4 +235,4 @@ In addition we need to expand our Babel configuration:
 
 The final source of the article [here](https://github.com/qetr1ck-op/webpack_react/tree/dev/project_source/03_webpack_and_react/kanban_app)
 
-Save my day: (http://survivejs.com/)[http://survivejs.com/webpack_react/react/]
+Save my day: [http://survivejs.com/](http://survivejs.com/webpack_react/react/)

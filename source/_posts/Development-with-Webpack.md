@@ -3,6 +3,10 @@ date: 2016-02-07 12:11:41
 thumbnailImage: title.png
 tags:
 	- Webpack
+  - Babel
+  - ES6 
+  - React
+  - Alt 
 categories:
 	- Javascript
 ---
@@ -142,7 +146,7 @@ Given our `index.html` is below `./build`, we should let` webpack-dev-server` to
 
 As the development setup has certain requirements of its own, we'll need to split our Webpack configuration. Given Webpack configuration is just JavaScript, there are many ways to achieve this. At least the following ways are feasible:
 
-*   Maintain configuration in multiple files and point Webpack to each through `--config` parameter. Share configuration through module imports. You can see this approach in action at [webpack/react-starter](https://github.com/HenrikJoreteg/hjs-webpack).
+*   Share configuration through module imports. You can see this approach in action at [webpack/react-starter](https://github.com/webpack/react-starter/blob/master/make-webpack-config.js)
 *   Push configuration to a library which you then consume. Example: [HenrikJoreteg/hjs-webpack](https://github.com/HenrikJoreteg/hjs-webpack#usage).
 * Maintain configuration within a single file and branch there. If we trigger a script through npm (i.e., `npm run test`), npm sets this information in an environment variable. We can match against it and return the configuration we want.
 
@@ -208,8 +212,6 @@ const webpack = require('webpack');
 ...
 
 if(TARGET === 'start' || !TARGET) {
-
-  module.exports = merge(common, {});
 
   module.exports = merge(common, {
     devServer: {
@@ -359,4 +361,4 @@ plugins: [
 
 The final source of the article [here](https://github.com/survivejs/webpack_react/tree/dev/project_source/02_developing_with_webpack/kanban_app)
 
-Save my day: (http://survivejs.com/)[http://survivejs.com/webpack_react/webpack_and_react/]
+Save my day: [http://survivejs.com/](http://survivejs.com/webpack_react/webpack_and_react/()

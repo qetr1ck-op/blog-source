@@ -1,7 +1,12 @@
 title: Development with Webpack and React part 3
 date: 2016-02-07 20:33:51
+thumbnailImage: title.png
 tags:
-    - Webpack
+  - Webpack
+  - Babel
+  - ES6 
+  - React
+  - Alt 
 categories:
     - Javascript
 ---
@@ -330,6 +335,8 @@ This can be achieved through data binding as illustrated by the diagram below:
 As `onEdit` is defined on `App` level, we'll need to pass `onEdit` handler through `Notes`. So for the stub to work, changes in two files are needed. Here's what it should look like for `App`:
 
 ```
+//app/components/App.jsx
+
 import uuid from 'node-uuid';
 import React from 'react';
 import Notes from './Notes.jsx';
@@ -372,12 +379,10 @@ export default class App extends React.Component {
 To make the scheme work as designed, we need to modify Notes to work according to the idea:
 
 ```
-app/components/Notes.jsx
+//app/components/Notes.jsx
 
 import React from 'react';
 import Note from './Note.jsx';
-
-export default ({notes}) => {
 
 export default ({notes, onEdit}) => {
 
