@@ -1,5 +1,6 @@
 title: Misconceptions About Inheritance in JavaScript
 thumbnailImage: title.png
+thumbnailImagePosition: right
 date: 2016-02-14 22:54:55
 tags:
     - OOP
@@ -8,6 +9,7 @@ categories:
 ---
 
 What’s the Difference Between Class & Prototypal Inheritance?
+
 This can be a tricky question, and you’ll probably need to defend your answer with follow-up Q&A, so pay special attention to learning the differences, and how to apply the knowledge to write better code.
 
 <!--more-->

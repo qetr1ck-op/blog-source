@@ -1,5 +1,6 @@
 title: First reaction about React.js
 thumbnailImage: title.gif
+thumbnailImagePosition: right
 date: 2016-02-04 17:20:14
 tags:
     - First look

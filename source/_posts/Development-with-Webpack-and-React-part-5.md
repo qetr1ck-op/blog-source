@@ -1,6 +1,6 @@
 title: Development with Webpack and React part 5
 date: 2016-02-21 12:02:24
-thumbnailImage: ...
+thumbnailImage: img.png
 tags:
   - Webpack
   - Babel
@@ -8,8 +8,10 @@ tags:
   - React
   - Alt 
 categories:
-    - Javascript
+  - Javascript
 ---
+
+![](images/img.png)
 
 We still have work to do to turn this into a real Kanban as pictured above. Most importantly our system is missing the concept of Lane.
 
@@ -20,7 +22,7 @@ We still have work to do to turn this into a real Kanban as pictured above. Most
 
 A `Lane` is something that should be able to contain many `Notes` within itself and track their order.
 
-![](img.png)
+![](images/img.jpg)
 
 # Extracting Lanes
 
@@ -135,7 +137,7 @@ The `Lanes` container will render each `Lane` separately. Each `Lane` in turn wi
 import React from 'react';
 import Lane from './Lane.jsx';
 
-export default ({lanes}) => {
+export default class ({lanes}) => {
   return (
     <div className="lanes">{lanes.map(lane =>
       <Lane className="lane" key={lane.id} lane={lane} />
@@ -650,5 +652,195 @@ export default class Lane extends React.Component {
 ```
 
 ## Defining Editable Logic
+
+We will need to define some logic to make this work. To follow the same idea as with `Note`, we can model the remaining CRUD actions here. We'll need to set up `update` and `delete` actions in particular.
+
+```
+// app/actions/LaneActions.js
+
+import alt from '../libs/alt';
+
+export default alt.generateActions(
+  'create', 'update', 'delete',
+  'attachToLane', 'detachFromLane'
+);
+```
+
+We are also going to need `LaneStore` level implementations for these. They can be modeled based on what we have seen in `NoteStore` earlier:
+
+```
+// app/stores/LaneStore.js
+
+...
+
+class LaneStore {
+  ...
+  create(lane) {
+    ...
+  }
+
+  update(updatedLane) {
+    const lanes = this.lanes.map(lane => {
+      if(lane.id === updatedLane.id) {
+        return Object.assign({}, lane, updatedLane);
+      }
+
+      return lane;
+    });
+
+    this.setState({lanes});
+  }
+  delete(id) {
+    this.setState({
+      lanes: this.lanes.filter(lane => lane.id !== id)
+    });
+  }
+
+  attachToLane({laneId, noteId}) {
+    ...
+  }
+  ...
+}
+
+export default alt.createStore(LaneStore, 'LaneStore');
+```
+
+Now that we have resolved actions and store, we need to adjust our component to take these changes into account:
+
+```
+// app/component/Lane.jsx
+
+...
+export default class Lane extends React.Component {
+  ...
+
+  editNote(id, task) {
+    // Don't modify if trying set an empty value
+    if(!task.trim()) {
+      NoteActions.update({id, editing: false});
+
+      return;
+    }
+
+    NoteActions.update({id, task, editing: false});
+  }
+
+  ...
+
+  editName = (name) => {
+    const laneId = this.props.lane.id;
+
+    // Don't modify if trying set an empty value
+    if(!name.trim()) {
+      LaneActions.update({id: laneId, editing: false});
+
+      return;
+    }
+
+    LaneActions.update({id: laneId, name, editing: false});
+  };
+  deleteLane = () => {
+    const laneId = this.props.lane.id;
+
+    LaneActions.delete(laneId);
+  };
+  activateLaneEdit = () => {
+    const laneId = this.props.lane.id;
+
+    LaneActions.update({id: laneId, editing: true});
+  };
+  activateNoteEdit(id) {
+    NoteActions.update({id, editing: true});
+  }
+
+}
+```
+If you want that lanes and notes are editable after they are created, set `lane.editing = true;` or `note.editing = true;` when creating them.
+
+# Styling Kanban Board
+
+As we added Lanes to the application, the styling went a bit off. Add the following styling to make it a little nicer:
+
+```
+//app/main.css
+
+body {
+  background: cornsilk;
+  font-family: sans-serif;
+}
+
+
+.lane {
+  display: inline-block;
+
+  margin: 1em;
+
+  background-color: #efefef;
+  border: 1px solid #ccc;
+  border-radius: 0.5em;
+
+  min-width: 10em;
+  vertical-align: top;
+}
+
+.lane-header {
+  overflow: auto;
+
+  padding: 1em;
+
+  color: #efefef;
+  background-color: #333;
+
+  border-top-left-radius: 0.5em;
+  border-top-right-radius: 0.5em;
+}
+
+.lane-name {
+  float: left;
+}
+
+.lane-add-note {
+  float: left;
+
+  margin-right: 0.5em;
+}
+
+.lane-delete {
+  float: right;
+
+  margin-left: 0.5em;
+
+  visibility: hidden;
+}
+.lane-header:hover .lane-delete {
+  visibility: visible;
+}
+
+.add-lane, .lane-add-note button {
+  cursor: pointer;
+
+  background-color: #fdfdfd;
+  border: 1px solid #ccc;
+}
+
+.lane-delete button {
+  padding: 0;
+
+  cursor: pointer;
+
+  color: white;
+  background-color: rgba(0, 0, 0, 0);
+  border: 0;
+}
+
+
+...
+```
+
+As this is a small project, we can leave the CSS in a single file like this. In case it starts growing, consider separating it to multiple files. One way to do this is to extract CSS per component and then refer to it there (e.g., `require('./lane.css')` at `Lane.jsx`).
+
+Besides keeping things nice and tidy, Webpack's lazy loading machinery can pick this up. As a result, the initial CSS your user has to load will be smaller.
+
+# On Namespacing Components
 
 TODO
