@@ -1,8 +1,7 @@
 title: Firebase and AngularJS
 thumbnailImage: title.jpg
 categories:
-  - Angular1.x
-  - Javascript
+  - Angular 1.x
 date: 2014-12-10 23:45:45
 tags:
 	- Firebase

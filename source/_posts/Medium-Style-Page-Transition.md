@@ -2,8 +2,6 @@ title: Medium-Style Page Transition
 thumbnailImage: title.gif
 categories:
   - CSS
-  - Inspiration
-  - Javascript
 date: 2014-09-01 22:50:51
 ---
 

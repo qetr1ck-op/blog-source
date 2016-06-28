@@ -1,6 +1,7 @@
 title: Development with Webpack and React part 5
 date: 2016-02-21 12:02:24
 thumbnailImage: img.png
+
 tags:
   - Webpack
   - Babel
@@ -11,8 +12,6 @@ categories:
   - Javascript
 ---
 
-![](images/img.png)
-
 We still have work to do to turn this into a real Kanban as pictured above. Most importantly our system is missing the concept of Lane.
 
 
@@ -22,17 +21,14 @@ We still have work to do to turn this into a real Kanban as pictured above. Most
 
 A `Lane` is something that should be able to contain many `Notes` within itself and track their order.
 
-![](images/img.jpg)
-
 # Extracting Lanes
 
 There will be a component for the higher level (i.e., `Lanes`) and for the lower level (i.e., `Lane`). The higher level component will deal with lane ordering. A `Lane` will render itself (i.e., name and `Notes`) and have basic manipulation operations.
 
 Just as with Notes, we are going to need a set of actions:
 
-```
-//app/actions/LaneActions.js
 
+``` javascript app/actions/LaneActions.js
 import alt from '../libs/alt';
 
 export default alt.generateActions('create');
@@ -40,9 +36,7 @@ export default alt.generateActions('create');
 
 In addition, we are going to need a `LaneStore` and a method matching to create:
 
-```
-//app/stores/LaneStore.js
-
+``` javascript app/stores/LaneStore.js
 import uuid from 'node-uuid';
 import alt from '../libs/alt';
 import LaneActions from '../actions/LaneActions';

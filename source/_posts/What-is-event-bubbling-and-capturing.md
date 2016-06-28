@@ -1,7 +1,6 @@
 title: What is event bubbling and capturing?
 date: 2014-02-02 19:55:10
 categories:
- - DOM
  - Javascript
 tags:
  - Performance

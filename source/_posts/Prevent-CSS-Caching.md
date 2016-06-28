@@ -1,7 +1,6 @@
 title: Prevent CSS Caching in Wordpress
 categories:
   - CSS
-  - Javascript
 date: 2014-06-02 19:50:42
 ---
 

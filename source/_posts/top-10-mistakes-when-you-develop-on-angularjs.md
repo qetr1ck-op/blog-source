@@ -2,7 +2,7 @@ title: TOP 10 mistakes when you develop on AngularJS
 thumbnailImage: img.jpg
 categories:
   - Javascript
-  - Angular
+  - Angular 1.x
 date: 2015-09-23 18:40:03
 tags:
   - Angular

@@ -2,9 +2,8 @@ title: сусle.js fundamentals
 date: 2016-02-02 16:32:47
 categories:
   - Javascript
-  - CSS
-  - Cycle.js
 tags:
+    - Cycle.js
 ---
 
 Cycle.js is a framework where your app is described as a simple function taking an event stream as input and outputting an event stream.

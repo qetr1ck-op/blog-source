@@ -1,9 +1,7 @@
 title: 'Class manipulation in Javascript, jQuery and AngularJS'
 thumbnailImage: title.jpg
 categories:
-  - Angular
   - Javascript
-  - jQuery
 date: 2014-07-02 23:24:37
 ---
 

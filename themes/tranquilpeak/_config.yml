@@ -149,6 +149,7 @@ image_gallery: true
 archive_pagination: true
 category_pagination: true
 tag_pagination: true
+thumbnail_image_position: right
 
 # Integrated services
 # Your Disqus shortname
