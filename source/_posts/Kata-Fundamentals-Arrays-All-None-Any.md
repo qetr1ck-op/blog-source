@@ -1,14 +1,16 @@
-title: 'Kata (Arrays): All, None & Any'
+title: 'Kata: All, None & Any'
 date: 2016-02-10 20:58:59
 tags:
     - Kata
     - Array
-    - Fundamentals
 categories: 
     - Javascript
+    - Kata
 ---
 
 As a part of this Kata, you need to create three functions that one needs to be able to call upon an array:
+
+<!--more-->
 
 * all
 

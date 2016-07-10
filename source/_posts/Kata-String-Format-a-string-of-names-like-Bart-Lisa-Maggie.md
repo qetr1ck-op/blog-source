@@ -1,8 +1,7 @@
-title: "Format a string of names like 'Bart, Lisa & Maggie'"
+title: "Kata: Format a string of names like 'Bart, Lisa & Maggie'"
 date: 2016-02-19 00:05:14
 tags:
     - Kata
-    - String
 categories: 
     - Javascript
     - Kata

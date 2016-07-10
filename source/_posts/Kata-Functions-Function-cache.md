@@ -1,13 +1,16 @@
-title: 'Kata (Functions): Function cache'
+title: 'Kata: Function cache'
 date: 2016-02-14 21:17:45
 tags:
     - Kata
     - Functions
 categories: 
     - Javascript
+    - Kata
 ---
 
 If you are calculating complex things or execute time-consuming API calls, you sometimes want to cache the results. In this case we want you to create a function wrapper, which takes a function and caches its results depending on the arguments, that were applied to the function.
+
+<!--more-->
 
 Usage example:
 

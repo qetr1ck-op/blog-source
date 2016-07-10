@@ -1,4 +1,4 @@
-title: 'Kata (Array, RegExp): Filter through name/email'
+title: 'Kata: Filter through name/email'
 date: 2016-02-15 22:34:45
 tags:
     - Kata
@@ -6,6 +6,7 @@ tags:
     - RegExp
 categories: 
     - Javascript
+    - Kata
 ---
 
 He has troubles with users ending or starting in a `.`, and his user-array is a flat array of user-email-pairs, like so:

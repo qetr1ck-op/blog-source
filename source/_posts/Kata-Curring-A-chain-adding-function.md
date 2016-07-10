@@ -1,4 +1,4 @@
-title: 'Kata (Functions, Curring): A chain adding function'
+title: 'Kata: A chain adding function'
 date: 2016-02-11 23:15:33
 tags:
     - Kata
