@@ -12,6 +12,7 @@ There are many ways to copy object in Javascript but most of the time such opera
 * And what about Sumbols and other non-enumerable properties?
 
 <!--more-->
+<!--toc-->
 
 # Shallow VS Deep copy
 
