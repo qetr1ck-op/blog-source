@@ -151,3 +151,8 @@ const cloneOfA = JSON.parse(JSON.stringify(a));
 ```
 
 This works with for all kinds of objects contain: `object`, `array`, `string`, `boolean`, `numbers`;
+
+Save my day:
+
+* [www.webreflection.co.uk](https://www.webreflection.co.uk/blog/2015/10/06/how-to-copy-objects-in-javascript#shallow-vs-deep-copy)
+* [stackoverflow.com](http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-clone-an-object)
