@@ -2,6 +2,8 @@ title: How to copy object in Javascript
 date: 2016-07-08 21:55:05
 categories:
     - Javascript
+    
+thumbnailImage: http://previews.123rf.com/images/blankstock/blankstock1501/blankstock150104323/35743522-Copy-file-sign-icon-Duplicate-document-symbol-Colored-round-buttons-Flat-design-circle-icons-set-Vec-Stock-Vector.jpg
 ---
 
 There are many ways to copy object in Javascript but most of the time such operation doesn't do what we expected.
