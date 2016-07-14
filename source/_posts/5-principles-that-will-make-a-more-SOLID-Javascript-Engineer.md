@@ -58,4 +58,48 @@ There is a easy rule to follow here:
 > If you have to open a JS file and need to make a modification there, in order to extend it - you've failed 
 **OCP**
 
-# 
+``` iceCreamMaker.js
+
+class IceCreamMachine {
+    constructor() {
+        this.flavors = ['chocolate', 'vanila'];
+    }
+    create() {
+        if (this.flavors.includes(flavor)) { // warning, ES7 Array.prototype.includes
+            console.log('Great success. You now can eat your ice cream');
+        } else {
+            console.log('A bad choice, not ice cream today');
+        }
+    }
+}
+
+export default IceCreamMachine
+```
+
+As far as you can see there's no way to add new ice cream flavor without literally open the module and edit 
+`IceCreamMachine.flavors` array.
+
+To follow **OCP** we can easily change that:
+
+```
+class IceCreamMachine {
+    constructor() {
+        this.flavors = ['chocolate', 'vanila'];
+    }
+    create() {
+        if (this.flavors.includes(flavor)) { // warning, ES7 Array.prototype.includes
+            console.log('Great success. You now can eat your ice cream');
+        } else {
+            console.log('A bad choice, not ice cream today');
+        }
+    }
+    flavorAdd(flavor) {
+        this.flavors = [...this.flavors, flavor];
+    }
+}
+```
+
+# Liskov Substitution Principle
+
+This is one of the most obscure name I've ever seen in programming world.
+
