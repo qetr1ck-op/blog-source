@@ -50,7 +50,7 @@ of function `runFacebook()` is implemented correctly in small divided functions.
 
 It means that our module should be open to extension, but closed to modification.
 
-Meaning is simple, if someone wants to extend your module behaviour, they won't need to modify existing code if they 
+Meaning is simple, if someone wants to extend your module behavior, they won't need to modify existing code if they 
 don't want to.
 
 There is a easy rule to follow here: 
@@ -58,11 +58,11 @@ There is a easy rule to follow here:
 > If you have to open a JS file and need to make a modification there, in order to extend it - you've failed 
 **OCP**
 
-``` iceCreamMaker.js
 
+```
 class IceCreamMachine {
     constructor() {
-        this.flavors = ['chocolate', 'vanila'];
+        this.flavors = ['chocolate', 'vanilla'];
     }
     create() {
         if (this.flavors.includes(flavor)) { // warning, ES7 Array.prototype.includes
@@ -84,7 +84,7 @@ To follow **OCP** we can easily change that:
 ```
 class IceCreamMachine {
     constructor() {
-        this.flavors = ['chocolate', 'vanila'];
+        this.flavors = ['chocolate', 'vanilla'];
     }
     create() {
         if (this.flavors.includes(flavor)) { // warning, ES7 Array.prototype.includes
@@ -101,5 +101,91 @@ class IceCreamMachine {
 
 # Liskov Substitution Principle
 
-This is one of the most obscure name I've ever seen in programming world.
+This is one of the most obscure name I've ever seen in programming world. 
+
+And even more the classical description is: 
+
+> Child classes should never break the parent class type definition.
+
+What a tough explanation. I'll make it more simple:
+
+> It means that we must make sure that new derived classes are extending the base class without changing their behavior.
+
+To illustrate we will go with classical example with:
+
+```
+class Rectangle {
+    constructor() {
+        // init procedure
+    }
+    setWidth(width) {
+        this.width = width;
+    }
+    setHeigth(height) {
+        this.height = height;
+    }
+    getArea() {
+        return this.width * this.height;
+    }
+}
+```
+
+We start with basic geometry abstraction `Rectangle`. Imagine that is a working and already is deployed to several clients.
+
+Now we need a new feature. A possibility to manipulate `Square`'s.
+
+In real life, in geometry, a square is a form of rectangle. So we could try to implement `Square` class that extends `Rectangle`.
+
+![](https://cdn.tutsplus.com/net/uploads/2014/01/SquareRect.png)
+
+But is a `Square` really a `Rectangle` in programming?..
+
+```
+class Square extends Rectangle {
+    constructor() {
+        super();
+        // init procedure
+    }
+    setWidth(width) {
+        this.width = width;
+        this.height = width;
+    }
+    setHeigth(height) {
+        this.height = height;
+        this.width = height;
+    }
+}
+```
+
+A square is a rectangle with equal width and height, and we do a strange implementation like in example above. 
+We overwrite both setters.
+
+So, our `Square` class isn't a `Rectangle` after all. 
+
+It breaks the law of geometry. It fails the `LSP` principle.
+
+# Interface Segregation principle
+
+The `SRP` is about actors and high lever architecture. 
+The `OCP` is about design and feature extension.
+The `LSP` is about sub-typing and inheritance.
+And the `ISP` is about business logic to client communication.
+
+> Interface Segregation actually means you shouldn't create bloated interfaces
+
+Since JS doesn't have an interfaces, I'm going to use more abstractive description.
+
+So how should we define our interfaces? We could thing about our model and expose all functionality we want it to offer:
+
+![](https://cdn.tutsplus.com/net/uploads/2014/01/hugeInterface.png)
+
+This looks as a good starting point to define what we want to implement in our class. Or is it?
+
+A start like this will lead as to one of the two possible implementation:
+
+* A huge `Car` or `Bus` or `Van` class implementation with all methods on Vehicle interface. And not only `SRP` should tell us to avoid such classes.
+* Or, many small classes like `LightControl`, `AudioCountrol` or `SpeedControl` which are implemented the whole interface but actually provide only the parts they implementing.
+
+It's obvious that neither solution is acceptable to implement the business logic.
+
 
