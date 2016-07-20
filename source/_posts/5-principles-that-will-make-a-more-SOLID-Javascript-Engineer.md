@@ -177,15 +177,65 @@ Since JS doesn't have an interfaces, I'm going to use more abstractive descripti
 
 So how should we define our interfaces? We could thing about our model and expose all functionality we want it to offer:
 
-![](https://cdn.tutsplus.com/net/uploads/2014/01/hugeInterface.png)
+Let's say your friend created a brand new HTML5 route library. He convinced you to implement it in your project.
 
-This looks as a good starting point to define what we want to implement in our class. Or is it?
+You start to play around and register the first route via `registerRouter(routeName)`. And you thing all are set up.
 
-A start like this will lead as to one of the two possible implementation:
+But your friend lied.
 
-* A huge `Car` or `Bus` or `Van` class implementation with all methods on Vehicle interface. And not only `SRP` should tell us to avoid such classes.
-* Or, many small classes like `LightControl`, `AudioCountrol` or `SpeedControl` which are implemented the whole interface but actually provide only the parts they implementing.
+He forgot to mention that you also need to implement `onErrorHandler()` and `handleIE8()` for every your registered route.
 
-It's obvious that neither solution is acceptable to implement the business logic.
+> The lesson is whenever you expose a module, make sure only essential are required, everything else is optional. Otherwise your friends will hate you.
 
+# Dependency Inversion Principle
 
+You've might heard about dependency inversion as a standalone term. `Dependency Injection` and `Inversion of Control` also mean the same.
+
+> A. High-level modules shouldn't depend on low-level modules. Both should depend on abstraction.
+> B. Abstraction shouldn't depend upon details. Details should depend on details.
+
+`DI` is all about handling over control from the function itself to the caller function. In our case it means defining who controls the type of parameters the function receives. Let's use an example.
+
+We've started to use an event emitter implementation. Your old functionality looks like this:
+
+```
+function awesomeFoo(dispatcher) {
+    dispatcher.trigger('awesome/foo');
+}
+
+function awesomeFooListener(dispatcher) {
+    dispatcher.on('awesome/foo', event => {
+        console.log(event)
+    };    
+}
+```
+
+There is one problem. New dispatcher methods are called with `emit()` and `listen()`.
+
+You could refactor your code. But what if implementation isn't all that great.
+
+> You'd like to be able easily switch between implementations
+
+You realize that you don't need the whole dispatcher object in every function. You change your code to receive only the relevant methods for every function:
+
+```
+function awesomeFoo(dispatcher) {
+    dispatch('awesome/foo');
+}
+
+function awesomeFooListener(dispatcher) {
+    listen('awesome/foo', event => {
+        console.log(event)
+    };    
+}
+```
+
+Your code now doesn't depend on any concrete implementation of event emitter object.
+
+> It does depend on abstraction. You can now freely switch between new/old implementation or even use a mock implementation for testing.
+
+Save my day:
+
+* [The Full Stack](http://thefullstack.xyz/solid-javascript/)
+* [Aspiring Craftsman](http://aspiringcraftsman.com/2011/12/08/solid-javascript-single-responsibility-principle/)
+* [code.tutsplus](http://code.tutsplus.com/series/the-solid-principles--cms-634)
