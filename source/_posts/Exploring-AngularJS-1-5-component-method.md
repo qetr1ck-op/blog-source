@@ -1,5 +1,6 @@
 title: Exploring AngularJS 1.5 .component() method
 date: 2016-07-22 22:20:03
+thumbnailImage: http://html5-demos.appspot.com/static/webcomponents/images/logos/webcomponents.png
 tags:
     - AngularJS
 categories:
@@ -16,7 +17,7 @@ Let's compare the difference in syntax and the possibility of new abstraction.
 <!--toc-->
 <!--more-->
 
-# directrive() to component()
+# "directrive()" to "component()"
 
 The syntax change is simple:
 
@@ -47,7 +48,7 @@ module
         <div>
           <input type="number" ng-model="$ctlr.count">
           <button ng-click="$ctrl.increment()">+</button>
-          <button ng-click="$ctrl.decrement()">+</button>
+          <button ng-click="$ctrl.decrement()">-</button>
         </div>
       `
     }
@@ -78,9 +79,9 @@ module
 
 Nice and simple.
 
-# `scope` and `bindToController` become `bindings`
+# "scope" and "bindToController" become "bindings"
 
-In `directive()` the `scope` property allows us to define whether we want to isolate the `$scope` or inherit it. So repeating every time just create an extra boilerplate. With `bindToController` we [can](https://docs.angularjs.org/api/ng/service/$compile) explicitly define binding directly to instance of controller via `this`.
+In `directive()` the `scope` property allows us to define whether we want to isolate the `$scope` or inherit it. So repeating every time just create an extra boilerplate. With [bindToController](https://docs.angularjs.org/api/ng/service/$compile) we can explicitly define binding directly to instance of controller via `this`.
 
 With `bindings` we can remove this boilerplate and simple define what we want to pass down to the component.
 
@@ -92,7 +93,7 @@ module
   .directive('counter', function counter() {
     return {
       scope: {
-        counter: '='
+        count: '='
       },
       bindToController: true
     }
@@ -107,7 +108,7 @@ module
   })
 ```
 
-# Controller and `contorllerAs` changes
+# Controller and "contorllerAs" changes
 
 Nothing has changed in the way we declare `controller`, however it's now smarter and has a default `contorllerAs` value of `$ctrl`.
 
@@ -180,7 +181,7 @@ The `template` property can be defined as a function property with injected `$el
   template: function ($element, $attrs) {
     // access to $element and $attrs
     return `
-      <div class="todo">
+      <div>
         <input type="text" ng-model="$ctrl.count">
         <button type="button" ng-click="$ctrl.decrement();">-</button>
         <button type="button" ng-click="$ctrl.increment();">+</button>
@@ -191,11 +192,11 @@ The `template` property can be defined as a function property with injected `$el
 }
 ```
 
-A life demo with new `.component()`:
+# A life demo with new ".component()":
 
 {% iframe http://embed.plnkr.co/CRSS2VkrfM6KK9U72mxg/ 100% 600px %}
 
-# Inheriting behavior with `require`
+# Inheriting behavior with "require"
 
 Inherited Directive or Component methods will be bound to `this.parent` property in the Controller:
 
@@ -213,3 +214,51 @@ Inherited Directive or Component methods will be bound to `this.parent` property
 ```
 
 # One-way binding
+
+A new syntax expression for isolate scope values:
+
+```
+{
+  ...
+  bindings: {
+    oneWay: '<',
+    twoWay: '='
+  },
+  ...
+}
+```
+
+> But still remember that object are passed by reference, and Angular doesn't make a clone of the object when it passed via `one-way binding`, it actually sets the same value, which means that objects have still `two-way binding` somehow.
+
+# Upgrading to Angular 2
+
+Writing in this style using `.component()` allows you easily transit to Angular 2, it'd look something like this:
+
+```
+import { Component } from '@angular/core'
+
+@Component({
+  selector: 'counter',
+  template: `
+    <div>
+      <input type="number" [(ng-model)]="count">
+      <button (click)="increment()">+</button>
+      <button (click)="decrement()">-</button>
+    </div>
+  `,
+})
+
+export default class CounterComponent {
+  constructor() {}
+  increment() {
+    this.count++;
+  }
+  decrement() {
+    this.count++;
+  }
+}
+```
+
+Save my day: 
+
+* [toddmotto](https://toddmotto.com/exploring-the-angular-1-5-component-method/)
