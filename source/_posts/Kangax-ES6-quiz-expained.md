@@ -77,7 +77,7 @@ let x, { x: y = 1} = { x }; y;
 3. Once it destucted the pattern`{ x: y = 1}`, we extract variable `y`, which correspond to the propery `x`. Since propery `x` is `undefined`, the default value `1` is assigned to it.
 
 
-
+test
 
 
 TODO: finish the post...
