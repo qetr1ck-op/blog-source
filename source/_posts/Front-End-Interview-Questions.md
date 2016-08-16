@@ -12,7 +12,7 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 # JavaScript: basics
 
-## null vs undefined. What are the differences between "null" and "undefined"?
+## Types. What are the differences between "null" and "undefined"?
 
 **Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`.
 
@@ -22,13 +22,76 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3), and here [learn.javascript.ru](https://learn.javascript.ru/types-conversion#специальные-значения)
 
-## == Vs ===. What are the differences between "==" and "==="?
+## Types. What are the differences between "==" and "==="?
 
 **Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
 
 `===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
 
-## Rapid fire table of type conversions:
+## Types. What is a potential pitfall with using typeof bar === "object" to determine if bar is an object? How can this pitfall be avoided?
+
+**Answer:** Use `Object.prototype.toString.call(<object>)` or use Duck Typing.
+
+## Hoisting. 
+
+What will the code below output to the console and why? Does it work in "use strict" directive?
+
+```
+(function(){
+  var a = b = 3;
+})();
+
+console.log("(typeof a !== 'undefined'));
+console.log("(typeof b !== 'undefined'));
+```
+
+**Answer:** `false true` because `b` is declared as global variable. Won't work.
+
+**Explanation:** Since both a and b are defined within the enclosing scope of the function, and since the line they are on begins with the var keyword, most JavaScript developers would expect `typeof a` and `typeof b` to both be `undefined` in the above example.
+
+However, that is not the case. The issue here is that most developers incorrectly understand the statement `var a = b = 3;` to be shorthand for:
+
+```
+var b = 3;
+var a = b;
+```
+
+But in fact, `var a = b = 3;` is actually shorthand for:
+
+```
+b = 3;
+var a = b;
+```
+
+Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
+
+## Best Practice. What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
+
+**Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
+
+**Explanation:** Some of the key benefits of strict mode include:
+
+* Makes debugging easier. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions, alerting you sooner to problems in your code and directing you more quickly to their source.
+
+* Prevents accidental globals. Without strict mode, assigning a value to an undeclared variable automatically creates a global variable with that name. This is one of the most common errors in JavaScript. In strict mode, attempting to do so throws an error.
+
+* Eliminates `this` coercion. Without `strict mode`, a reference to a this value of `undefined` is automatically coerced to the global. This can cause many headfakes and pull-out-your-hair kind of bugs.
+
+* Disallows duplicate property names or parameter values. Strict mode throws an error when it detects a duplicate named property in an object (e.g.,` var object = {foo: "bar", foo: "baz"};`) or a duplicate named argument for a function (e.g., `function foo(val1, val2, val1){}`), thereby catching what is almost certainly a bug in your code that you might otherwise have wasted lots of time tracking down.
+
+* Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
+
+## Best Practice. What wrapping the entire content of a JavaScript source file in IIFE?
+
+**Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
+
+**Explanation:** Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable. This is often used, for example, in jQuery plugins. jQuery allows you to disable the $ reference to the jQuery namespace, using jQuery.noConflict(). If this has been done, your code can still use $ employing this closure technique, as follows:
+
+```
+(function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
+```
+
+## Types. Rapid fire table of type conversions:
 
 | Question                                    | Answer                                                                                                                    |
 |---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -87,7 +150,7 @@ function isEqual(a, b) {
 
 Or use [lodash](https://www.npmjs.com/package/lodash.isequal) equivalent.
 
-## True Lies. 11+ true false related questions that will trick you
+## Types. True Lies. 11+ true false related questions that will trick you
 
 **Answer:**  There are only two truthy things - `true` and everything that is not false.
 
@@ -107,7 +170,15 @@ True / False Rapid Fire Table:
 | `true%1`                                                      | 0. When you are trying to find reminder of true, true becomes 1 and reminder of 1 while dividing by 1 is 0.                                                               |
 | `''%1`                                                        | 0                                                                                                                                                                         |
 
-## Truthy isn't Equal to true. As "[]" is true, "[] == true" should also be "true", right?
+## Types. What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+
+**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`.
+
+**Explanation:** The NaN property represents a value that is “not a number”. This special value results from an operation that could not be performed either because one of the operands was non-numeric (e.g., "abc" / 4), or because the result of the operation is non-numeric (e.g., an attempt to divide by zero).
+
+ES6 offers a new `Number.isNaN()` function, which is a different and more reliable than the old global `isNaN()` function.
+
+## toString, valueOf. Truthy isn't Equal to true. As "[]" is true, "[] == true" should also be "true", right?
 
 **Answer:** Not.
 
@@ -376,6 +447,44 @@ for(let i = 0; i < 10; i++) {
   }, 10);
 }
 ```
+
+## Pass by value or by reference. Does JavaScript pass parameter by value or by reference?
+
+**Answer**: Primitive type (string, number, etc.) are passed by value and objects are passed by reference. If you change a property of the passed object, the change will be affected. However, you assign a new object to the passed object, the changes will not be reflected.
+
+```
+var num = 10,
+  name = "Addy Osmani",
+  obj1 = {
+    value: "first value"
+  },
+  obj2 = {
+   value: "second value"
+  },
+  obj3 = obj2;
+ 
+function change(num, name, obj1, obj2) {
+  num = num * 10;
+  name = "Paul Irish";
+  obj1 = obj2;
+  obj2.value = "new value";
+}
+ 
+change(num, name, obj1, obj2);
+ 
+console.log(num); // 10
+console.log(name);// "Addy Osmani"
+console.log(obj1.value);//"first value"
+console.log(obj2.value);//"new value"
+console.log(obj3.value);//"new value"     
+```
+
+## Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
+
+Question: How could you cache execution of any function?
+
+TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
+http://www.thatjsdude.com/interview/js2.html#memoization
 
 # AngularJS 
 
