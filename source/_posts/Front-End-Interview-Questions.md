@@ -12,7 +12,15 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 # JavaScript: basics
 
-## Types. What are the differences between "null" and "undefined"?
+## Types.
+
+### What are the differences between "==" and "==="?
+
+**Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
+
+`===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
+
+### What are the differences between "null" and "undefined"?
 
 **Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`.
 
@@ -22,76 +30,11 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3), and here [learn.javascript.ru](https://learn.javascript.ru/types-conversion#специальные-значения)
 
-## Types. What are the differences between "==" and "==="?
-
-**Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
-
-`===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
-
-## Types. What is a potential pitfall with using typeof bar === "object" to determine if bar is an object? How can this pitfall be avoided?
+### What is a potential pitfall with using "typeof bar === "object"" to determine if bar is an object? How can this pitfall be avoided?
 
 **Answer:** Use `Object.prototype.toString.call(<object>)` or use Duck Typing.
 
-## Hoisting. 
-
-What will the code below output to the console and why? Does it work in "use strict" directive?
-
-```
-(function(){
-  var a = b = 3;
-})();
-
-console.log("(typeof a !== 'undefined'));
-console.log("(typeof b !== 'undefined'));
-```
-
-**Answer:** `false true` because `b` is declared as global variable. Won't work.
-
-**Explanation:** Since both a and b are defined within the enclosing scope of the function, and since the line they are on begins with the var keyword, most JavaScript developers would expect `typeof a` and `typeof b` to both be `undefined` in the above example.
-
-However, that is not the case. The issue here is that most developers incorrectly understand the statement `var a = b = 3;` to be shorthand for:
-
-```
-var b = 3;
-var a = b;
-```
-
-But in fact, `var a = b = 3;` is actually shorthand for:
-
-```
-b = 3;
-var a = b;
-```
-
-Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
-
-## Best Practice. What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
-
-**Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
-
-**Explanation:** Some of the key benefits of strict mode include:
-
-* Makes debugging easier. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions, alerting you sooner to problems in your code and directing you more quickly to their source.
-
-* Prevents accidental globals. Without strict mode, assigning a value to an undeclared variable automatically creates a global variable with that name. This is one of the most common errors in JavaScript. In strict mode, attempting to do so throws an error.
-
-* Eliminates `this` coercion. Without `strict mode`, a reference to a this value of `undefined` is automatically coerced to the global. This can cause many headfakes and pull-out-your-hair kind of bugs.
-
-* Disallows duplicate property names or parameter values. Strict mode throws an error when it detects a duplicate named property in an object (e.g.,` var object = {foo: "bar", foo: "baz"};`) or a duplicate named argument for a function (e.g., `function foo(val1, val2, val1){}`), thereby catching what is almost certainly a bug in your code that you might otherwise have wasted lots of time tracking down.
-
-* Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
-
-## Best Practice. What wrapping the entire content of a JavaScript source file in IIFE?
-
-**Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
-
-**Explanation:** Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable. This is often used, for example, in jQuery plugins. jQuery allows you to disable the $ reference to the jQuery namespace, using jQuery.noConflict(). If this has been done, your code can still use $ employing this closure technique, as follows:
-
-```
-(function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
-```
-
-## Types. Rapid fire table of type conversions:
+### Rapid fire table of primitive type conversions:
 
 | Question                                    | Answer                                                                                                                    |
 |---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -122,35 +65,7 @@ Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 
 | typeof bar                                  | undefined                                                                                                                 |
 | typeof(NaN)                                 | "number"                                                                                                                  |
 
-## Object Equality. How would you compare two objects?
-
-**Answer:** JavaScript has two different approaches for testing equality. Primitives like strings and numbers are compared by their value, while objects like arrays, dates, and user defined objects are compared by their reference. This means it compares whether two objects are referring to the same location in memory.
-
-Equality check will check whether two objects have same value for same property. To check that, you can get the keys for both the objects. 
-
-```
-function isEqual(a, b) {
-    var aProps = Object.getOwnPropertyNames(a),
-        bProps = Object.getOwnPropertyNames(b);
-
-    if (aProps.length != bProps.length) {
-        return false;
-    }
-
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-        
-        if (a[propName] !== b[propName]) {
-            return false;
-        }
-    }
-    return true;
-}
-```
-
-Or use [lodash](https://www.npmjs.com/package/lodash.isequal) equivalent.
-
-## Types. True Lies. 11+ true false related questions that will trick you
+### True Lies. 11+ true false related questions that will trick you
 
 **Answer:**  There are only two truthy things - `true` and everything that is not false.
 
@@ -169,8 +84,7 @@ True / False Rapid Fire Table:
 | `Boolean(function(){})`                                       | true if you pass a truthy value to Boolean, it will be true.                                                                                                              |
 | `true%1`                                                      | 0. When you are trying to find reminder of true, true becomes 1 and reminder of 1 while dividing by 1 is 0.                                                               |
 | `''%1`                                                        | 0                                                                                                                                                                         |
-
-## Types. What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+### What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
 
 **Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`.
 
@@ -178,158 +92,41 @@ True / False Rapid Fire Table:
 
 ES6 offers a new `Number.isNaN()` function, which is a different and more reliable than the old global `isNaN()` function.
 
-## toString, valueOf. Truthy isn't Equal to true. As "[]" is true, "[] == true" should also be "true", right?
 
-**Answer:** Not.
+## Scope and hoisting
 
-You are right about first part, `[]`, empty array is an object and object is always truthy. 
-
-However, special case about `==` (not-strict equal) is that it will do some implicit coercion.
-
-1. Since left and right side of the equality are two different types, JavaScript can't compare them directl.
-2. JavaScript implementation will try to convert `[]` by using `toPrimitive` (of JavaScript implementation). since `[].valueOf` is not primitive will use `toString` and will get `""`.
-3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
-4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
-
-## Extend Core Object, prototype.
-
-**Question:** How could you write a method on instance of a date which will give you next day?
-
-**Answer:** I have to declare a method on the prototype of Date object. To get access to the current value of the instance of the date, i will use `this`
+### What will the code below output to the console and why? Does it work in "use strict" directive?
 
 ```
-Date.prototype.nextDay = function(){
-  return new Date(this.setDate(this.getDate() + 1));
-}
+(function(){
+  var a = b = 3;
+})();
 
-var date = new Date(); 
-date; //Fri May 16 2014 20:47:14 GMT-0500 (Central Daylight Time)
-date.nextDay();//Sat May 17 2014 20:47:14 GMT-0500 (Central Daylight Time)
+console.log("(typeof a !== 'undefined'));
+console.log("(typeof b !== 'undefined'));
 ```
 
-**Question:** If i have a var `str = 'hello world'`, how could i get `str.reverse()` return `'dlrow olleh'`?
+**Answer:** `false true` because `b` is declared as global variable. Won't work.
 
-**Answer:** You have to extend the core String Object
+**Explanation:** Since both a and b are defined within the enclosing scope of the function, and since the line they are on begins with the var keyword, most JavaScript developers would expect `typeof a` and `typeof b` to both be `undefined` in the above example.
 
-```
-String.prototype.reverse = function(){
-  return this.split('').reverse().join(''); // or better [...this].reverse().join('');
-}
-
-var str = 'hello world';
-str.reverse();//"dlrow olleh"
-```
-
-**Question:** How could you make this work `[1,2,3,4,5].duplicator()` to return `[1,2,3,4,5,1,2,3,4,5]` ?
-
-**Answer:** We need to add a method in the prototype of Array object.
+However, that is not the case. The issue here is that most developers incorrectly understand the statement `var a = b = 3;` to be shorthand for:
 
 ```
-Array.prototype.duplicator = function(){
-  return this.concat(this); // or better [...this, ...this];
-}
-
-[1,2,3,4,5].duplicator(); // [1,2,3,4,5,1,2,3,4,5]
+var b = 3;
+var a = b;
 ```
 
-## arguments and call. Write a simple function to tell whether 2 is passed as parameter or not?
-
-**Answer:** First convert arguments to an array with `rest` operator, after that simply use `Array.prototype.includes`.
-
-``` javascript
-function isTwoPassed(...params) {
-  return params.includes(2);
-}
-/*
-ES5 way
-function isTwoPassed(){
-  var args = Array.prototype.slice.call(arguments);
-  return args.indexOf(2) != -1;
-}
-*/
-
-isTwoPassed(1,4); //false
-isTowPassed(5,3,1,2); //true
-```
-
-## call/apply and bind. If you want to use an arbitrary object as value of this, how will you do that?
-
-**Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
-
-For example, I have a method named deductMontlyFee in the object `monica` and by default value of this would be `monica` inside the method.
+But in fact, `var a = b = 3;` is actually shorthand for:
 
 ```
-const monica = {
-  name: 'Monica Geller',
-  total: 400,
-  deductMontlyFee(fee){
-     this.total = this.total - fee;
-     return this.name + ' remaining balance is '+ this.total; 
-  }
-}
+b = 3;
+var a = b;
 ```
 
-If I bind the deductMontlyFee of `monica` with another object `rachel` and pass `rachel` as first parameter of the bind function, `rachel` would be the value of this:
+Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
 
-```
-const rachel = {name: 'Rachel Green', total: 1500};
-const rachelFeeDeductor = monica.deductMonthlyFee.bind(rachel, 200);
-
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1300"
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1100"
-```
-
-With call:
-
-```
-monica.deductMonthlyFee.apply(rachel, 200);
-```
-
-[call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
-
-## apply. How could you use Math.max to find the max value in an array?
-
-```
-Math.max(...arr);  
-
-//ES5 way
-//Math.max.apply(Math, arr);  
-```
-
-## this. What the heck is "this" in JavaScript?
-
-**Answer:** At the time of execution of every function, JavaScript engine sets a property to the function called `this` which refer to the current execution context. `this` is always refer to an object and depends on how function is called:
-
-1. In the global context or inside a function this refers to the `window`/`global` object. In ES6 or with `use strict` directive it's `undefined`
-2. While executing a method in the context of an object, the object becomes the value of `this`
-3. If you use a constructor (by using new keyword) to create an object, the value of `this` will refer to the newly created object.
-4. Set the value of `this` to any arbitrary object by passing the object as the first parameter of `bind`, `call` or `apply`
-5. Use `arrow function` for use parent lexical scope.
-
-## log prefix. How could you set a prefix before everything you log? for example, if you "log('my message')"" it will log: "(app) my message"
-
-**Answer:** Just get the arguments, convert it to an array and unshift whatever prefix you want to set. Finally, use apply to pass all the arguments to console.
-
-```
-function log(){
-  var args = Array.prototype.slice.call(arguments);
-  args.unshift('(app)');
-  console.log.apply(console, args);
-}
-
-log('my message'); //(app) my message
-log('my message', 'your message'); //(app) my message your message 
-```
-
-**ES6 Answer:** 
-
-```
-function log(...params){
-  console.log(['(app)', ...params]);
-}
-```
-
-## Scope and hoisting. What will you see in the console for the following example?
+### What will you see in the console for the following example?
 
 ```
 var a = 1; 
@@ -368,7 +165,25 @@ foo();//?
 
 As function declaration is get hoisted. the first bar is at the top and second bar after the return will also be hoisted. Since there is already a bar (first function declaration), the second one will replace the first one. As there could be one function for a single name and the last one stays. Hence, when you executing bar, you are executed the second one (after hoisting) and you get.
 
-## Closure. What is a “closure” in JavaScript? Provide an example.
+### What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
+
+**Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
+
+**Explanation:** Some of the key benefits of strict mode include:
+
+* Makes debugging easier. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions, alerting you sooner to problems in your code and directing you more quickly to their source.
+
+* Prevents accidental globals. Without strict mode, assigning a value to an undeclared variable automatically creates a global variable with that name. This is one of the most common errors in JavaScript. In strict mode, attempting to do so throws an error.
+
+* Eliminates `this` coercion. Without `strict mode`, a reference to a this value of `undefined` is automatically coerced to the global. This can cause many headfakes and pull-out-your-hair kind of bugs.
+
+* Disallows duplicate property names or parameter values. Strict mode throws an error when it detects a duplicate named property in an object (e.g.,` var object = {foo: "bar", foo: "baz"};`) or a duplicate named argument for a function (e.g., `function foo(val1, val2, val1){}`), thereby catching what is almost certainly a bug in your code that you might otherwise have wasted lots of time tracking down.
+
+* Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
+
+## Closure and Functions
+
+### What is a “closure” in JavaScript? Provide an example.
 
 > Closure is a function with all accessible variables in lexical environment
 
@@ -402,7 +217,7 @@ globalVar = xyz
 */
 ```
 
-## Closure. Closures Inside in loop with "setTimeout".
+### Closures Inside in loop with "setTimeout".
 
 If log the loop counter inside `setTimeout`, what will be logged?
 
@@ -448,7 +263,205 @@ for(let i = 0; i < 10; i++) {
 }
 ```
 
-## Pass by value or by reference. Does JavaScript pass parameter by value or by reference?
+### "call" / "apply" VS "bind". If you want to use an arbitrary object as value of this, how will you do that?
+
+**Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
+
+For example, I have a method named deductMontlyFee in the object `monica` and by default value of this would be `monica` inside the method.
+
+```
+const monica = {
+  name: 'Monica Geller',
+  total: 400,
+  deductMontlyFee(fee){
+     this.total = this.total - fee;
+     return this.name + ' remaining balance is '+ this.total; 
+  }
+}
+```
+
+If I bind the deductMontlyFee of `monica` with another object `rachel` and pass `rachel` as first parameter of the bind function, `rachel` would be the value of this:
+
+```
+const rachel = {name: 'Rachel Green', total: 1500};
+const rachelFeeDeductor = monica.deductMonthlyFee.bind(rachel, 200);
+
+rachelFeeDeductor(); //"Rachel Green remaining balance is 1300"
+rachelFeeDeductor(); //"Rachel Green remaining balance is 1100"
+```
+
+With `apply`:
+
+```
+monica.deductMonthlyFee.apply(rachel, 200);
+```
+
+[call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
+
+### "arguments" and "call". Write a simple function to tell whether 2 is passed as parameter or not?
+
+**Answer:** First convert `arguments` to an array with `rest` operator, after that simply use `Array.prototype.includes`.
+
+``` javascript
+function isTwoPassed(...params) {
+  return params.includes(2);
+}
+/*
+ES5 way
+function isTwoPassed(){
+  var args = Array.prototype.slice.call(arguments);
+  return args.indexOf(2) != -1;
+}
+*/
+
+isTwoPassed(1,4); //false
+isTowPassed(5,3,1,2); //true
+```
+
+### "apply" and "spread". How could you use "Math.max" to find the max value in an array?
+
+```
+Math.max(...arr);  
+
+//ES5 way
+//Math.max.apply(Math, arr);  
+```
+
+### "apply" and "rest". How could you set a prefix before everything you log? for example, if you "log('my message')"" it will log: "(app) my message"
+
+**Answer:** Just get the arguments, convert it to an array and unshift whatever prefix you want to set. Finally, use apply to pass all the arguments to console.
+
+```
+function log(){
+  var args = Array.prototype.slice.call(arguments);
+  args.unshift('(app)');
+  console.log.apply(console, args);
+}
+
+log('my message'); //(app) my message
+log('my message', 'your message'); //(app) my message your message 
+```
+
+**ES6 Answer:** 
+
+```
+function log(...params){
+  console.log(['(app)', ...params]);
+}
+```
+
+### Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
+
+Question: How could you cache execution of any function?
+
+TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
+http://www.thatjsdude.com/interview/js2.html#memoization
+
+### Why wrapping the entire content of a JavaScript source file in IIFE?
+
+**Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
+
+**Explanation:** Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable. This is often used, for example, in jQuery plugins. jQuery allows you to disable the $ reference to the jQuery namespace, using jQuery.noConflict(). If this has been done, your code can still use $ employing this closure technique, as follows:
+
+```
+(function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
+```
+
+## Objects 
+
+### this. What the heck is "this" in JavaScript?
+
+**Answer:** At the time of execution of every function, JavaScript engine sets a property to the function called `this` which refer to the current execution context. `this` is always refer to an object and depends on how function is called:
+
+1. In the global context or inside a function this refers to the `window`/`global` object. In ES6 or with `use strict` directive it's `undefined`
+2. While executing a method in the context of an object, the object becomes the value of `this`
+3. If you use a constructor (by using new keyword) to create an object, the value of `this` will refer to the newly created object.
+4. Set the value of `this` to any arbitrary object by passing the object as the first parameter of `bind`, `call` or `apply`
+5. Use `arrow function` for use parent lexical scope.
+
+### How would you compare two objects?
+
+**Answer:** JavaScript has two different approaches for testing equality. Primitives like strings and numbers are compared by their value, while objects like arrays, dates, and user defined objects are compared by their reference. This means it compares whether two objects are referring to the same location in memory.
+
+Equality check will check whether two objects have same value for same property. To check that, you can get the keys for both the objects. 
+
+```
+function isEqual(a, b) {
+    var aProps = Object.getOwnPropertyNames(a),
+        bProps = Object.getOwnPropertyNames(b);
+
+    if (aProps.length != bProps.length) {
+        return false;
+    }
+
+    for (var i = 0; i < aProps.length; i++) {
+        var propName = aProps[i];
+        
+        if (a[propName] !== b[propName]) {
+            return false;
+        }
+    }
+    return true;
+}
+```
+
+Or use [lodash](https://www.npmjs.com/package/lodash.isequal) equivalent.
+
+### Object comparison, toString, valueOf. Truthy isn't Equal to true. As "[]" is true, "[] == true" should also be "true", right?
+
+**Answer:** Not.
+
+You are right about first part, `[]`, empty array is an object and object is always truthy. 
+
+However, special case about `==` (not-strict equal) is that it will do some implicit coercion.
+
+1. Since left and right side of the equality are two different types, JavaScript can't compare them directl.
+2. JavaScript implementation will try to convert `[]` by using `toPrimitive` (of JavaScript implementation). since `[].valueOf` is not primitive will use `toString` and will get `""`.
+3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
+4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
+
+### Extend Core Object through prototype.
+
+**Question:** How could you write a method on instance of a date which will give you next day?
+
+**Answer:** I have to declare a method on the prototype of Date object. To get access to the current value of the instance of the date, i will use `this`
+
+```
+Date.prototype.nextDay = function(){
+  return new Date(this.setDate(this.getDate() + 1));
+}
+
+var date = new Date(); 
+date; //Fri May 16 2014 20:47:14 GMT-0500 (Central Daylight Time)
+date.nextDay();//Sat May 17 2014 20:47:14 GMT-0500 (Central Daylight Time)
+```
+
+**Question:** If i have a var `str = 'hello world'`, how could i get `str.reverse()` return `'dlrow olleh'`?
+
+**Answer:** You have to extend the core String Object
+
+```
+String.prototype.reverse = function(){
+  return this.split('').reverse().join(''); // or better [...this].reverse().join('');
+}
+
+var str = 'hello world';
+str.reverse();//"dlrow olleh"
+```
+
+**Question:** How could you make this work `[1,2,3,4,5].duplicator()` to return `[1,2,3,4,5,1,2,3,4,5]` ?
+
+**Answer:** We need to add a method in the prototype of Array object.
+
+```
+Array.prototype.duplicator = function(){
+  return this.concat(this); // or better [...this, ...this];
+}
+
+[1,2,3,4,5].duplicator(); // [1,2,3,4,5,1,2,3,4,5]
+```
+
+### Pass by value or by reference. Does JavaScript pass parameter by value or by reference?
 
 **Answer**: Primitive type (string, number, etc.) are passed by value and objects are passed by reference. If you change a property of the passed object, the change will be affected. However, you assign a new object to the passed object, the changes will not be reflected.
 
@@ -478,13 +491,6 @@ console.log(obj1.value);//"first value"
 console.log(obj2.value);//"new value"
 console.log(obj3.value);//"new value"     
 ```
-
-## Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
-
-Question: How could you cache execution of any function?
-
-TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
-http://www.thatjsdude.com/interview/js2.html#memoization
 
 # AngularJS 
 
