@@ -12,23 +12,39 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 # JavaScript: basics
 
-## Types.
+## Types
+
+### What are the differences between "undeclared", "undefined", and "null"?
+
+**Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`. Also there are `undeclared` variables which don’t even exist.
+
+A variable is `undeclared` when it does not use the var keyword. It gets created on the global object, thus it operates in a different space as the declared variables.
+
+```javascript
+var declaredVariable = 1;
+
+(function scoppedVariables() {
+  undeclaredVariable = 1;
+  var declaredVariable = 2;
+})();
+
+undeclaredVariable; // 1
+declaredVariable; // 1
+```
+
+Note: this will not work in strict mode. 
+
+`undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and `typeof undefined` is also "undefined". Remember, `undefined` is not a constant or a keyword. `undefined` is a type with exactly one value: `undefined`.
+
+`null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. `null` is not an object, it is a primitive value. For example, you cannot add properties to it. Sometimes people wrongly assume that it is an object, because `typeof null` returns "object".
+
+With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3), and here [learn.javascript.ru](https://learn.javascript.ru/types-conversion#специальные-значения)
 
 ### What are the differences between "==" and "==="?
 
 **Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
 
 `===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
-
-### What are the differences between "null" and "undefined"?
-
-**Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`.
-
-`undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and typeof `undefined` is also "undefined". Remember, `undefined` is not a constant or a keyword. `undefined` is a type with exactly one value: `undefined`.
-
-`null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. `null` is not an object, it is a primitive value. For example, you cannot add properties to it. Sometimes people wrongly assume that it is an object, because typeof `null` returns "object".
-
-With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3), and here [learn.javascript.ru](https://learn.javascript.ru/types-conversion#специальные-значения)
 
 ### What is a potential pitfall with using "typeof bar === "object"" to determine if bar is an object? How can this pitfall be avoided?
 
@@ -367,6 +383,43 @@ http://www.thatjsdude.com/interview/js2.html#memoization
 (function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
 ```
 
+### Explain why the following doesn't work as an IIFE: "function foo(){ }();"
+
+**Answer:** Because `foo` isn’t being called! This is a function definition, it defines `foo`. But it’s not a function expression - that is, it’s not understood by the JS parser to actually call a function.
+
+For the parser, things look like this:
+
+```javascript
+function foo(){
+} // ok, done with that function definition
+  // (silly human left off the semicolon, how embarrassing!)
+
+(); // Are they trying to call something? What’s the function’s name?
+    // PARSE ERROR
+```
+
+In order to prep the parser that we're actually dealing with a function expression we have to wrap things up in `()` like so:
+
+```javascript
+(
+  function foo(){
+  }()
+);
+```
+
+Also will work with `!` and `+` operators:
+
+```javascript
++function() {
+  
+}();
+
+!function() {
+
+}();
+```
+
+
 ## Objects 
 
 ### this. What the heck is "this" in JavaScript?
@@ -492,6 +545,309 @@ console.log(obj2.value);//"new value"
 console.log(obj3.value);//"new value"     
 ```
 
+## OOP
+
+### Prototypal inheritance
+
+**Answer:** In most languages, there are classes and objects. Classes inherit from other classes. In JavaScript, the inheritance is prototype-based. That means that there are no classes. Instead, an object inherits from another object. The main point is that one object can be `prototype` of another object. That means if property isn’t found in the object - than it takes from `prototype` object. In JavaScript this implementation is at the language level.
+
+**Explanation:** [OOP in prototype style](http://qetr1ck-op.github.io/2014/09/15/OOP-in-prototype-style/)
+
+#### Difference between: "function Person(){}", "var person = Person()", and "var person = new Person()"?
+
+**Answer:** In the example below we define a new class called Person with an empty constructor. Invoke function `Person()` will return `undefined`. On other hand invoking `new Person` will return an empty object `{}`.
+
+**Explanation:**
+
+JavaScript is a prototype-based language and contains no class statement, such as is found in C++ or Java. This is sometimes confusing for programmers accustomed to languages with a class statement. Instead, JavaScript uses functions as constructors for classes. Defining a class is as easy as defining a function. In the example below we define a new class called `Person` with an empty constructor.
+
+And the spec says, the `new` operator uses the internal `[[Construct]]` method, and it basically does the following:
+
+1. Initializes a new empty object (no properties)
+2. Sets the prototype of the new object to the value of the `prototype` property of Person.
+  * Note: The default value of `prototype` for a function is an object (automatically created when the function is declared) with its prototype set to `Object.prototype` and a `constructor` property pointing back to the function Person.
+  * Note: The terminology can be confusing. The property named `prototype` is not the same as the prototype of the object. Only functions have the property named "prototype", but all objects have a prototype.
+3. Calls the function `Person` with `this` set to the new object, and with the supplied `arguments`.
+4. If calling the function `Person` returns an object, this object is the result of the expression. Otherwise the newly created object is the result of the expression.
+
+An equivalent implementation of what the new operator does, can be expressed like this with ES5 `Object.create`:
+
+```javascript
+function NEW(f) {
+  var obj, ret, proto;
+
+  // Check if `f.prototype` is an object, not a primitive
+  proto = Object(f.prototype) === f.prototype ? f.prototype : Object.prototype;
+
+  // Create an object that inherits from `proto`
+  obj = Object.create(proto);
+
+  // Apply the function setting `obj` as the `this` value
+  ret = f.apply(obj, Array.prototype.slice.call(arguments, 1));
+
+  if (Object(ret) === ret) { // the result is an object?
+    return ret;
+  }
+  return obj;
+}
+
+// Example usage:
+function Foo (arg) {
+  this.prop = arg;
+}
+Foo.prototype.inherited = 'baz';
+
+var obj = NEW(Foo, 'bar');
+obj.prop;          // 'bar'
+obj.inherited;     // 'baz'
+obj instanceof Foo // true
+```
+
+#### Why we need "Object.create" and how it works. And "new F" VS "Object.create".
+
+**Answer:** `Object.create` methods allows you to easily implement differential inheritance, where objects can directly inherit from other objects.
+
+```javascript
+var userB = {
+  sayHello: function() {
+    console.log('Hello '+ this.name);
+  }
+};
+
+var bob = Object.create(userB, {
+  'id' : {
+    value: MY_GLOBAL.nextId(),
+    enumerable:true // writable:false, configurable(deletable):false by default
+  },
+  'name': {
+    value: 'Bob',
+    enumerable: true
+  }
+});
+```
+
+**Explanation:**
+
+`new F` is `Object.create(F.prototype)` with additionally running the constructor function. And giving the constructor the chance to return the actual object that should be the result of the expression instead of this. So basically `Object.create` doesn't execute the constructor.
+
+
+## Events
+
+### Explain event delegation
+
+**Answer:** Event delegation allows you to avoid adding event listeners to specific nodes, instead, the event listener is added to one parent. That event listener analyzes bubbled events to find a match on child elements.
+
+**Explanation:** 
+
+Let's say that we have a parent UL element with several child elements:
+
+```html
+<ul id="parent-list">
+  <li id="post-1">Item 1</li>
+  <li id="post-2">Item 2</li>
+  <li id="post-3">Item 3</li>
+  <li id="post-4">Item 4</li>
+  <li id="post-...">...</li>
+  <li id="post-1001">Item 1001</li>
+</ul>
+```
+
+Let's also say that something needs to happen when each child element is clicked.  You could add a separate event listener to each individual `LI` element, but what if `LI` elements are frequently added and removed from the list?  Adding and removing event listeners would be a nightmare, especially if addition and removal code is in different places within your app. The better solution is to add an event listener to the parent UL element. 
+
+When the event bubbles up to the `UL` element, you check the event object's target property to gain a reference to the actual clicked node:
+
+```javascript
+// Get the element, add a click listener...
+document.getElementById("parent-list").addEventListener("click", function(e) {
+  // e.target is the clicked element!
+  // If it was a list item
+  if(e.target && e.target.nodeName == "LI") {
+    // List item found!  Output the ID!
+    console.log("List item ", e.target.id.replace("post-", ""), " was clicked!");
+  }
+});
+```
+
+# JavaScript: advance
+
+## What is asynchronous programming, and why is it important in JS? Non-blocking I/O in JS.
+
+Synchronous programming means that, barring conditionals and function calls, code is executed sequentially from top-to-bottom, blocking on long-running tasks such as network requests and disk I/O.
+
+Asynchronous programming means that the engine runs in an event loop. When a blocking operation is needed, the request is started, and the code keeps running without blocking for the result. When the response is ready, an interrupt is fired, which causes an event handler to be run, where the control flow continues. In this way, a single program thread can handle many concurrent operations.
+
+Node is asynchronous by default, meaning that the server works in much the same way, waiting in a loop for a network request, and accepting more incoming requests while the first one is being handled.
+
+In JavaScript, almost all I/O is non-blocking. This includes:
+* HTTP requests
+* DB operations
+* Disk reads and writes
+* User interfaces are asynchronous by nature, and spend most of their time waiting for user input to interrupt the event loop and trigger event handlers
+
+The single thread of execution asks the runtime to perform an operation, providing a callback function and then moves on to do something else. When the operation has been completed, a message is enqueued along with the provided callback function. At some point in the future, the message is dequeued and the callback fired.
+
+Let’s compare two bits of code that make HTTP requests to `www.google.com` and output the response to console with `Node.js` and the `Request`:
+
+```
+request('http://www.google.com', function(error, response, body) {
+  console.log(body);
+});
+
+console.log('Done!');
+```
+
+1. The request function is executed, passing an anonymous function as a callback to execute when a response is available sometime in the future.
+2. “Done!” is immediately output to the console
+3. Sometime in the future, the response comes back and our callback is executed, outputting its body to the console
+
+## The Event Loop
+
+The decoupling of the caller from the response allows for the JavaScript runtime to do other things while waiting for your asynchronous operation to complete and their callbacks to fire. But where in memory do these callbacks live – and in what order are they executed? What causes them to be called?
+
+JavaScript runtimes contain a message queue which stores a list of messages to be processed and their associated callback functions. These messages are queued in response to external events (such as a mouse being clicked or receiving the response to an HTTP request) given a callback function has been provided. If, for example a user were to click a button and no callback function was provided – no message would have been enqueued.
+
+In a loop, the queue is polled for the next message (each poll referred to as a “tick”) and when a message is encountered, the callback for that message is executed.
+
+![Event Loop](http://www.appsdev.is.ed.ac.uk/blog/wp-content/uploads/2015/03/Event-loop.png)
+
+## Macrotasks and Microtasks
+
+Take this little bit of JavaScript:
+
+```
+console.log('script start');
+
+setTimeout(function() {
+  console.log('setTimeout');
+}, 0);
+
+Promise.resolve().then(function() {
+  console.log('promise1');
+}).then(function() {
+  console.log('promise2');
+});
+
+console.log('script end');
+```
+
+**Answer:** The correct answer: `script start, script end, promise1, promise2, setTimeout`, but it's pretty wild out there in terms of browser support.
+
+To understand this you need to know how the event loop handles macrotasks and microtasks.
+
+macrotasks: `setTimeout`, `setInterval`, `setImmediate`, I/O, UI rendering
+microtasks: `process.nextTick`, `Promises`, `Object.observe`, `MutationObserver`
+
+[A great post](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
+
+## What is the difference between "classical inheritance" and "prototypal inheritance"?
+
+Class Inheritance: instances inherit from classes (like a blueprint — a description of the class), and create sub-class relationships: hierarchical class taxonomies. Instances are typically instantiated via constructor functions with the `new` keyword. Class inheritance may or may not use the `class` keyword from ES6.
+
+Prototypal Inheritance: instances inherit directly from other objects. Instances are typically instantiated via factory functions or `Object.create()`. Instances may be composed from many different objects, allowing for easy selective inheritance.
+
+Good to hear:
+* Classes: create tight coupling or hierarchies/taxonomies.
+* Prototypes: mentions of concatenative inheritance, prototype delegation, functional inheritance, object composition.
+
+## What are the pros and cons of functional programming vs object-oriented programming?
+
+OOP Pros: It’s easy to understand the basic concept of objects and easy to interpret the meaning of method calls. OOP tends to use an imperative style rather than a declarative style, which reads like a straight-forward set of instructions for the computer to follow.
+
+OOP Cons: OOP Typically depends on shared state. Objects and behaviors are typically tacked together on the same entity, which may be accessed at random by any number of functions with non-deterministic order, which may lead to undesirable behavior such as race conditions.
+
+FP Pros: Using the functional paradigm, programmers avoid any shared state or side-effects, which eliminates bugs caused by multiple functions competing for the same resources. With features such as the availability of point-free style (aka tacit programming), functions tend to be radically simplified and easily recomposed for more generally reusable code compared to OOP.
+
+FP Cons: Over exploitation of FP features such as point-free style and large compositions can potentially reduce readability because the resulting code is often more abstractly specified, more terse, and less concrete.
+More people are familiar with OO and imperative programming than functional programming, so even common idioms in functional programming can be confusing to new team members.
+
+## What does “favor object composition over class inheritance” mean?
+
+This is a quote from “Design Patterns: Elements of Reusable Object-Oriented Software”. 
+
+It means that code reuse should be achieved by assembling smaller units of functionality into new objects instead of inheriting from classes and creating object taxonomies.
+
+**Good to hear:**
+
+* Avoid class hierarchies.
+* Avoid brittle base class problem.
+* Avoid tight coupling.
+* Avoid rigid taxonomy (forced is-a relationships that are eventually wrong for new use cases).
+* Avoid the gorilla banana problem (“what you wanted was a banana, what you got was a gorilla holding the banana, and the entire jungle”).
+
+## What are two-way data binding and one-way data flow, and how are they different?
+
+Two way data binding means that UI fields are bound to model data dynamically such that when a UI field changes, the model data changes with it and vice-versa.
+
+One way data flow means that the model is the single source of truth. Changes in the UI trigger messages that signal user intent to the model (or “store” in React). Only the model has the access to change the app’s state. The effect is that data always flows in a single direction, which makes it easier to understand.
+
+One way data flows are deterministic, whereas two-way binding can cause side-effects which are harder to follow and understand.
+
+**Good to hear:**
+React is the new canonical example of one-way data flow, so mentions of React are a good signal. Cycle.js is another popular implementation of uni-directional data flow.
+Angular is a popular framework which uses two-way binding.
+
+## What are the pros and cons of monolithic vs microservice architectures?
+
+A monolithic architecture means that your app is written as one cohesive unit of code whose components are designed to work together, sharing the same memory space and resources.
+
+A microservice architecture means that your app is made up of lots of smaller, independent applications capable of running in their own memory space and scaling independently from each other across potentially many separate machines.
+
+**Good to hear:**
+
+Monolithic Pros: The major advantage of the monolithic architecture is that most apps typically have a large number of cross-cutting concerns, such as logging, rate limiting, and security features such audit trails and DOS protection.
+
+When everything is running through the same app, it’s easy to hook up components to those cross-cutting concerns.
+
+Monolithic cons: Monolithic app services tend to get tightly coupled and entangled as the application evolves, making it difficult to isolate services for purposes such as independent scaling or code maintainability.
+
+Monolithic architectures are also much harder to understand, because there may be dependencies, side-effects, and magic which are not obvious when you’re looking at a particular service or controller.
+
+Microservice pros: Microservice architectures are typically better organized, since each microservice has a very specific job, and is not concerned with the jobs of other components. Decoupled services are also easier to recompose and reconfigure to serve the purposes of different apps (for example, serving both the web clients and public API).
+
+They can also have performance advantages depending on how they’re organized because it’s possible to isolate hot services and scale them independent of the rest of the app.
+
+Microservice cons: As you’re building a new microservice architecture, you’re likely to discover lots of cross-cutting concerns that you did not anticipate at design time. A monolithic app could establish shared magic helpers or middleware to handle such cross-cutting concerns without much effort.
+
+## What do you think of AMD vs CommonJS and ES6 modules?
+
+**Answer:** 
+
+For many years JS had a single widely accepted module format, which is to say, there was none. Everything was a global variable petulantly hanging off the window object. 
+
+Dark Ages. Long ago an adhoc group formed to solve the global conflict. The fruits of this vigilante justice are known today as CommonJS. Multiple competing formats were proposed and implemented in the wild by these dashing radicals and two bright lights emerged with significant adherents: AMD and CJS.
+
+*Asynchronous Module Design* (AMD) accounts for the async nature of JS but some felt the aesthetics were harder to read with a wrapper function.
+
+*CommonJS* (CJS) is synchronous, thus blocking, but generally understood to be an easier read.
+
+```javascript
+// this is an AMD module
+define(function () {
+  return something
+})
+
+// and this is CommonJS
+module.exports = something
+```
+
+JavaScript vendors and concerned citizens began formally standardizing modules into the language proper. After years of thrashing, a standard module format has finally emerged with ES6.
+
+# DOM API
+
+## When would you use document.write()?
+
+**Answer:** In terms of vendors supplying third parties or analytics code (like Google Analytics) it's actually the easiest way for them to distribute such snippets
+
+**Explanation:**
+
+1. It keeps the scripts small
+2. They don't have to worry about overriding already established onload events or including the necessary abstraction to add onload events safely
+3. It's extremely compatible
+
+`document.write` only works while the page is loading; If you call it after the page is done loading, it will overwrite the whole page.
+
+This effectively means you have to call it from an inline script block - And that will prevent the browser from processing parts of the page that follow. Scripts and Images will not be downloaded until the writing block is finished.
+
 # AngularJS 
 
 ## List at least three ways to communicate between modules of your application using core AngularJS functionality.
@@ -555,8 +911,6 @@ describe('Filter: myFltr', function () {
   });
 });
 ```
-
-
 
 ## When a scope is terminated, two similar “destroy” events are fired. What are they used for, and why are there two?
 
@@ -931,3 +1285,7 @@ Use `babel-node` with any version of node, as it transpiles modules into ES5
 ## Modules
 
 TODO with https://ponyfoo.com/articles/es6
+
+Save my day:
+
+* [10 Interview Questions Every JavaScript Developer Should Know](https://medium.com/javascript-scene/10-interview-questions-every-javascript-developer-should-know-6fa6bdf5ad95#.qwihvpqxq)
