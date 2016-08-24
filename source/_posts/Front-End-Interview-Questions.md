@@ -832,12 +832,21 @@ module.exports = something
 
 JavaScript vendors and concerned citizens began formally standardizing modules into the language proper. After years of thrashing, a standard module format has finally emerged with ES6.
 
-# DOM API
+# Environment APIs
 
-## When would you use document.write()?
+## DOM
 
-**Answer:** In terms of vendors supplying third parties or analytics code (like Google Analytics) it's actually the easiest way for them to distribute such snippets
+### When would you use "document.write()" ?
 
+**Answer:** In terms of vendors supplying third parties or analytics code (like Google Analytics) it's actually the easiest way for them to distribute such snippets.
+
+```html
+<script>
+  var url = 'http://ads.com/buyme?screen=' + screen.width + "x" + screen.height;
+
+  document.write('<script src="' + url + '"></scr' + 'ipt>');
+</script>
+```
 **Explanation:**
 
 1. It keeps the scripts small
@@ -847,6 +856,23 @@ JavaScript vendors and concerned citizens began formally standardizing modules i
 `document.write` only works while the page is loading; If you call it after the page is done loading, it will overwrite the whole page.
 
 This effectively means you have to call it from an inline script block - And that will prevent the browser from processing parts of the page that follow. Scripts and Images will not be downloaded until the writing block is finished.
+
+## AJAX
+  
+### Explain AJAX in as much detail as possible
+
+**Explanation:** AJAX is a way to communicate to the server without reloading the page. Once we receive the data from the server, we can then manipulate those data and display unto certain parts of the page, this is why we don’t need to reload the page.
+
+**Explanation:** AJAX stands for Asynchronous JavaScript and XML. In a nutshell, it is the use of the `XMLHttpRequest` object to communicate with server-side scripts. It can send as well as receive information in a variety of formats, including JSON, XML, HTML, and even text files. AJAX’s most appealing characteristic, however, is its "asynchronous" nature, which means it can do all of this without having to refresh the page
+
+Typical example for GET request with `XMLHttpRequest`:
+
+<script src="https://gist.github.com/qetr1ck-op/f52380392d7f0afb4835f8257a483ff7.js"></script>
+
+
+### How to work with HTTP headers in AJAX. Do we have a restriction?
+
+**Answer:** There are three methods `setRequestHeader(name, value)`, `getResponseHeader(name)`, `getAllResponseHeaders()`
 
 # AngularJS 
 
