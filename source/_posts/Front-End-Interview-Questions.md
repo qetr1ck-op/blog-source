@@ -10,13 +10,17 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 <!--more-->
 <!--toc-->
 
-# JavaScript: basics
+# Web Core
 
-## Types
+## JavaScript: basics
 
-### What are the differences between "undeclared", "undefined", and "null"?
+### Types
+
+#### What are the differences between "undeclared", "undefined", and "null"?
 
 **Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`. Also there are `undeclared` variables which don’t even exist.
+
+**Explanation:**
 
 A variable is `undeclared` when it does not use the var keyword. It gets created on the global object, thus it operates in a different space as the declared variables.
 
@@ -32,25 +36,25 @@ undeclaredVariable; // 1
 declaredVariable; // 1
 ```
 
-Note: this will not work in strict mode. 
+> Note: this will not work in `strict mode`. 
 
-`undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and `typeof undefined` is also "undefined". Remember, `undefined` is not a constant or a keyword. `undefined` is a type with exactly one value: `undefined`.
+`undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and `typeof undefined` is also "undefined"
 
-`null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. `null` is not an object, it is a primitive value. For example, you cannot add properties to it. Sometimes people wrongly assume that it is an object, because `typeof null` returns "object".
+`null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. You cannot add properties to it. Sometimes people wrongly assume that it is an object, because `typeof null` returns "object".
 
-With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3), and here [learn.javascript.ru](https://learn.javascript.ru/types-conversion#специальные-значения)
+With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3).
 
-### What are the differences between "==" and "==="?
+#### What are the differences between "==" and "==="?
 
 **Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
 
 `===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
 
-### What is a potential pitfall with using "typeof bar === "object"" to determine if bar is an object? How can this pitfall be avoided?
+#### Why "typeof bar === object" isn't  right? How can this pitfall be avoided?
 
 **Answer:** Use `Object.prototype.toString.call(<object>)` or use Duck Typing.
 
-### Rapid fire table of primitive type conversions:
+#### Rapid fire table of primitive type conversions:
 
 | Question                                    | Answer                                                                                                                    |
 |---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -67,40 +71,23 @@ With non strict comparison th `null == undefined` is `true`, because that is in 
 | " -9\n" + 5                                 | " -9\n5"                                                                                                                  |
 | " -9\n" - 5                                 | -14                                                                                                                       |
 | 5 && 2                                      | 2                                                                                                                         |
-| 2 && 5                                      | 5                                                                                                                         |                                                                                                                        |
-| null + 1                                    | 1                                                                                                                         |
-| undefined + 1                               | NaN                                                                                                                       |
-| null == "\n0\n"                             | false                                                                                                                     |
-| +null == +"\n0\n"                           | true                                                                                                                      |
-| typeof []                                   | Object. Actually Array is derived from Object.  If you want to check array use Array.isArray(arr) or {}.toString.call([]) |
-| What is typeof arguments                    | Object. arguments are array like but not array. it has length, can access by index but can't push pop, etc                |
-| var a = (2, 3, 5);  what is the value of a? | 5. The comma operator evaluates each of its operands (from left to right) and returns the value of the last operand       |
-| parseFloat('12.3.4')                        | 12.3                                                                                                                      |
-| Math.max([2,3,4,5])                         | NaN                                                                                                                       |
-| 3 instanceof Number                         | false                                                                                                                     |
-| typeof bar                                  | undefined                                                                                                                 |
-| typeof(NaN)                                 | "number"                                                                                                                  |
+| 2 && 5                                      | 5                                                                                                                                    
 
-### True Lies. 11+ true false related questions that will trick you
+#### Rapid fire table of truth/false:
 
-**Answer:**  There are only two truthy things - `true` and everything that is not false.
+| Question                 | Answer                                                                                                                          |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| typeof []                | Object. Actually Array is derived from Object.,If you want to check array use Array.isArray(arr) or {}.toString.call([])        |
+| var a = (2, 3, 5); a?    | 5. The comma operator evaluates each of its operands (from left to right) and returns the value of the last operand             |
+| var baz = pony.foo       | let {foo: baz} = pony                                                                                                           |
+| Math.max([2,3,4,5])      | NaN                                                                                                                             |
+| 'false' === false        | false. Because, it's a string with length greater than 0. Only empty string is false                                            |
+| ' ' === false            | true. It's an array object (array is child of object)                                                                           |
+| {} === true              | true. It's an object. An object without any property is an object can't be                                                      |
+| new String('') === false | false.Passing empty string to the string constructor, will create an String object. More precisely a instance of String object. |
+| !!`new Boolean(false)`   | true, As it creates an instance of the Boolean object which is an object. Object is truthy.                                     |
 
-The 6 things are falsy and they are - `false`, `null`, `undefined`, `''`, `0`, `NaN`.
-
-True / False Rapid Fire Table:
-
-| Question                                                    | Answer                                                                                                                                                                    |
-|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Is `'false'` is `false`?                                        | No. Because, it's a string with length greater than 0. Only empty string is false                                                                                         |
-| Is `' '` is `false`?                                            | No. Because, it's not an empty string. There is a white space in it.                                                                                                      |
-| What about `{}`?                                              | true. It's an object. An object without any property is an object can't be falsy.                                                                                         |
-| Tell me about `[]`?                                           | This is also truthy. It's an array object (array is child of object) is truthy.                                                                                           |
-| You talked bout `''` to be falsy.  What about `new String('')`? | true. Though you are passing empty string to the string constructor, it is creating an String object.  More precisely a instance of String object. It becomes an object.  |
-| Tell me about `new Boolean(false)`                          | As it creates an instance of the Boolean object which is an object. Object is truthy.                                                                                     |
-| `Boolean(function(){})`                                       | true if you pass a truthy value to Boolean, it will be true.                                                                                                              |
-| `true%1`                                                      | 0. When you are trying to find reminder of true, true becomes 1 and reminder of 1 while dividing by 1 is 0.                                                               |
-| `''%1`                                                        | 0                                                                                                                                                                         |
-### What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+#### What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
 
 **Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`.
 
@@ -108,10 +95,9 @@ True / False Rapid Fire Table:
 
 ES6 offers a new `Number.isNaN()` function, which is a different and more reliable than the old global `isNaN()` function.
 
+### Scope and hoisting
 
-## Scope and hoisting
-
-### What will the code below output to the console and why? Does it work in "use strict" directive?
+#### Example 1. With "use strict" directive?
 
 ```
 (function(){
@@ -142,7 +128,7 @@ var a = b;
 
 Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
 
-### What will you see in the console for the following example?
+#### Example 2. What if you don't have declared "function a".
 
 ```
 var a = 1; 
@@ -162,7 +148,7 @@ console.log(a);
 * When you set `a = 10;`, you are setting the local variable `a`, not the global one. Hence, the value of global variable remain same and you get, `1` in the log.
 * Extra: If you didnt have a function named as "a", you will see 10 in the log.
 
-For the following code, what will be returned for executing foo:
+#### Example 3
 
 ```
 function foo(){
@@ -174,14 +160,14 @@ function foo(){
         return 8;
     }
 }
-foo();//?
+foo();
 ```
 
 **Answer:** 8
 
 As function declaration is get hoisted. the first bar is at the top and second bar after the return will also be hoisted. Since there is already a bar (first function declaration), the second one will replace the first one. As there could be one function for a single name and the last one stays. Hence, when you executing bar, you are executed the second one (after hoisting) and you get.
 
-### What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
+#### What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
 
 **Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
 
@@ -197,11 +183,13 @@ As function declaration is get hoisted. the first bar is at the top and second b
 
 * Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
 
-## Closure and Functions
+### Closure and Functions
 
-### What is a “closure” in JavaScript? Provide an example.
+#### What is a "closure" in JavaScript? What is a practical use for a closure? Provide an example. 
 
-> Closure is a function with all accessible variables in lexical environment
+**Answer:** Closure is a function with all accessible variables in lexical environment. Main usage is encapsulating data from outer usage.
+
+**Explanation:** 
 
 A closure is an inner function that has access to the variables in the outer (enclosing) function’s scope chain. The closure has access to variables in three scopes; specifically: (1) variable in its own scope, (2) variables in the enclosing function’s scope, and (3) global variables.
 
@@ -233,7 +221,7 @@ globalVar = xyz
 */
 ```
 
-### Closures Inside in loop with "setTimeout".
+#### Closures Inside in loop with "setTimeout".
 
 If log the loop counter inside `setTimeout`, what will be logged?
 
@@ -279,42 +267,7 @@ for(let i = 0; i < 10; i++) {
 }
 ```
 
-### "call" / "apply" VS "bind". If you want to use an arbitrary object as value of this, how will you do that?
-
-**Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
-
-For example, I have a method named deductMontlyFee in the object `monica` and by default value of this would be `monica` inside the method.
-
-```
-const monica = {
-  name: 'Monica Geller',
-  total: 400,
-  deductMontlyFee(fee){
-     this.total = this.total - fee;
-     return this.name + ' remaining balance is '+ this.total; 
-  }
-}
-```
-
-If I bind the deductMontlyFee of `monica` with another object `rachel` and pass `rachel` as first parameter of the bind function, `rachel` would be the value of this:
-
-```
-const rachel = {name: 'Rachel Green', total: 1500};
-const rachelFeeDeductor = monica.deductMonthlyFee.bind(rachel, 200);
-
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1300"
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1100"
-```
-
-With `apply`:
-
-```
-monica.deductMonthlyFee.apply(rachel, 200);
-```
-
-[call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
-
-### "arguments" and "call". Write a simple function to tell whether 2 is passed as parameter or not?
+#### Write a simple function to tell whether 2 is passed as parameter or not?
 
 **Answer:** First convert `arguments` to an array with `rest` operator, after that simply use `Array.prototype.includes`.
 
@@ -334,7 +287,7 @@ isTwoPassed(1,4); //false
 isTowPassed(5,3,1,2); //true
 ```
 
-### "apply" and "spread". How could you use "Math.max" to find the max value in an array?
+#### How could you use "Math.max" to find the max value in an array?
 
 ```
 Math.max(...arr);  
@@ -343,7 +296,7 @@ Math.max(...arr);
 //Math.max.apply(Math, arr);  
 ```
 
-### "apply" and "rest". How could you set a prefix before everything you log? for example, if you "log('my message')"" it will log: "(app) my message"
+#### How could you set a prefix before everything you log? for example, if you "log('my message')"" it will log: "(app) my message"
 
 **Answer:** Just get the arguments, convert it to an array and unshift whatever prefix you want to set. Finally, use apply to pass all the arguments to console.
 
@@ -366,14 +319,14 @@ function log(...params){
 }
 ```
 
-### Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
+#### Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
 
 Question: How could you cache execution of any function?
 
 TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
 http://www.thatjsdude.com/interview/js2.html#memoization
 
-### Why wrapping the entire content of a JavaScript source file in IIFE?
+#### Why wrapping the entire content of a JavaScript source file in IIFE?
 
 **Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
 
@@ -383,7 +336,7 @@ http://www.thatjsdude.com/interview/js2.html#memoization
 (function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
 ```
 
-### Explain why the following doesn't work as an IIFE: "function foo(){ }();"
+#### Explain why the following doesn't work as an IIFE: "function foo(){ }();"
 
 **Answer:** Because `foo` isn’t being called! This is a function definition, it defines `foo`. But it’s not a function expression - that is, it’s not understood by the JS parser to actually call a function.
 
@@ -419,10 +372,9 @@ Also will work with `!` and `+` operators:
 }();
 ```
 
+### Objects 
 
-## Objects 
-
-### this. What the heck is "this" in JavaScript?
+#### this. What the heck is "this" in JavaScript?
 
 **Answer:** At the time of execution of every function, JavaScript engine sets a property to the function called `this` which refer to the current execution context. `this` is always refer to an object and depends on how function is called:
 
@@ -432,18 +384,57 @@ Also will work with `!` and `+` operators:
 4. Set the value of `this` to any arbitrary object by passing the object as the first parameter of `bind`, `call` or `apply`
 5. Use `arrow function` for use parent lexical scope.
 
-### How would you compare two objects?
+#### "call" / "apply" VS "bind". If you want to use an arbitrary object as value of this, how will you do that?
+
+**Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
+
+For example, I have a method named deductMontlyFee in the object `monica` and by default value of this would be `monica` inside the method.
+
+```
+const monica = {
+  name: 'Monica Geller',
+  total: 400,
+  deductMontlyFee(fee){
+     this.total = this.total - fee;
+     return `${this.name} remaining balance is ${this.total}`; 
+  }
+}
+```
+
+If I bind the deductMontlyFee of `monica` with another object `rachel` and pass `rachel` as first parameter of the bind function, `rachel` would be the value of this:
+
+```
+const rachel = {name: 'Rachel Green', total: 1500};
+const rachelFeeDeductor = monica.deductMonthlyFee.bind(rachel, 200);
+
+rachelFeeDeductor(); //"Rachel Green remaining balance is 1300"
+rachelFeeDeductor(); //"Rachel Green remaining balance is 1100"
+```
+
+With `apply`:
+
+```
+monica.deductMonthlyFee.apply(rachel, 200);
+```
+
+[call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
+
+#### How would you compare two objects?
 
 **Answer:** JavaScript has two different approaches for testing equality. Primitives like strings and numbers are compared by their value, while objects like arrays, dates, and user defined objects are compared by their reference. This means it compares whether two objects are referring to the same location in memory.
 
 Equality check will check whether two objects have same value for same property. To check that, you can get the keys for both the objects. 
 
-```
+Use [lodash](https://www.npmjs.com/package/lodash.isequal) or any npm equivalent.
+
+Or implement by own:
+
+```javascript
 function isEqual(a, b) {
     var aProps = Object.getOwnPropertyNames(a),
         bProps = Object.getOwnPropertyNames(b);
 
-    if (aProps.length != bProps.length) {
+    if (aProps.length !== bProps.length) {
         return false;
     }
 
@@ -458,9 +449,8 @@ function isEqual(a, b) {
 }
 ```
 
-Or use [lodash](https://www.npmjs.com/package/lodash.isequal) equivalent.
 
-### Object comparison, toString, valueOf. Truthy isn't Equal to true. As "[]" is true, "[] == true" should also be "true", right?
+#### Object comparison, toString, valueOf. As "[]" is true, "[] == true" should also be "true", right?
 
 **Answer:** Not.
 
@@ -473,7 +463,7 @@ However, special case about `==` (not-strict equal) is that it will do some impl
 3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
 4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
 
-### Extend Core Object through prototype.
+#### Extend Core Object through prototype. Examples
 
 **Question:** How could you write a method on instance of a date which will give you next day?
 
@@ -514,38 +504,7 @@ Array.prototype.duplicator = function(){
 [1,2,3,4,5].duplicator(); // [1,2,3,4,5,1,2,3,4,5]
 ```
 
-### Pass by value or by reference. Does JavaScript pass parameter by value or by reference?
-
-**Answer**: Primitive type (string, number, etc.) are passed by value and objects are passed by reference. If you change a property of the passed object, the change will be affected. However, you assign a new object to the passed object, the changes will not be reflected.
-
-```
-var num = 10,
-  name = "Addy Osmani",
-  obj1 = {
-    value: "first value"
-  },
-  obj2 = {
-   value: "second value"
-  },
-  obj3 = obj2;
- 
-function change(num, name, obj1, obj2) {
-  num = num * 10;
-  name = "Paul Irish";
-  obj1 = obj2;
-  obj2.value = "new value";
-}
- 
-change(num, name, obj1, obj2);
- 
-console.log(num); // 10
-console.log(name);// "Addy Osmani"
-console.log(obj1.value);//"first value"
-console.log(obj2.value);//"new value"
-console.log(obj3.value);//"new value"     
-```
-
-## OOP
+### OOP
 
 ### Prototypal inheritance
 
