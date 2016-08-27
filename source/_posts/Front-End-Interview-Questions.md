@@ -16,7 +16,7 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 ### Types
 
-#### What are the differences between "undeclared", "undefined", and "null"?
+> What are the differences between `undeclared`, `undefined`, and `null`?
 
 **Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`. Also there are `undeclared` variables which don’t even exist.
 
@@ -36,7 +36,7 @@ undeclaredVariable; // 1
 declaredVariable; // 1
 ```
 
-> Note: this will not work in `strict mode`. 
+Note: this will not work in `strict mode`. 
 
 `undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and `typeof undefined` is also "undefined"
 
@@ -44,17 +44,17 @@ declaredVariable; // 1
 
 With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3).
 
-#### What are the differences between "==" and "==="?
+> What are the differences between `==` and `===`?
 
 **Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
 
 `===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
 
-#### Why "typeof bar === object" isn't  right? How can this pitfall be avoided?
+> Why `typeof bar === object` isn't  right? How can this pitfall be avoided?
 
 **Answer:** Use `Object.prototype.toString.call(<object>)` or use Duck Typing.
 
-#### Rapid fire table of primitive type conversions:
+> Rapid fire table of primitive type conversions
 
 | Question                                    | Answer                                                                                                                    |
 |---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
@@ -73,7 +73,7 @@ With non strict comparison th `null == undefined` is `true`, because that is in 
 | 5 && 2                                      | 2                                                                                                                         |
 | 2 && 5                                      | 5                                                                                                                                    
 
-#### Rapid fire table of truth/false:
+> Rapid fire table of truth/false
 
 | Question                 | Answer                                                                                                                          |
 |--------------------------|---------------------------------------------------------------------------------------------------------------------------------|
@@ -87,9 +87,9 @@ With non strict comparison th `null == undefined` is `true`, because that is in 
 | new String('') === false | false.Passing empty string to the string constructor, will create an String object. More precisely a instance of String object. |
 | !!`new Boolean(false)`   | true, As it creates an instance of the Boolean object which is an object. Object is truthy.                                     |
 
-#### What is NaN? What is its type? How can you reliably test if a value is equal to NaN?
+> What is `NaN`? What is its type? How can you reliably test if a value is equal to `NaN`?
 
-**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`.
+**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`. Use `isNaN`
 
 **Explanation:** The NaN property represents a value that is “not a number”. This special value results from an operation that could not be performed either because one of the operands was non-numeric (e.g., "abc" / 4), or because the result of the operation is non-numeric (e.g., an attempt to divide by zero).
 
@@ -97,7 +97,38 @@ ES6 offers a new `Number.isNaN()` function, which is a different and more reliab
 
 ### Scope and hoisting
 
-#### Example 1. With "use strict" directive?
+> Example. What is the result? How to fix?
+
+**Answer:** `fooz` function expression isn't hoisted. Change to function declaration. The result should be `foo, foz, foq, fox`
+
+```javascript
+fox();
+foo();
+foq();
+foz();
+
+function fox() {
+  setTimeout(() => {
+    console.log('foox')
+  })
+}
+
+function foo() {
+  console.log('foo');
+}
+
+function foq() {
+  Promise.resolve().then(() => {
+    console.log('fooq');
+  })
+}
+
+const foz = function () {
+  console.log('fooz');
+}
+```
+
+> Example. With `use strict` directive?
 
 ```
 (function(){
@@ -128,7 +159,7 @@ var a = b;
 
 Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
 
-#### Example 2. What if you don't have declared "function a".
+> Example. What if you don't have declared "function a".
 
 ```
 var a = 1; 
@@ -148,7 +179,7 @@ console.log(a);
 * When you set `a = 10;`, you are setting the local variable `a`, not the global one. Hence, the value of global variable remain same and you get, `1` in the log.
 * Extra: If you didnt have a function named as "a", you will see 10 in the log.
 
-#### Example 3
+> Example
 
 ```
 function foo(){
@@ -167,7 +198,7 @@ foo();
 
 As function declaration is get hoisted. the first bar is at the top and second bar after the return will also be hoisted. Since there is already a bar (first function declaration), the second one will replace the first one. As there could be one function for a single name and the last one stays. Hence, when you executing bar, you are executed the second one (after hoisting) and you get.
 
-#### What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
+> What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
 
 **Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
 
@@ -185,7 +216,7 @@ As function declaration is get hoisted. the first bar is at the top and second b
 
 ### Closure and Functions
 
-#### What is a "closure" in JavaScript? What is a practical use for a closure? Provide an example. 
+> What is a closure? What is a practical use for a closure? Provide an example. 
 
 **Answer:** Closure is a function with all accessible variables in lexical environment. Main usage is encapsulating data from outer usage.
 
@@ -221,7 +252,7 @@ globalVar = xyz
 */
 ```
 
-#### Closures Inside in loop with "setTimeout".
+> Closures Inside in loop with `setTimeout`.
 
 If log the loop counter inside `setTimeout`, what will be logged?
 
@@ -267,13 +298,13 @@ for(let i = 0; i < 10; i++) {
 }
 ```
 
-#### Write a simple function to tell whether 2 is passed as parameter or not?
+> Write a simple function to tell whether `'foo'` is passed as parameter or not?
 
 **Answer:** First convert `arguments` to an array with `rest` operator, after that simply use `Array.prototype.includes`.
 
 ``` javascript
 function isTwoPassed(...params) {
-  return params.includes(2);
+  return params.includes('');
 }
 /*
 ES5 way
@@ -287,7 +318,7 @@ isTwoPassed(1,4); //false
 isTowPassed(5,3,1,2); //true
 ```
 
-#### How could you use "Math.max" to find the max value in an array?
+> How could you use "Math.max" to find the max value in an array?
 
 ```
 Math.max(...arr);  
@@ -296,7 +327,7 @@ Math.max(...arr);
 //Math.max.apply(Math, arr);  
 ```
 
-#### How could you set a prefix before everything you log? for example, if you "log('my message')"" it will log: "(app) my message"
+> How could you set a prefix before everything you log? for example, if you `log('my message')` it will log: `(app) my message`
 
 **Answer:** Just get the arguments, convert it to an array and unshift whatever prefix you want to set. Finally, use apply to pass all the arguments to console.
 
@@ -319,14 +350,14 @@ function log(...params){
 }
 ```
 
-#### Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
+> Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
 
 Question: How could you cache execution of any function?
 
 TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
 http://www.thatjsdude.com/interview/js2.html#memoization
 
-#### Why wrapping the entire content of a JavaScript source file in IIFE?
+> Why wrapping the entire content of a JavaScript source file in IIFE?
 
 **Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
 
@@ -336,7 +367,7 @@ http://www.thatjsdude.com/interview/js2.html#memoization
 (function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
 ```
 
-#### Explain why the following doesn't work as an IIFE: "function foo(){ }();"
+> Explain why the following doesn't work as an IIFE: `function foo(){ }();`
 
 **Answer:** Because `foo` isn’t being called! This is a function definition, it defines `foo`. But it’s not a function expression - that is, it’s not understood by the JS parser to actually call a function.
 
@@ -374,17 +405,17 @@ Also will work with `!` and `+` operators:
 
 ### Objects 
 
-#### this. What the heck is "this" in JavaScript?
+> What the heck is `this` in JavaScript?
 
 **Answer:** At the time of execution of every function, JavaScript engine sets a property to the function called `this` which refer to the current execution context. `this` is always refer to an object and depends on how function is called:
 
 1. In the global context or inside a function this refers to the `window`/`global` object. In ES6 or with `use strict` directive it's `undefined`
 2. While executing a method in the context of an object, the object becomes the value of `this`
-3. If you use a constructor (by using new keyword) to create an object, the value of `this` will refer to the newly created object.
+3. If you use a constructor (by using `new` keyword) to create an object, the value of `this` will refer to the newly created object.
 4. Set the value of `this` to any arbitrary object by passing the object as the first parameter of `bind`, `call` or `apply`
 5. Use `arrow function` for use parent lexical scope.
 
-#### "call" / "apply" VS "bind". If you want to use an arbitrary object as value of this, how will you do that?
+> `call` / `apply` VS `bind`. If you want to use an arbitrary object as value of this, how will you do that?
 
 **Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
 
@@ -419,7 +450,7 @@ monica.deductMonthlyFee.apply(rachel, 200);
 
 [call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
 
-#### How would you compare two objects?
+> How would you compare two objects?
 
 **Answer:** JavaScript has two different approaches for testing equality. Primitives like strings and numbers are compared by their value, while objects like arrays, dates, and user defined objects are compared by their reference. This means it compares whether two objects are referring to the same location in memory.
 
@@ -450,7 +481,7 @@ function isEqual(a, b) {
 ```
 
 
-#### Object comparison, toString, valueOf. As "[]" is true, "[] == true" should also be "true", right?
+> Object comparison, toString, valueOf. As "[]" is true, "[] == true" should also be "true", right?
 
 **Answer:** Not.
 
@@ -463,7 +494,7 @@ However, special case about `==` (not-strict equal) is that it will do some impl
 3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
 4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
 
-#### Extend Core Object through prototype. Examples
+> Extend Core Object through prototype. Examples
 
 **Question:** How could you write a method on instance of a date which will give you next day?
 
@@ -506,13 +537,13 @@ Array.prototype.duplicator = function(){
 
 ### OOP
 
-### Prototypal inheritance
+> Prototypal inheritance. Provide example with classical approach and with OOLO.
 
 **Answer:** In most languages, there are classes and objects. Classes inherit from other classes. In JavaScript, the inheritance is prototype-based. That means that there are no classes. Instead, an object inherits from another object. The main point is that one object can be `prototype` of another object. That means if property isn’t found in the object - than it takes from `prototype` object. In JavaScript this implementation is at the language level.
 
 **Explanation:** [OOP in prototype style](http://qetr1ck-op.github.io/2014/09/15/OOP-in-prototype-style/)
 
-#### Difference between: "function Person(){}", "var person = Person()", and "var person = new Person()"?
+> Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
 
 **Answer:** In the example below we define a new class called Person with an empty constructor. Invoke function `Person()` will return `undefined`. On other hand invoking `new Person` will return an empty object `{}`.
 
@@ -562,7 +593,7 @@ obj.inherited;     // 'baz'
 obj instanceof Foo // true
 ```
 
-#### Why we need "Object.create" and how it works. And "new F" VS "Object.create".
+> Why we need `Object.create` and how it works. And `new F` VS `Object.create.
 
 **Answer:** `Object.create` methods allows you to easily implement differential inheritance, where objects can directly inherit from other objects.
 
@@ -573,7 +604,7 @@ var userB = {
   }
 };
 
-var bob = Object.create(userB, {
+var bob = Object.create(userB, { // object descriptor
   'id' : {
     value: MY_GLOBAL.nextId(),
     enumerable:true // writable:false, configurable(deletable):false by default
@@ -589,10 +620,41 @@ var bob = Object.create(userB, {
 
 `new F` is `Object.create(F.prototype)` with additionally running the constructor function. And giving the constructor the chance to return the actual object that should be the result of the expression instead of this. So basically `Object.create` doesn't execute the constructor.
 
+## DOM
 
-## Events
+> `window` VS `document`
 
-### Explain event delegation
+**Answer:**  Yes. JavaScript has a global object and everything runs under it. `document` is a property of `window` object.
+
+**Explanation:** 
+
+ `window` is global object that holds global variables, global functions, location, history everything is under it. Besides, `setTimeout`, ajax call (`XMLHttpRequest`), `console` or `localStorage` are part of window.
+
+`document` is also under `window`. `document` represents the `DOM`,  the object oriented representation of the html markup. All the nodes are part of document. Hence you can use `getElementById` or `addEventListener` on document. These methods are not present in the `window` object.
+
+> `window.onload` VS `document.onload` VS `document.addEventListener('DOMContentLoaded')`. Does they fire at the same time?
+
+**Answer:**
+* `window.onload` is fired when all page is loaded, including all resources (images, styles, iframes)
+* `document.onload` is fired when DOM (DOM tree built from markup code within the document) is ready which without external content.
+* `DOMContentLoaded` means that DOM has already been built, we can use handlers or search through the nodes, but resources such as images, styles don't be loaded yet
+
+> Is `attribute` similar to `property`?
+ 
+**Answer:** We operate with DOM-properties via JS. Attributes are part of HTML markup.
+
+**Explanation:** 
+
+What is a property?
+
+JS objects have DOM-properties. These properties are kind of like instance variables for the particular element. As such, a property can be different types (boolean, string, etc.). Properties can be accessed as object properties: `a.href`
+
+What is an attribute?
+
+Attributes are in the HTML itself, rather than in the DOM. They are very similar to properties, but not quite as good. When a property is available it’s recommended that you work with properties rather than attributes.
+
+> Explain event delegation
+
 
 **Answer:** Event delegation allows you to avoid adding event listeners to specific nodes, instead, the event listener is added to one parent. That event listener analyzes bubbled events to find a match on child elements.
 
@@ -629,7 +691,7 @@ document.getElementById("parent-list").addEventListener("click", function(e) {
 
 # JavaScript: advance
 
-## What is asynchronous programming, and why is it important in JS? Non-blocking I/O in JS.
+> What is asynchronous programming, and why is it important in JS? Non-blocking I/O in JS.
 
 Synchronous programming means that, barring conditionals and function calls, code is executed sequentially from top-to-bottom, blocking on long-running tasks such as network requests and disk I/O.
 
