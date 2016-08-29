@@ -545,7 +545,7 @@ Array.prototype.duplicator = function(){
 
 > Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
 
-**Answer:** In the example below we define a new class called Person with an empty constructor. Invoke function `Person()` will return `undefined`. On other hand invoking `new Person` will return an empty object `{}`.
+**Answer:** In the example below we define a new "class" called Person with an empty constructor. Invoke function `Person()` will return `undefined`. On the other hand invoking `new Person` will return an empty object `{}`.
 
 **Explanation:**
 
@@ -593,7 +593,7 @@ obj.inherited;     // 'baz'
 obj instanceof Foo // true
 ```
 
-> Why we need `Object.create` and how it works. And `new F` VS `Object.create.
+> Why we need `Object.create` and how it works. And `new F` VS `Object.create`.
 
 **Answer:** `Object.create` methods allows you to easily implement differential inheritance, where objects can directly inherit from other objects.
 
@@ -620,11 +620,11 @@ var bob = Object.create(userB, { // object descriptor
 
 `new F` is `Object.create(F.prototype)` with additionally running the constructor function. And giving the constructor the chance to return the actual object that should be the result of the expression instead of this. So basically `Object.create` doesn't execute the constructor.
 
-## DOM
+### DOM / Events
 
-> `window` VS `document`
+> Is there are a difference `window` VS `document`?
 
-**Answer:**  Yes. JavaScript has a global object and everything runs under it. `document` is a property of `window` object.
+**Answer:**  Yes. JavaScript has a global `window` object and everything runs under it. `document` is a property of `window` object.
 
 **Explanation:** 
 
@@ -632,7 +632,16 @@ var bob = Object.create(userB, { // object descriptor
 
 `document` is also under `window`. `document` represents the `DOM`,  the object oriented representation of the html markup. All the nodes are part of document. Hence you can use `getElementById` or `addEventListener` on document. These methods are not present in the `window` object.
 
-> `window.onload` VS `document.onload` VS `document.addEventListener('DOMContentLoaded')`. Does they fire at the same time?
+> How could you make sure to run some javaScript when DOM is ready like `$(document).ready?`
+
+**Answer:** There are four different ways:
+
+1. Put your script in the last tag of html body element. DOM would be ready by the time browser hits the script tag.
+2. Place your code inside a `DOMContentLoaded` handler. This event will be fired when DOM is completely loaded.
+3. Watch changes in the `readyState` of the `document`. And the last state is `"complete"` state, you can put your code there.
+4. Use jQuery `$(document).ready`.
+
+> `window.onload` VS `document.onload` VS `document.addEventListener('DOMContentLoaded')`. Do they fire at the same time?
 
 **Answer:**
 * `window.onload` is fired when all page is loaded, including all resources (images, styles, iframes)
@@ -653,8 +662,231 @@ What is an attribute?
 
 Attributes are in the HTML itself, rather than in the DOM. They are very similar to properties, but not quite as good. When a property is available it’s recommended that you work with properties rather than attributes.
 
-> Explain event delegation
+* `elem.hasAttribute(name)`
+* `elem.getAttribute(name)`
+* `elem.setAttribute(name, value)`
+* `elem.removeAttribute(name)`
+* `elem.attributes`
 
+> What are the different ways to get an element from DOM?
+ 
+**Answer:** You can use the following methods in `document`:
+
+* `getElementById` to get a element that has the provided Id.
+* `getElementsByClassName` to get a nodelist (nodelist is not an array, rather it is array-like object) by providing a class name.
+* `getElementsByTagName` to get a nodelist by the provided tag name.
+* `getElementsByName` to get a nodelist by name property
+* `querySelector` you will pass css style selector and this will return first matched element in the DOM.
+* `querySelectorAll` will return a non-live nodelist by using depth-first pre order traversal of all the matched elements. Non-live means, any changes after selecting the elements will not be reflected.
+
+There are two more options but I dont use them frequently-
+
+* `getElementsByName` returns the list of elements by the provided name of the html tag
+* `getElementsByTagNameNS` returns elements with particular tag name within the provided namespace
+
+**Answer:** Fastest way to Query DOM: 
+
+If you have an ID of an element `getElmentById` is the fastest way to select an element. However, you should not have so many ID in you document to avoid style repetition. `getElementsByClassName` is the second quickest way to select an element.
+
+Here is the list. As we go downwards through the list, it takes more time to select elements.
+
+* ID (#myID)
+* Class (.myClass)
+* Tag (div, p)
+* Sibling (div+p, div~p)
+* child (div>p)
+* Descendant (div p)
+* Universal (*)
+* Attribute (input[type="checkbox"])
+* Pseudo (p:first-child)
+
+>  Why `querySelectorAll('.my-class')` is slower than `getElementsByClassName('my-class')`?
+
+**Answer:** `querySlectorAll` is a generic purpose method. It is optimized for different kinds of selectors. Hence it has to check whether you put a `"#"` or `"."` in front of the parameter you are passing. If you are just passing a class name with `"."`, under the hood it uses `getElementsByClassName` (could vary based on browser implements). Whereas if you directly uses `getElementsByClassName` it directly uses this method and doesn't have to go through all the initial processing of `querySelectorAll`. Hence to search elements with a particular class name, `getElementsByClassName` is faster than `querySelectorAll`.  
+
+> Why we can't use `forEach` or similar array methods on a `NodeList`? How could you solve this problem?
+
+**Answer:** Both `array` and `nodeList` have `length` and you can loop through elements but they are not same object.
+
+Both are inherited from `Object`. However `array` has different `prototype` object than `nodeList`. `forEach`, `map`, etc are on `array.prototype` which doesn't exist in the `NodeList.prototype` object:
+
+```javascript
+myArray --> Array.prototype --> Object.prototype --> null
+
+myNodeList --> NodeList.prototype --> Object.prototype --> null
+```
+
+**Answer:** Convert `NodeList` to an `array`. After that you will have access to all `array.prototype` methods.
+
+```javascript
+var myNodeList = document.querySelectorAll('.my-class');
+var nodesArray = Array.prototype.slice.call(myNodeList);
+
+//use array method on nodeList
+nodesArray.forEach(function(el, idx){
+  console.log(idx, el);
+});
+```
+
+**Answer ES6:**
+
+```javascript
+const myNodeList = document.querySelectorAll('.my-class');
+
+// Spread operator
+[...myNodeList].forEach(cb);
+
+// Array.from()
+Array.from(myNodeList).forEach(cb);
+
+// for...of statement
+for (var el of myNodeList) cb(el);
+```
+
+>  How would you add/remove/toggle a class to an element?
+
+**Answer:**
+
+```javascript
+el.classList.remove('my-class'); //removing a class
+el.classList.toggle('my-class');  // toggling a class
+el.classList.contains('my-class'); // checking whether class exists
+```
+
+> How to check if element isn't empty, without children?
+ 
+```javascript
+if (!elem.childNodes.length) { ... }
+
+if (!elem.hasChildNodes()) { ... }
+
+if (!elem.firstChild) { ... }
+
+if (!elem.lastChild) { ... }
+```
+
+> How you would perform next operation: create element with content, append it, then insert it before some element, change text of it, remove it from DOM. How to clone an element?
+ 
+**Answer:** Use the next methods `document.createElement(tag)`, `el.innerHTML`, `parent.appendChild(el)`, `parent.insertBefore(el, someEl)`, `parent.removeChild(el)`
+
+For clone an element we can create function or use `el.cloneNode(true)` where `true` means deep cloning.
+
+> How to delete all children of element?
+
+**Answer:** 
+
+```javascript
+function removeChildren(elem) {
+  try {
+    elem.innerHTML = ''; //dont work with table cells and etc.
+  } catch (e) {
+    while (elem.firstChild) {
+      elem.removeChild(elem.firstChild);
+    }
+  }
+}
+```
+
+> createTextNode vs innerHTML
+
+**Answer:** It depends on content. `innerHTML` inserts content as HTML, but `createTextNode` inserts tags as text.
+
+> What is the best way to create a DOM element? Set `innherHTML` or use `createElement`? Do you know about `insertAdjacentHTML`?
+
+**Answer:** According to jsPerf option 1 is approximately 3 times slower than option 2.
+
+**Explanation:** 
+
+`appendChild` does not cause a complete rebuild of the DOM or even all of the elements/nodes within the target.
+
+`innerHTML` does cause a complete rebuild of the content of the target element, which if you're appending is unnecessary.
+
+Appending via `innerHTML += content` makes the browser run through all of the nodes in the element building an HTML string to give to the JavaScript layer. Your code then appends text to it and sets innerHTML, causing the browser to drop all of the old nodes in the target, re-parse all of that HTML, and build new nodes. So in that sense, it may not be efficient. (However, parsing HTML is what browsers do and they're really, really fast at it.)
+
+Setting `innerHTML` does indeed invalidate any references to elements within the target element you may be holding - because those elements don't exist anymore, you removed them and then put in new ones (that look very similar) when you set `innerHTML`.
+
+In short, if you're appending, I'd use `appendChild` or `insertAdjacentHTML`. If you're replacing, there are very valid situations where using innerHTML is a better option than creating the tree yourself via the DOM API.
+
+Finally, it's worth mentioning `insertAdjacentHTML`, which is a function that you can use to insert nodes and elements into or next to an element using an HTML string. You can append to an element with it: `theElement.insertAdjacentHTML("beforeend", "the HTML goes here");`
+
+> What is `createDocumentFragment` and why you might use it?
+
+**Answer:** If you are changing DOM that cause expensive reflow, you can avoid it by using `documentFragment` as it is managed in the memory.
+
+**Explanation:**
+
+`documentFragment` a very lightweight or minimal part of a DOM or a subtree of a DOM tree. It is very helpful when you are manipulating a part of DOM for multiple times. It becomes expensive to hit a certain portion of DOM for hundreds time. You might cause reflow for hundred times.
+
+A bad practice, you are hitting the DOM every single time:
+
+```javascript
+//
+var list = ['foo', 'bar', 'baz', ... ],
+    el, text;
+for (var i = 0; i < list.length; i++) {
+    el = document.createElement('li');
+    text = document.createTextNode(list[i]);
+    el.appendChild(text);
+    document.body.appendChild(el);
+}
+```
+
+A good practice, you causing reflow one time:
+
+```javascript
+var fragment = document.createDocumentFragment(),
+    list = ['foo', 'bar', 'baz', ...],
+    el, text;
+for (var i = 0; i < list.length; i++) {
+    el = document.createElement('li');
+    text = document.createTextNode(list[i]);
+    el.appendChild(text);
+    fragment.appendChild(el);
+}
+document.body.appendChild(fragment);
+```
+
+> What is reflow? What causes reflow? How could you reduce reflow?
+
+**Answer:** When you change size or position of an element in the page, all the elements after it has to change their position according to the changes you made. For example, if you change height on an element, all the elements under it has to move down in the page to accomodate a change in height. Hence, flow of the elements in the page is changed and this is called *reflow*.
+
+Re-flows could be very expensive and it might have a performance hit specially in the smaller devices like phone. As it might causes changes in the portion (or whole) layout of the page.
+
+The following cases causes reflow:
+
+* change layout (geometry of the page)
+* resize the window
+* change height/width of any element
+* changing font
+* change font size
+* move DOM element (animation)
+* adding or removing stylesheet
+* calculating offset height or offset width
+* `display: none;`
+
+How to avoid: To avoid reflow, try to avoid doing things in the above list and some more in the below
+
+* avoid setting multiple inline style
+* apply animation to the elements that are positioned fixed or absolute
+* avoid tables for layout
+
+More: [reflow and repaint: css performance makes your JS slow](http://www.stubbornella.org/content/2009/03/27/reflows-repaints-css-performance-making-your-javascript-slow/#animations)
+
+> What is repaint and when does this happen?
+
+**Answer:** repaint happens when you change the look of an element without changing the size and shape. This doesn't cause reflow as geometry of the element didn't changed.
+
+How it happens:
+
+* change background color
+* change text color
+* visibility hidden
+
+> Event phases. How does event flows?
+
+**Answer:**...
+
+> Explain event delegation
 
 **Answer:** Event delegation allows you to avoid adding event listeners to specific nodes, instead, the event listener is added to one parent. That event listener analyzes bubbled events to find a match on child elements.
 
