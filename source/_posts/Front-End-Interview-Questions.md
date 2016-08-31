@@ -765,7 +765,7 @@ if (!elem.firstChild) { ... }
 if (!elem.lastChild) { ... }
 ```
 
-> How you would perform next operation: create element with content, append it, then insert it before some element, change text of it, remove it from DOM. How to clone an element?
+> How you would perform next operation: create element with content, add `data-foo` attribute, append newly created element to whatever you want, then move it before some element, change text of it, remove it from DOM. How to clone an element?
  
 **Answer:** Use the next methods `document.createElement(tag)`, `el.innerHTML`, `parent.appendChild(el)`, `parent.insertBefore(el, someEl)`, `parent.removeChild(el)`
 
@@ -882,9 +882,19 @@ How it happens:
 * change text color
 * visibility hidden
 
-> Event phases. How does event flows?
+> What is event bubble? How does event flows (event phases)?
 
-**Answer:**...
+**Answer:** to understand event bubble, you have to understand what happen when you click on anything on a page.
+
+The event flow model specified by DOM Level 2 Events has three phases to it:
+
+* Capture: When you clicked, browser knows a click event occurred. It starts from the `window` (lowest level/root of your website), then goes to `document`, then `html` root tag, then `body`, then `table`... its trying to reach the the as lowest level of element as possible. This is called capture phase (phase -1).
+* Target: When browser reach the lowest level of element. In this case, you have clicked on a table cell (table data) hence target would be `td` tag. Then browser checks whether you have any click handler attached to this element. If there is any, browser executes that click hander. This is called target phase (phase -2).
+`Bubbling`: After firing click hander attached to `td`, browser walks toward root. One level upward and check whether there is any click handler attached with table row `tr` element. If there is any it will execute that. Then it goes to `tbody`, `table`, `body`, `html`, `document`, `window`. In this stage its moving upward and this is called event bubbling or bubbling phase (phase-3).
+
+Event handlers with `on<eventName>` doesn't know anything about capture phase.
+
+To capture on `capture` phase need to `addEventListener(<eventName>, <cb>, true)`, otherwise it will work by bubble phase.
 
 > Explain event delegation
 
@@ -921,18 +931,65 @@ document.getElementById("parent-list").addEventListener("click", function(e) {
 });
 ```
 
-# JavaScript: advance
+> Can you remove an event handler from an element?
+
+**Answer:** `target.removeEventListener('click', <handledName>)`
+
+> How could you prevent a click on an anchor from going to the link? How could you stop further propagation of an event?
+
+**Answer:** `preventDefault()` inside event handler. However, this doesn't stop further propagation. To stop it `event.stopPropagation();`
+
+> How to capture all click in a page?
+
+**Answer:** You can leverage event bubble to get all the clicks. As all the clicks will be bubbled up to the body.
+
+```javascript
+document.querySelector('body').addEventListener('click', function(e){
+  console.log('body clicked', e.target);
+});
+
+//or
+window.onclick = function(e){
+  console.log('someone clicked', e.target)
+}
+```
+
+## JavaScript: advance
+
+> What do you think of AMD vs CommonJS and ES6 modules?
+
+**Answer:** 
+
+For many years JS had a single widely accepted module format, which is to say, there was none. Everything was a global variable petulantly hanging off the window object. 
+
+Dark Ages. Long ago an adhoc group formed to solve the global conflict. The fruits of this vigilante justice are known today as CommonJS. Multiple competing formats were proposed and implemented in the wild by these dashing radicals and two bright lights emerged with significant adherents: AMD and CJS.
+
+*Asynchronous Module Design* (AMD) accounts for the async nature of JS but some felt the aesthetics were harder to read with a wrapper function.
+
+*CommonJS* (CJS) is synchronous, thus blocking, but generally understood to be an easier read.
+
+```javascript
+// this is an AMD module
+define(function () {
+  return something
+})
+
+// and this is CommonJS
+module.exports = something
+```
+
+JavaScript vendors and concerned citizens began formally standardizing modules into the language proper. After years of thrashing, a standard module format has finally emerged with ES6.
 
 > What is asynchronous programming, and why is it important in JS? Non-blocking I/O in JS.
 
-Synchronous programming means that, barring conditionals and function calls, code is executed sequentially from top-to-bottom, blocking on long-running tasks such as network requests and disk I/O.
+Synchronous programming means that code is executed sequentially from top-to-bottom, blocking on long-running tasks such as network requests and disk I/O.
 
 Asynchronous programming means that the engine runs in an event loop. When a blocking operation is needed, the request is started, and the code keeps running without blocking for the result. When the response is ready, an interrupt is fired, which causes an event handler to be run, where the control flow continues. In this way, a single program thread can handle many concurrent operations.
 
 Node is asynchronous by default, meaning that the server works in much the same way, waiting in a loop for a network request, and accepting more incoming requests while the first one is being handled.
 
 In JavaScript, almost all I/O is non-blocking. This includes:
-* HTTP requests
+* Networking requests
 * DB operations
 * Disk reads and writes
 * User interfaces are asynchronous by nature, and spend most of their time waiting for user input to interrupt the event loop and trigger event handlers
@@ -953,7 +1010,7 @@ console.log('Done!');
 2. “Done!” is immediately output to the console
 3. Sometime in the future, the response comes back and our callback is executed, outputting its body to the console
 
-## The Event Loop
+> The Event Loop
 
 The decoupling of the caller from the response allows for the JavaScript runtime to do other things while waiting for your asynchronous operation to complete and their callbacks to fire. But where in memory do these callbacks live – and in what order are they executed? What causes them to be called?
 
@@ -963,7 +1020,7 @@ In a loop, the queue is polled for the next message (each poll referred to as a 
 
 ![Event Loop](http://www.appsdev.is.ed.ac.uk/blog/wp-content/uploads/2015/03/Event-loop.png)
 
-## Macrotasks and Microtasks
+> Macrotasks and Microtasks
 
 Take this little bit of JavaScript:
 
@@ -992,7 +1049,7 @@ microtasks: `process.nextTick`, `Promises`, `Object.observe`, `MutationObserver`
 
 [A great post](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
 
-## What is the difference between "classical inheritance" and "prototypal inheritance"?
+> What is the difference between "classical inheritance" and "prototypal inheritance"?
 
 Class Inheritance: instances inherit from classes (like a blueprint — a description of the class), and create sub-class relationships: hierarchical class taxonomies. Instances are typically instantiated via constructor functions with the `new` keyword. Class inheritance may or may not use the `class` keyword from ES6.
 
@@ -1002,7 +1059,7 @@ Good to hear:
 * Classes: create tight coupling or hierarchies/taxonomies.
 * Prototypes: mentions of concatenative inheritance, prototype delegation, functional inheritance, object composition.
 
-## What are the pros and cons of functional programming vs object-oriented programming?
+> What are the pros and cons of functional programming vs object-oriented programming?
 
 OOP Pros: It’s easy to understand the basic concept of objects and easy to interpret the meaning of method calls. OOP tends to use an imperative style rather than a declarative style, which reads like a straight-forward set of instructions for the computer to follow.
 
@@ -1013,11 +1070,16 @@ FP Pros: Using the functional paradigm, programmers avoid any shared state or si
 FP Cons: Over exploitation of FP features such as point-free style and large compositions can potentially reduce readability because the resulting code is often more abstractly specified, more terse, and less concrete.
 More people are familiar with OO and imperative programming than functional programming, so even common idioms in functional programming can be confusing to new team members.
 
-## What does “favor object composition over class inheritance” mean?
+> What does “favor object composition over class inheritance” mean?
 
 This is a quote from “Design Patterns: Elements of Reusable Object-Oriented Software”. 
 
-It means that code reuse should be achieved by assembling smaller units of functionality into new objects instead of inheriting from classes and creating object taxonomies.
+Object composition is a way to combine simple objects or data types into more complex ones. It means that code reuse should be achieved by assembling smaller units of functionality into new objects instead of inheriting from classes and creating object taxonomies.
+
+```javascript
+import { a, b, c } from 'components';
+composedObject = Object.assign({}, a, b, c);
+```
 
 **Good to hear:**
 
@@ -1027,7 +1089,7 @@ It means that code reuse should be achieved by assembling smaller units of funct
 * Avoid rigid taxonomy (forced is-a relationships that are eventually wrong for new use cases).
 * Avoid the gorilla banana problem (“what you wanted was a banana, what you got was a gorilla holding the banana, and the entire jungle”).
 
-## What are two-way data binding and one-way data flow, and how are they different?
+> ## What are two-way data binding and one-way data flow, and how are they different?
 
 Two way data binding means that UI fields are bound to model data dynamically such that when a UI field changes, the model data changes with it and vice-versa.
 
@@ -1039,7 +1101,7 @@ One way data flows are deterministic, whereas two-way binding can cause side-eff
 React is the new canonical example of one-way data flow, so mentions of React are a good signal. Cycle.js is another popular implementation of uni-directional data flow.
 Angular is a popular framework which uses two-way binding.
 
-## What are the pros and cons of monolithic vs microservice architectures?
+> ## What are the pros and cons of monolithic vs microservice architectures?
 
 A monolithic architecture means that your app is written as one cohesive unit of code whose components are designed to work together, sharing the same memory space and resources.
 
@@ -1060,30 +1122,6 @@ Microservice pros: Microservice architectures are typically better organized, si
 They can also have performance advantages depending on how they’re organized because it’s possible to isolate hot services and scale them independent of the rest of the app.
 
 Microservice cons: As you’re building a new microservice architecture, you’re likely to discover lots of cross-cutting concerns that you did not anticipate at design time. A monolithic app could establish shared magic helpers or middleware to handle such cross-cutting concerns without much effort.
-
-## What do you think of AMD vs CommonJS and ES6 modules?
-
-**Answer:** 
-
-For many years JS had a single widely accepted module format, which is to say, there was none. Everything was a global variable petulantly hanging off the window object. 
-
-Dark Ages. Long ago an adhoc group formed to solve the global conflict. The fruits of this vigilante justice are known today as CommonJS. Multiple competing formats were proposed and implemented in the wild by these dashing radicals and two bright lights emerged with significant adherents: AMD and CJS.
-
-*Asynchronous Module Design* (AMD) accounts for the async nature of JS but some felt the aesthetics were harder to read with a wrapper function.
-
-*CommonJS* (CJS) is synchronous, thus blocking, but generally understood to be an easier read.
-
-```javascript
-// this is an AMD module
-define(function () {
-  return something
-})
-
-// and this is CommonJS
-module.exports = something
-```
-
-JavaScript vendors and concerned citizens began formally standardizing modules into the language proper. After years of thrashing, a standard module format has finally emerged with ES6.
 
 # Environment APIs
 
