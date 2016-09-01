@@ -846,6 +846,29 @@ for (var i = 0; i < list.length; i++) {
 document.body.appendChild(fragment);
 ```
 
+> When would you use "document.write()" ?
+
+**Answer:** In terms of vendors supplying third parties or analytics code (like Google Analytics) it's actually the easiest way for them to distribute such snippets.
+
+```html
+<script>
+  var url = 'http://ads.com/buyme?screen=' + screen.width + "x" + screen.height;
+
+  document.write('<script src="' + url + '"></scr' + 'ipt>');
+</script>
+```
+
+**Explanation:**
+
+1. It keeps the scripts small
+2. They don't have to worry about overriding already established onload events or including the necessary abstraction to add onload events safely
+3. It's extremely compatible
+
+`document.write` only works while the page is loading; If you call it after the page is done loading, it will overwrite the whole page.
+
+This effectively means you have to call it from an inline script block - And that will prevent the browser from processing parts of the page that follow. Scripts and Images will not be downloaded until the writing block is finished.
+
+
 > What is reflow? What causes reflow? How could you reduce reflow?
 
 **Answer:** When you change size or position of an element in the page, all the elements after it has to change their position according to the changes you made. For example, if you change height on an element, all the elements under it has to move down in the page to accomodate a change in height. Hence, flow of the elements in the page is changed and this is called *reflow*.
@@ -954,11 +977,137 @@ window.onclick = function(e){
 }
 ```
 
+### AJAX
+  
+> Explain AJAX in as much detail as possible
+
+**Answer:** AJAX is a way to communicate to the server without reloading the page. Once we receive the data from the server, we can then manipulate those data and display unto certain parts of the page, this is why we don’t need to reload the page.
+
+**Explanation:** AJAX stands for Asynchronous JavaScript and XML. In a nutshell, it is the use of the `XMLHttpRequest` object to communicate with server-side scripts. It can send as well as receive information in a variety of formats, including JSON, XML, HTML, and even text files. AJAX’s most appealing characteristic, however, is its "asynchronous" nature, which means it can do all of this without having to refresh the page
+
+Typical example for GET request with `XMLHttpRequest`:
+
+<script src="https://gist.github.com/qetr1ck-op/f52380392d7f0afb4835f8257a483ff7.js"></script>
+
+> What is COMET? How to achieve this technique?
+
+**Answer:** he AJAX - is a "request sent - get the result," and the COMET - is "a continuous channel through which the data come."
+
+**Explanation:**
+
+Comet is a Web application model that enables web servers to send data to the client without having to explicitly request it.
+
+Examples COMET-app:
+
+* Chat - man sitting and watching what others write. At the same time new messages arrive "on their own", he should not have to press a button to refresh the chat window.
+* Auction - a person looks at the screen and sees renewed the current bid for the goods.
+* Editing interface - when one editor is beginning to change the document, others see the information about it. Perhaps, and collaborative editing, editors when they see each other's changes.
+
+COMET techniques overview:
+
+* Polling: a simple method based on periodically polling the server.
+* Long poll: A method by which a client opens a connection and doesn't close it up until the event occurs. In the event occurs, the client receives a notification and then opens a connection again.
+* "Infinite" iframe: The method is based on html document download features. It creates an invisible iframe, which reads "infinite" file. When an event occurs, a new row is added to the file. The string can be a javascript snippet.
+* HTML5 WebSockets: specification defines an API establishing "socket" connections between a web browser and a server. In plain words: There is an persistent connection between the client and the server and both parties can start sending data at any time.
+
+> How to work with HTTP headers in AJAX. Do we have a restriction?
+
+**Answer:** There are three methods `setRequestHeader(name, value)`, `getResponseHeader(name)`, `getAllResponseHeaders()`
+
+> Send JSON Object with Ajax?
+
+**Answer:** Use `xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")` and `JSON.stringify(<object>)`;
+
+```javascript
+var jsonRequest = "json_name=" + JSON.stringify({name:"John", time:"2pm"});
+var xhr = new XMLHttpRequest();
+
+xhr.open("POST", "/submit");
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+xhr.send(json_upload);
+```
+
+> Sending POST data using an XMLHttpRequest using different encoding patterns.
+
+**Answer:** With `XMLHttpRequest` we don't need explicitly set header with `Content-type`.
+
+In spec are 3 types for submitting body entity:
+
+* `application/x-www-form-urlencoded`
+* `multipart/form-data`
+* `text-plain`
+
+With `application/x-www-form-urlencoded`:
+
+```javascript
+var xhr = new XMLHttpRequest();
+
+var body = 'name=' + encodeURIComponent(name) +
+  '&surname=' + encodeURIComponent(surname);
+
+xhr.open("POST", '/submit', true)
+xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+xhr.onreadystatechange = ...;
+
+xhr.send(body);
+```
+
+With `multipart/form-data`:
+
+```html
+<form name="person">
+  <input name="name" value="John">
+  <input name="surname" value="Doe">
+</form>
+
+<script>
+  var formData = new FormData(document.forms.person);
+
+  formData.append("patronym", "Робертович");
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/url");
+  xhr.setRequestHeader('Content-Type', 'multipart/form-data')
+  xhr.send(formData);
+</script>
+```
+
+
+
 ## JavaScript: advance
+
+> What is `defer` and `async` attribute does in a script tag?
+
+**Answer:** HTML parser will ignore `defer` and `async` keyword for inline script (script that does not have a src attribute).
+
+* with `<script async src="...">` browser downloads the file during HTML parsing and will pause the HTML parser to execute it when it has finished downloading
+* with `<script defer src="...">` browser downloads the file during HTML parsing and will only execute it after the parser has completed. defer scripts are also guarenteed to execute in the order that they appear in the document.
+
+```html
+<script src="1.js" async></script>
+<script src="2.js" async></script>
+```
+
+**Examples**: 
+
+```html
+//1
+<script src="big.js"></script>
+<script src="small.js"></script>
+
+//2
+<script async src="big.js"></script>
+<script async src="small.js"></script>
+
+//3
+<script defer src="big.js"></script>
+<script defer src="small.js"></script>
+```
 
 > What do you think of AMD vs CommonJS and ES6 modules?
 
-**Answer:** 
+**Answer:**
 
 For many years JS had a single widely accepted module format, which is to say, there was none. Everything was a global variable petulantly hanging off the window object. 
 
@@ -1089,7 +1238,7 @@ composedObject = Object.assign({}, a, b, c);
 * Avoid rigid taxonomy (forced is-a relationships that are eventually wrong for new use cases).
 * Avoid the gorilla banana problem (“what you wanted was a banana, what you got was a gorilla holding the banana, and the entire jungle”).
 
-> ## What are two-way data binding and one-way data flow, and how are they different?
+> What are two-way data binding and one-way data flow, and how are they different?
 
 Two way data binding means that UI fields are bound to model data dynamically such that when a UI field changes, the model data changes with it and vice-versa.
 
@@ -1101,7 +1250,7 @@ One way data flows are deterministic, whereas two-way binding can cause side-eff
 React is the new canonical example of one-way data flow, so mentions of React are a good signal. Cycle.js is another popular implementation of uni-directional data flow.
 Angular is a popular framework which uses two-way binding.
 
-> ## What are the pros and cons of monolithic vs microservice architectures?
+> What are the pros and cons of monolithic vs microservice architectures?
 
 A monolithic architecture means that your app is written as one cohesive unit of code whose components are designed to work together, sharing the same memory space and resources.
 
@@ -1125,45 +1274,7 @@ Microservice cons: As you’re building a new microservice architecture, you’r
 
 # Environment APIs
 
-## DOM
 
-### When would you use "document.write()" ?
-
-**Answer:** In terms of vendors supplying third parties or analytics code (like Google Analytics) it's actually the easiest way for them to distribute such snippets.
-
-```html
-<script>
-  var url = 'http://ads.com/buyme?screen=' + screen.width + "x" + screen.height;
-
-  document.write('<script src="' + url + '"></scr' + 'ipt>');
-</script>
-```
-**Explanation:**
-
-1. It keeps the scripts small
-2. They don't have to worry about overriding already established onload events or including the necessary abstraction to add onload events safely
-3. It's extremely compatible
-
-`document.write` only works while the page is loading; If you call it after the page is done loading, it will overwrite the whole page.
-
-This effectively means you have to call it from an inline script block - And that will prevent the browser from processing parts of the page that follow. Scripts and Images will not be downloaded until the writing block is finished.
-
-## AJAX
-  
-### Explain AJAX in as much detail as possible
-
-**Explanation:** AJAX is a way to communicate to the server without reloading the page. Once we receive the data from the server, we can then manipulate those data and display unto certain parts of the page, this is why we don’t need to reload the page.
-
-**Explanation:** AJAX stands for Asynchronous JavaScript and XML. In a nutshell, it is the use of the `XMLHttpRequest` object to communicate with server-side scripts. It can send as well as receive information in a variety of formats, including JSON, XML, HTML, and even text files. AJAX’s most appealing characteristic, however, is its "asynchronous" nature, which means it can do all of this without having to refresh the page
-
-Typical example for GET request with `XMLHttpRequest`:
-
-<script src="https://gist.github.com/qetr1ck-op/f52380392d7f0afb4835f8257a483ff7.js"></script>
-
-
-### How to work with HTTP headers in AJAX. Do we have a restriction?
-
-**Answer:** There are three methods `setRequestHeader(name, value)`, `getResponseHeader(name)`, `getAllResponseHeaders()`
 
 # AngularJS 
 
