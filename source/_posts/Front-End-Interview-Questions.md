@@ -1073,6 +1073,61 @@ With `multipart/form-data`:
 </script>
 ```
 
+## ES6
+
+> When standard was finalized?
+
+The ES6 specification was finalized in June 2015, (hence ES2015).
+
+Future versions of the specification will follow the ES[YYYY] pattern, e.g ES2016 for ES7.
+
+> Tooling
+
+To get ES6 working today, you need a JavaScript-to-JavaScript transpiler:
+
+* They allow you to compile code in the latest version into older versions of the language
+* As browser support gets better, we’ll transpile ES2016 and ES2017 into ES6 and beyond
+* We’ll need better source mapping functionality
+* They’re the most reliable way to run ES6 source code in production today (although browsers get ES5)
+* 
+Use `babel` to transpile ES6 into ES5 for static build
+
+Use `babelify` to incorporate babel into your `Gulp`, `Grunt`, or `npm` run build process
+
+Use `Node.js` v4.x.x or greater as they have decent ES6 support baked in, thanks to v8
+
+Use `babel-node` with any version of node, as it transpiles modules into ES5
+
+> Assignment Destructuring, the Rapid Table
+
+> Spread Operator and Rest Parameters
+
+> Arrow Functions
+
+> Template Literals
+
+> Object Literals
+
+> Classes
+
+> Let and Const
+
+> Symbols
+
+> Iterators
+
+> Generators
+
+> Promises
+
+> Maps / WeakMaps
+
+> Sets / WeakSets
+
+> Modules
+
+TODO with https://ponyfoo.com/articles/es6
+
 ## JavaScript: advance
 
 > What is `defer` and `async` attribute does in a script tag?
@@ -1375,6 +1430,7 @@ Cookies are small text files that websites place in a browser for tracking or lo
 
 You can save to `localStorage` and `sessionStorage` only primitives, for object you need you use `JSON.stringify1`
 
+### CSS
 
 ## General Website Optimization Questions
 
@@ -1390,38 +1446,46 @@ You can save to `localStorage` and `sessionStorage` only primitives, for object 
 
 **Answer:** Another problem with [many solutions](https://www.nomensa.com/blog/2010/7-tips-for-multi-lingual-website-accessibility): setting the default language, using Unicode encoding, using the `lang` attribute, being aware of standard font sizes and text direction, and language word length (may affect layout).
 
-# AngularJS 
+# Technologies
 
-## List at least three ways to communicate between modules of your application using core AngularJS functionality.
+## JS Framework
+
+### AngularJS 
+
+> List at least three ways to communicate between modules of your application using core AngularJS functionality.
+
+**Answer:** There are at least three idiomatic way to achieve this:
 
 * Using services
 * Using events
-* By assigning models on `$rootScope`
 * Directly between controllers, using `ControllerAs`, or other forms of inheritance
+* By assigning models on `$rootScope`
 * Directly between controllers, using `$parent`, `$$childHead`, `$$nextSibling`, etc.
 
-## Which means of communication between modules of your application are easily testable?
+> Which means of communication between modules of your application are easily testable?
 
-Using a service is definitely easy to test. Services are injected, and in a test either a real service can be used or it can be mocked.
+**Answer:** The big deal is in DI patten.
+
+Using a `service` is definitely easy to test. Services are injected, and in a test either a real `service` can be used or it can be mocked.
 
 Events can be tested. In unit testing controllers, they usually are instantiated. For testing events on `$rootScope`, it must be injected into the test.
 
-For testing direct communication between controllers, the expected results should probably be mocked. Otherwise, controllers would need to be manually instantiated to have the right context.
+For testing direct `communication` between `controller`s, the expected results should probably be mocked. Otherwise, controllers would need to be manually instantiated to have the right context.
 
-## The most popular e2e testing tool for AngularJS is Protractor. There are also others which rely on similar mechanisms. Describe how e2e testing of AngularJS applications work.
+> The most popular e2e testing tool for AngularJS is Protractor. Describe how e2e testing of AngularJS applications work?
 
 The e2e tests are executed against a running app, that is a fully initialized system. They most often spawn a browser instance and involve the actual input of commands through the user interface. The written code is evaluated by an automation program, such as a Selenium server (webdriver). That program sends commands to a browser instance, then evaluates the visible results and reports back to the user.
 
 The assertions are handled by another library, for Protractor (end-to-end) / Karma (unit tests) the default is Jasmine.
 
-## What are the basic steps to unit test an AngularJS filter?
+> What are the basic steps to unit test an AngularJS filter?
 
 1. Inject the module that contains the filter.
 2. Provide any mocks that the filter relies on.
 3. Get an instance of the filter using $filter('yourFilterName').
 4. Assert your expectations.
 
-```
+```javascript
 describe('Filter: myFltr', function () {
   var myFltr;
 
@@ -1454,28 +1518,31 @@ describe('Filter: myFltr', function () {
 });
 ```
 
-## When a scope is terminated, two similar “destroy” events are fired. What are they used for, and why are there two?
+> When a scope is terminated, “destroy” events are fired. What are they used for, and why are there two?
 
 The first one is an AngularJS event, “$destroy” can be used by AngularJS scopes where they are accessible, such as in controllers or link functions.
 
-```
+```javascript
 scope.$on(‘$destroy’, function () {
   // handle the destroy, i.e. clean up.
 });
+
+// in 1.5.x
+$onDestroy() {...}
 ```
 
 The jqLite / jQuery event is called whenever a node is removed, which may just happen without scope teardown:
 
-```
+```javascript
 element.on(‘$destroy’, function () {
   // respectful jQuery plugins already have this handler.
   // angular.element(document.body).off(‘someCustomEvent’);
 });
 ```
 
-## How do you reset a “$timeout”, and disable a “$watch()”?
+> How do you reset a `$timeout`, and disable a `$watch()`?
 
-The key to both is assigning the result of the function to a variable.
+**Answer:** The key to both is assigning the result of the function to a variable.
 
 To cleanup the timeout, just `.cancel()` it:
 
@@ -1487,7 +1554,7 @@ var customTimeout = $timeout(function () {
 $timeout.cancel(customTimeout);
 ```
 
-The same applies to “$interval()”. To disable a watch, just call it:
+The same applies to `$interval()`. To disable a watch, just call it:
 
 ```
 var deregisterWatchFn = $rootScope.$watch(‘someGloballyAvailableProperty’, function (newVal) {
@@ -1499,7 +1566,7 @@ var deregisterWatchFn = $rootScope.$watch(‘someGloballyAvailableProperty’, f
 });
 ```
 
-## Name and describe the phases of a directive definition function execution, or describe how directives are instantiated.
+> Name and describe the phases of a directive definition function execution, or describe how directives are instantiated.
 
 Each directive undergoes something similar to a life cycle as AngularJS compiles and links the DOM. The directive lifecycle begins and ends within the AngularJS bootstrapping process, before the page is rendered. 
 
@@ -1510,7 +1577,7 @@ In a directive’s life cycle, there are four distinct functions that can execut
 * The `pre-link` function allows for private `$scope` manipulation before the `post-link` process begins.
 * The `post-link` method is the primary workhorse method of the directive.
 
-```
+```javascript
 .directive("directiveName",function () {
   return {
     controller: function() {
@@ -1533,7 +1600,7 @@ In a directive’s life cycle, there are four distinct functions that can execut
 
 Commonly, not all of the functions are needed. In most circumstances, developers will simply create a `controller` and `link` (which refers to `post-link`) function following the pattern below.
 
-```
+```javascript
 .directive("directiveName",function () {
   return {
     controller: function() {
@@ -1549,23 +1616,23 @@ Commonly, not all of the functions are needed. In most circumstances, developers
 
 More [here](https://www.toptal.com/angular-js/angular-js-demystifying-directives).
 
-## How does interpolation, e.g. “{ { someModel } }”, actually work?
+> How does interpolation, e.g. `{{ someModel }}`, actually works?
 
 During the compilation process the `compiler` uses the `$interpolate` service to see if text nodes and element attributes contain interpolation markup with embedded expressions.
 
 If that is the case, the compiler adds watches on the computed interpolation function, which will update the corresponding text nodes or attribute values as part of the normal digest cycle.
 
-## How does the digest phase work?
+> How does the digest phase work?
 
 In a nutshell, on every digest cycle all scope models are compared against their previous values. That is dirty checking. If change is detected, the watches set on that model are fired. Then another digest cycle executes, and so on until all models are stable.
 
-It is probably important to mention that there is no `.$digest()` polling. That means that every time it is being called deliberately. As long as core directives are used, we don’t need to worry, but when external code changes models the digest cycle needs to be called manually. Usually to do that, `$apply()`, `$digest()`, `$timeout()`, `$evalAsync()`.
+As long as core directives are used, we don’t need to worry, but when external code changes models the digest cycle needs to be called manually. Usually to do that, `$apply()`, `$digest()`, `$timeout()`, `$evalAsync()`.
 
-## List a few ways to improve performance in an AngularJS app
+> List a few ways to improve performance in an AngularJS app
 
 The first one can be enabled through the `$compileProvider`:
 
-```
+```javascript
 .config(function ($compileProvider) {
   $compileProvider.debugInfoEnabled(false);
 });
@@ -1593,11 +1660,11 @@ That’s it! If the application now receives multiple `$http` responses at aroun
 
 The `setTimeout()` is called with a 0 delay which causes an actual delay of around 10 milliseconds depending on the browser. That means, if our three asynchronous calls return at around the same time (somewhere inside that particular timeout delay), they get resolve with a single `$digest` cycle instead of three which speeds up our application.
 
-## What is $rootScope and how does it relate to $scope?
+> What is $rootScope and how does it relate to $scope?
 
 `$rootScope` is the parent object of all `$scope` Angular objects created in a web page.
 
-## What is the difference between "ng-show"/"ng-hide" and "ng-if" directives?
+> What is the difference between "ng-show"/"ng-hide" and "ng-if" directives?
 
 `ng-show`/`ng-hide` will always insert the DOM element, but will display/hide it based on the condition. 
 
@@ -1605,7 +1672,7 @@ The `setTimeout()` is called with a 0 delay which causes an actual delay of arou
 
 `ng-if` is better when we needed the DOM to be loaded conditionally, as it will help load page bit faster compared to `ng-show`/`ng-hide`
 
-## Where should we implement the DOM manipulation in AngularJS?
+> Where should we implement the DOM manipulation in AngularJS?
 
 In the directives. DOM Manipulations should not exist in controllers, services or anywhere else but in directives.
 
@@ -1614,7 +1681,7 @@ Otherwise it's:
 * It is not testable
 * It include css hard coded selectors dependencies
 
-## Is it a good or bad practice to use AngularJS together with jQuery?
+> Is it a good or bad practice to use AngularJS together with jQuery?
 
 jQuery takes a traditional imperative approach to manipulating the DOM. In an imperative approach, it is up to the programmer to express the individual steps leading up to the desired outcome. What do I mean by this? So if we want an action to occur when a user types say 150 characters into an input, in jQuery we would say, "every time the user hits a key, check how many characters are in the input, if it exceeds 150 characters, do the action." Every step is addressed along the way.
 
@@ -1624,11 +1691,11 @@ It might seem like I'm just splitting hairs here, but it's really an important d
 
 To simply begin writing side scripts in jQuery where you are plucking out elements and setting up side event listeners just goes against the AngularJS approach in my opinion.
 
-## If you were to migrate from Angular 1.4 to Angular 1.5, what is the main thing that would need refactoring?
+> If you were to migrate from Angular 1.4 to Angular 1.5, what is the main thing that would need refactoring?
 
 Changing `.directive` to `.component` to adapt to the new Angular 1.5 components. More about [.component approach](http://qetr1ck-op.github.io/2016/07/22/Exploring-AngularJS-1-5-component-method/)
 
-## Lifecycle hooks in Angular 1.5
+> Lifecycle hooks in Angular 1.5
 
 * `$onInit`
 * `$postLink`
@@ -1637,17 +1704,17 @@ Changing `.directive` to `.component` to adapt to the new Angular 1.5 components
 
 More in [awesome post](https://toddmotto.com/angular-1-5-lifecycle-hooks).
 
-## How would you specify that a scope variable should have one-time binding only?
+> How would you specify that a scope variable should have one-time binding only?
 
 By using `::model.property` in front of it. This allows the check if the candidate is aware of the available variable bindings in AngularJS.
 
-## What is the difference between one-way binding and two-way binding?
+> What is the difference between one-way binding and two-way binding?
 
 One way binding implies that the scope variable in the html will be set to the first value its model is bound to (i.e. assigned to).
 
 Two way binding implies that the scope variable will change it’s value everytime its model is assigned to a different value
 
-## What is the role of services in AngularJS and name any services made available by default?
+> What is the role of services in AngularJS and name any services made available by default?
 
 * Services are objects that provide separation of concerns to an AngularJS app.
 * Services can be created using a factory method or a service method.
@@ -1660,7 +1727,7 @@ Few of the inbuilt services in AngularJS are:
 – the `$log` service: Simple service for logging. Default implementation safely writes the message into the browser’s console
 – the `$anchorScroll`: it scrolls to the element related to the specified hash or (if omitted) to the current value of `$location.hash()`
 
-## What are Providers and when to use them?
+> What are Providers and when to use them?
 
 Each web application you build is composed of objects that collaborate to get stuff done. These objects need to be instantiated and wired together for the app to work. In Angular apps most of these objects are instantiated and wired together automatically by the `$injector` service.
 
@@ -1675,15 +1742,19 @@ The most verbose, but also the most comprehensive one is a `Provider` recipe. Th
 
 The `Provider` recipe is the core recipe type and all the other recipe types are just syntactic sugar on top of it. It is the most verbose recipe with the most abilities, but for most services it's overkill.
 
+When to use?
+
 You should use the Provider recipe only when you want to expose an API for application-wide configuration that must be made before the application starts. This is usually interesting only for reusable services whose behavior might need to vary slightly between applications.
 
 The Provider recipe is syntactically defined as a custom type that implements a `$get` method. This method is a factory function just like the one we use in the Factory recipe. In fact, if you define a Factory recipe, an empty Provider type with the $get method set to your factory function is automatically created under the hood.
 
 More in [official docs](https://docs.angularjs.org/guide/providers).
 
-# Algorithms
+# Fundamentals
 
-## Binary search
+## Data Structure and algorithm
+
+> Binary search
 
 A binary search tree is a great place to store data in an ordered way to allow for an easy search for specific information.
 It works by comparing the target value to the midpoint of the array; if they are not equal, the lower or upper half of the array is eliminated depending on the result and the search is repeated until the position of the target value is found.
@@ -1721,7 +1792,7 @@ function binarySearch(items, value){
 }
 ```
 
-## The fastest method to create unique items in array
+> The fastest method to create unique items in array
 
 With primitive values:
 
@@ -1756,7 +1827,7 @@ var a = [], l = this.length;
   return a;
 ```
 
-## The fastest method to find items in array
+> The fastest method to find items in array
 
 Create a classical hash table with complexity of `O(n)`:
 
@@ -1769,64 +1840,9 @@ var result = arr.reduce(function(map, obj) {
 
 And search in the structure is `O(1)`;
 
-## Big-O Complexity Chart
+> Big-O Complexity Chart
 
 [An awesome cheat sheet](http://bigocheatsheet.com/)
-
-# ES6
-
-## When standard was finalized?
-
-The ES6 specification was finalized in June 2015, (hence ES2015).
-
-Future versions of the specification will follow the ES[YYYY] pattern, e.g ES2016 for ES7.
-
-## Tooling
-
-To get ES6 working today, you need a JavaScript-to-JavaScript transpiler:
-
-* They allow you to compile code in the latest version into older versions of the language
-* As browser support gets better, we’ll transpile ES2016 and ES2017 into ES6 and beyond
-* We’ll need better source mapping functionality
-* They’re the most reliable way to run ES6 source code in production today (although browsers get ES5)
-* 
-Use `babel` to transpile ES6 into ES5 for static build
-
-Use `babelify` to incorporate babel into your `Gulp`, `Grunt`, or `npm` run build process
-
-Use `Node.js` v4.x.x or greater as they have decent ES6 support baked in, thanks to v8
-
-Use `babel-node` with any version of node, as it transpiles modules into ES5
-
-## Assignment Destructuring, the Rapid Table
-
-## Spread Operator and Rest Parameters
-
-## Arrow Functions
-
-## Template Literals
-
-## Object Literals
-
-## Classes
-
-## Let and Const
-
-## Symbols
-
-## Iterators
-
-## Generators
-
-## Promises
-
-## Maps / WeakMaps
-
-## Sets / WeakSets
-
-## Modules
-
-TODO with https://ponyfoo.com/articles/es6
 
 Save my day:
 
