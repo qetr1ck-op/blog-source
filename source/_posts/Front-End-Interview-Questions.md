@@ -1073,8 +1073,6 @@ With `multipart/form-data`:
 </script>
 ```
 
-
-
 ## JavaScript: advance
 
 > What is `defer` and `async` attribute does in a script tag?
@@ -1272,9 +1270,125 @@ They can also have performance advantages depending on how they’re organized b
 
 Microservice cons: As you’re building a new microservice architecture, you’re likely to discover lots of cross-cutting concerns that you did not anticipate at design time. A monolithic app could establish shared magic helpers or middleware to handle such cross-cutting concerns without much effort.
 
-# Environment APIs
+
+## Markup
+
+### HTML
+
+> What is doctype? Why do u need it?
+
+**Answer:** `doctype` is an instruction to the browser to inform about the version of html document and how browser should render it.
+
+**Explanation:** 
+
+It ensures how element should be displayed on the page by most of the browser. And it also makes browser's life easier. otherwise, browser will guess and will go to quirks mode. Moreover, `doctype` is required to validate markup.
+
+```html
+<!DOCTYPE html>
+<meta charset="UTF-8">
+```
+
+> Difference between standard/strict mode and quirks mode?
+
+**Answer:** quirks mode in browser allows u to render page for as old browsers. This is for backward compatibility.
+
+> What is the use of `data-` attribute?
+
+**Answer:** allow you to store extra information/data in the DOM and allows to write valid html with embedded private data. You can easily access data attribute by using JS.
+
+```html
+<div id="myDiv" data-user="jsDude" data-list-size="5" data-maxage="180"></div>
+```
+
+> What is the difference between `span` and `div`?
+
+**Answer:** `div` is a block element, `span` is inline.
+
+This means that to use them semantically, divs should be used to wrap sections of a document, while spans should be used to wrap small portions of text, images, etc.
+
+>  When should you use section, div or article?
+
+**Answer:** To decide which of these three elements is appropriate, choose the first suitable option:
+
+1. Would the enclosed content would make sense on it’s own in a feed reader? If so use `<article>`
+2. Is the enclosed content related? If so use `<section>`
+3. Finally if there’s no semantic relationship use `<div>`
+
+> What is "Semantic HTML?"
+
+**Answer:** Semantic HTML is a coding style where the tags embody what the text is meant to convey.
+
+**Explanation:** 
+
+In Semantic HTML, tags like `<b></b>` for bold, and `<i></i>` for italic should not be used, reason being they just represent formatting, and provide no indication of meaning or structure. The semantically correct thing to do is use `<strong></strong>` and `<em></em>`. These tags will have the same bold and italic effects, while demonstrating meaning and structure (emphasis in this case).
+
+> What are some new HTML5 markup elements?
+
+**Answer:**
+
+There are [several](https://www.w3.org/TR/html-markup/bdi.html#bdi): <article>, <aside>, <bdi>, <command>, <details>, <figure>, <figcaption>, <summary>, <header>, <footer>, <hgroup>, <mark>, <meter>, <nav>, <progress>, <ruby>, <rt>, <section>, <time>, and <wpr>.
+
+> What are the new media-related elements in HTML5?
+
+**Answer:** 
+
+HTML5 has strong support for media. There are now special `<audio>` and `<video>` tags. There are additional A/V support tags as well: `<embed>` is a container for 3rd party applications.
+
+> What is the difference between `SVG` and `Canvas`?
+
+**Answer:** 
+
+* `SVG` is a document format for scalable vector graphics.
+* `Canvas` is a javascript API for drawing vector graphics to a bitmap of a specific size.
+
+**Explanation:** 
+
+SVG is XML based, which means that every element is available within the SVG DOM. You can attach JavaScript event handlers for an element.
+
+With SVG you can view, save and edit the file in many different tools.
+
+In SVG, each drawn shape is remembered as an object. If attributes of an SVG object are changed, the browser can automatically re-render the shape.
+
+Canvas is rendered pixel by pixel. In canvas, once the graphic is drawn, it is forgotten by the browser. If its position should be changed, the entire scene needs to be redrawn, including any objects that might have been covered by the graphic.
+
+Canvas:
+
+* Pixel based (Dynamic .png)
+* Single HTML element.(Inspect element in Developer tool. You can see only canvas tag)
+* Modified through script only
+* Event model/user interaction is granular (x,y)
+* Performance is better with smaller surface, a larger number of objects (>10k), or both
+
+SVG:
+
+* Shape based
+* Multiple graphical elements, which become part of the SVG DOM
+* Modified through script and CSS
+* Event model/user interaction is abstracted (rect, path)
+* Performance is better with smaller number of objects (<10k), a larger surface, or both
+
+> Describe the difference between `cookies`, `sessionStorage`, and `localStorage`
+
+**Answer:** `localStorage`, `sessionStorage` and `cookies` are all client storage solutions.
+
+Cookies are small text files that websites place in a browser for tracking or login purposes. Meanwhile, `localStorage` and `sessionStorage` are new objects, both of which are storage specifications but vary in scope and duration. Of the two, `localStorage` is permanent and website-specific whereas `sessionStorage` only lasts as long as the duration of the longest open tab.
+
+You can save to `localStorage` and `sessionStorage` only primitives, for object you need you use `JSON.stringify1`
 
 
+## General Website Optimization Questions
+
+> How do you optimize a website’s assets?
+
+**Answer:** There are a [number of answers](https://www.sitepoint.com/web-site-optimization-steps/) to this question: File concatenation, file compression, CDN Hosting, offloading assets, re-organizing and refining code, etc.
+
+> What are three ways to reduce page load time?
+
+**Answer:** Again there are [many answers](https://blog.crazyegg.com/2013/12/11/speed-up-your-website/) here: Reduce image sizes, remove unnecessary widgets, HTTP compression, put CSS at the top and script references at the bottom or in external files, reduce lookups, minimize redirects, caching, etc.
+
+> What kind of things must you be wary of when design or developing for multilingual sites?
+
+**Answer:** Another problem with [many solutions](https://www.nomensa.com/blog/2010/7-tips-for-multi-lingual-website-accessibility): setting the default language, using Unicode encoding, using the `lang` attribute, being aware of standard font sizes and text direction, and language word length (may affect layout).
 
 # AngularJS 
 
