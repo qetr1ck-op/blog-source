@@ -22,8 +22,6 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 **Explanation:**
 
-A variable is `undeclared` when it does not use the var keyword. It gets created on the global object, thus it operates in a different space as the declared variables.
-
 ```javascript
 var declaredVariable = 1;
 
@@ -38,11 +36,11 @@ declaredVariable; // 1
 
 Note: this will not work in `strict mode`. 
 
+A variable is `undeclared` when it does not use the var keyword. It gets created on the global object, thus it operates in a different space as the declared variables.
+
 `undefined` means, value of the variable is not defined. JavaScript has a global variable `undefined` whose value is "undefined" and `typeof undefined` is also "undefined"
 
 `null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. You cannot add properties to it. Sometimes people wrongly assume that it is an object, because `typeof null` returns "object".
-
-With non strict comparison th `null == undefined` is `true`, because that is in [spec](http://es5.github.io/x11.html#x11.9.3).
 
 > What are the differences between `==` and `===`?
 
@@ -89,7 +87,7 @@ With non strict comparison th `null == undefined` is `true`, because that is in 
 
 > What is `NaN`? What is its type? How can you reliably test if a value is equal to `NaN`?
 
-**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`. Use `isNaN`
+**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`. Use `Number.isNaN`
 
 **Explanation:** The NaN property represents a value that is “not a number”. This special value results from an operation that could not be performed either because one of the operands was non-numeric (e.g., "abc" / 4), or because the result of the operation is non-numeric (e.g., an attempt to divide by zero).
 
@@ -172,7 +170,7 @@ b();
 console.log(a);   
 ```
 
-**Answer:** 1
+**Answer:** `1`. Without `function a` the result is `10`
 
 * function declaration `function a(){ }` is hoisted first and it behaves like `var a = function () { };`. Hence in local scope variable `a` is created.
 * If you have two variables with same name (one in global another in local), local variable always get precedence over global variable.
@@ -304,7 +302,7 @@ for(let i = 0; i < 10; i++) {
 
 ``` javascript
 function isTwoPassed(...params) {
-  return params.includes('');
+  return params.includes('foo');
 }
 /*
 ES5 way
