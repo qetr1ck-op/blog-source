@@ -3,16 +3,9 @@ date: 2016-07-11 23:13:43
 categories:
     - Javascript
     - OOP
-thumbnailImage: http://phpsrbija.rs/wp-content/uploads/2015/04/solid-principles-e1428402535364.png
 ---
 
-Being a SOLID developer in JS isn't so as straight forward as in other languages.
-
-Some developers consider functional approach. Others chose OOP style.
-
-Some stand in both line. And other think that having class is wrong and redundant and prefer factories.
-
-But still, SOLID principles are the basic pillars of object oriented programming.
+Being a SOLID developer in JS isn't so as straight forward as in other languages. Some developers consider functional approach. Others chose OOP style. Some stand in both line. And other think that having class is wrong and redundant and prefer factories. But still, SOLID principles are the basic pillars of object oriented programming.
 
 But what are they?
 

@@ -1,6 +1,7 @@
 title: Exploring AngularJS 1.5 .component() method
 date: 2016-07-22 22:20:03
 thumbnailImage: http://html5-demos.appspot.com/static/webcomponents/images/logos/webcomponents.png
+thumbnailImagePosition: right
 tags:
     - AngularJS
 categories:

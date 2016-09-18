@@ -1,6 +1,7 @@
 title: 'call & apply VS bind, the simplest explanation'
 date: 2016-08-06 12:03:54
 thumbnailImage: title.gif
+thumbnailImagePosition: right
 categories: 
 - Javascript
 tags:

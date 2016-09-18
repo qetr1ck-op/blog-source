@@ -1,6 +1,7 @@
 title: Moving from "ngModel.$parsers"/"ng-if" to "ngModel.$validators"/"ngMessages"
 date: 2016-09-03 22:24:46
 thumbnailImage: http://i.giphy.com/P7SYySPcTnQC4.gif
+thumbnailImagePosition: right
 categories:
   - Javascript
   - AngularJS

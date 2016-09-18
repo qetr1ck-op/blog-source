@@ -1,6 +1,7 @@
 title: Front End Interview Questions
 date: 2016-08-14 11:39:13
 thumbnailImage: https://media.giphy.com/media/4BgU4OMAjkwyQ/giphy.gif
+thumbnailImagePosition: right
 categories:
 tags:
 ---
@@ -1123,6 +1124,8 @@ Use `babel-node` with any version of node, as it transpiles modules into ES5
 > Sets / WeakSets
 
 > Modules
+
+> Proxy
 
 TODO with https://ponyfoo.com/articles/es6
 

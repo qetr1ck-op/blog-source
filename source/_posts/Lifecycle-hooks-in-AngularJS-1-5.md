@@ -1,6 +1,7 @@
 title: Lifecycle hooks in AngularJS 1.5
 date: 2016-09-04 10:48:03
 thumbnailImage: https://media.giphy.com/media/3o6Ztn5Du98sxh2h7G/giphy.gif
+thumbnailImagePosition: right
 categories:
   - Javascript
   - AngularJS 1.5
