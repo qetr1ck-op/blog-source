@@ -1,6 +1,7 @@
 title: {{ title }}
 date: {{ date }}
-thumbnailImage:  
+thumbnailImage: 
+thumbnailImagePosition: right 
 categories:
 tags:
 ---
