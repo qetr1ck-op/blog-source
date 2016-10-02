@@ -6,13 +6,13 @@ categories:
 tags:
 ---
 
-In depth, table of contents of one of the most popular screencast about utility for managing tasks.
+Depth table of contents of one of the most popular screencast about utility for managing tasks.
 
 <!--more-->
 <!--toc-->
 
 
-# What is Gulp? Compare with Webpack, etc.
+# What is Gulp? Compare with Webpack.
 
 What is Gulp?
 
@@ -148,4 +148,23 @@ What is Gulp?
 3. Adding `gulp-load-plugins` [5:05](https://youtu.be/Qc6go3cNuRk?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=305)
 3. Result after refactoring [6:50](https://youtu.be/Qc6go3cNuRk?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=410)
  
-- [Code examples](https://github.com/iliakan/gulp-screencast/tree/master/11-plugins-streams)
+- [Code examples](https://github.com/iliakan/gulp-screencast/tree/master/12-organize-final)
+
+# A real example: styles, assets, sprites, production
+
+1. Goal and app structure [0:15](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=15)
+2. Improving build of styles and assets [1:55](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=115)
+3. A typical problem with preprocessors with `src` and fixing with `resolver` [4:03](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=242)
+4. Working with sprites using `gulp-svg-sprites` [6:20](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=380)
+5. Add production mode: minify with `gulp-cssnano`, resource hash with `gulp-rev` and `gulp-rev-replace`  [15:13](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=914)
+6. Do we need to use long-term hashing for images?  [22:17](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=1337)
+7. Summary [25:35](https://youtu.be/VqYAitDKbpo?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=1536)
+ 
+- [Code examples](https://github.com/iliakan/gulp-screencast/tree/master/12-organize-final)
+
+# Integration with Webpack
+
+1. Summary [27:16](https://youtu.be/ohWOWqskHWU?list=PLDyvV36pndZFLTE13V4qNWTZbeipNhCgQ&t=1636)
+ 
+- [Code examples 1](https://github.com/iliakan/gulp-screencast/tree/master/14-webpack-stream)
+- [Code examples 2](https://github.com/iliakan/gulp-screencast/tree/master/14-webpack-final-direct)
