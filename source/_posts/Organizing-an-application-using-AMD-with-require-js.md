@@ -1,5 +1,6 @@
 title: 'Organizing an application using AMD with require.js'
 thumbnailImage: title.jpg
+thumbnailImagePosition: bottom
 categories:
   - Javascript
 date: 2014-12-20 12:39:53

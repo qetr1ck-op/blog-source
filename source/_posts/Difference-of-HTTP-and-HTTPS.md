@@ -1,5 +1,6 @@
 title: Difference of HTTP and HTTPS
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 categories:
   - HTTP
 date: 2014-05-31 06:00:36

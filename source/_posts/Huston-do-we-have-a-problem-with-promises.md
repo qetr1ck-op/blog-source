@@ -1,5 +1,6 @@
 title: 'Huston, do we have a problem with promises?'
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 date: 2015-02-02 20:13:01
 categories:
 	- Javascript

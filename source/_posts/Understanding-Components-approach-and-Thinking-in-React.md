@@ -1,6 +1,7 @@
 title: Understanding Components approach and Thinking in React
 date: 2016-02-05 12:34:35
 thumbnailImage: title.gif
+thumbnailImagePosition: right
 tags:
 categories:
     - Javascript

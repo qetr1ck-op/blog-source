@@ -1,14 +1,14 @@
 title: Canvas-off icon navigation with an animated border effect
 thumbnailImage: title.png
+thumbnailImagePosition: right
 categories:
   - Javascript
   - CSS
 date: 2014-08-11 21:11:48
 ---
 
-<!--more-->
-
 <!--toc-->
+<!--more-->
 
 #   The Markup
 

@@ -1,14 +1,12 @@
-title: git pull versus git pull --rebase
+title: "git pull" versus "git pull --rebase"
 tags:
   - Git
 date: 2014-10-16 22:05:58
 ---
 
 
-
-<!--more-->
-
 <!--toc-->
+<!--more-->
 
 # Short answer
 

@@ -1,5 +1,6 @@
 title: 'OOP in prototype style'
 thumbnailImage: title.png
+thumbnailImagePosition: right
 tags:
   - OOP
 categories:

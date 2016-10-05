@@ -1,6 +1,7 @@
 title: Development with Webpack and React part 1
 date: 2016-02-07 12:11:41
 thumbnailImage: title.png
+thumbnailImagePosition: right
 tags:
 	- Webpack
   - Babel

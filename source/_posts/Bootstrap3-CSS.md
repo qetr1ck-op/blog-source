@@ -1,5 +1,6 @@
 title: 'Bootstrap 3: CSS'
 thumbnailImage: title.jpg
+thumbnailImagePosition: bottom
 date: 2014-07-17 20:10:04
 categories:
   - CSS

@@ -1,5 +1,6 @@
 title: Medium-Style Page Transition
 thumbnailImage: title.gif
+thumbnailImagePosition: right
 categories:
   - CSS
 date: 2014-09-01 22:50:51

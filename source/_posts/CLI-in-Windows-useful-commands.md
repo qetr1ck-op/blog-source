@@ -1,6 +1,7 @@
 ---
 title: 'CLI in Windows, useful commands'
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 categories:
   - CLI
 date: 2014-06-14 10:22:15

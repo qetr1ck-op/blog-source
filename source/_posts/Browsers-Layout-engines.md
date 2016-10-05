@@ -1,5 +1,6 @@
 title: Browsers Layout engines
 thumbnailImage: title.jpeg
+thumbnailImagePosition: right
 categories:
   - Web
 date: 2014-12-02 21:01:39

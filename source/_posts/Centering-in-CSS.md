@@ -1,5 +1,6 @@
 title: Centering in CSS
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 categories:
   - CSS
 date: 2014-09-08 22:54:09

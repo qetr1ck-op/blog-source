@@ -1,11 +1,11 @@
 title: Form pop-up with inputs navigation
 thumbnailImage: form.png
+categories:
   - Javascript
   - Forms
 tags:
   - Javascript
   - Forms
-categories:
 date: 2014-03-30 21:41:30
 ---
 

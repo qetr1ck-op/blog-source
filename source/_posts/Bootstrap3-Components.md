@@ -1,5 +1,6 @@
 title: 'Bootstrap 3: Components'
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 tags:
   - Bootstrap
 categories:

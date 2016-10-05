@@ -1,5 +1,6 @@
 title: Practical design patterns in JavaScript
 thumbnailImage: title.gif
+thumbnailImagePosition: right
 date: 2016-02-03 12:43:26
 categoris:
     - Javascript

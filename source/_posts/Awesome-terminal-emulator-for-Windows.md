@@ -1,5 +1,6 @@
 title: Awesome terminal emulator for Windows
 thumbnailImage: title.jpg
+thumbnailImagePosition: right
 categories:
   - CLI
 date: 2014-12-02 21:15:37

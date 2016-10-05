@@ -7,6 +7,7 @@ categories:
 date: 2014-07-19 09:56:12
 ---
 
+<!--toc-->
 <!--more-->
 
 #  Initialize a Git

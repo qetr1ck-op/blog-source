@@ -8,8 +8,8 @@ categories:
 date: 2014-07-13 13:43:08
 ---
 
-
 <!--toc-->
+<!--more-->
 
 #  Promises arrive in JavaScript!
 

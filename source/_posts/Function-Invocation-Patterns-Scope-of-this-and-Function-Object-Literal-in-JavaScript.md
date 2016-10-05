@@ -1,5 +1,6 @@
 title: 'Function Invocation Patterns in JavaScript'
 thumbnailImage: title.png
+thumbnailImagePosition: bottom
 categories:
   - Javascript
   - Pattern

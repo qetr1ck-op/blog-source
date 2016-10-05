@@ -1,5 +1,6 @@
 title: Git and GitHub, Git versus Subversion
 thumbnailImage: git-github.png
+thumbnailImagePosition: right
 tags:
   - Git
   - GitHub

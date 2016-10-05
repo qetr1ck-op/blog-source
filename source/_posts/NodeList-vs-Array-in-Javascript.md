@@ -1,5 +1,6 @@
 title: NodeList vs Array in Javascript
 thumbnailImage: title.png
+thumbnailImagePosition: bottom
 categories:
   - Javascript
 date: 2014-07-30 22:39:40

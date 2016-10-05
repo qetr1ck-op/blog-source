@@ -1,5 +1,5 @@
 title: TOP 10 mistakes when you develop on AngularJS
-thumbnailImage: img.jpg
+thumbnailImagePosition: right
 categories:
   - Javascript
   - Angular 1.x

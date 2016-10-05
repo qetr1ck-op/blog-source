@@ -6,7 +6,7 @@ categories:
 tags:
 ---
 
-What is not-so-simple request?
+What is not-so-simple HTTP request?
 
 <!--more-->
 <!--toc-->
