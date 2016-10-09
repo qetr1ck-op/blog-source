@@ -1676,7 +1676,6 @@ a.fancybox {
     .postShorten.postShorten--thumbnailimg-right .postShorten-thumbnailimg img {
       display: block;
       width: 220px;
-      height: 220px;
       object-fit: cover;
       overflow: hidden; }
   .postShorten.postShorten--thumbnailimg-right .postShorten-wrap {
