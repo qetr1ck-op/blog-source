@@ -391,3 +391,213 @@ fs.readFile('foo.txt', 'utf8', (err, data) => {
   }
 })
 ```
+
+### Propagation errors
+
+Propagation errors in synchronous, direct function is done with well-known `throw` statement.
+
+In CPS style however, proper propagation is done by passing the error to the next callback in the chain:
+
+```js
+function readJson(filename, callback) {
+  fs.readFile(filename, 'utf8', (err, data) => {
+    let parsed;
+    if (err) {
+      // propagate the error and exit
+      return callback(err);
+    }
+
+    try {
+      parsed = JSON.parse(data);
+    } catch(err) {
+      // catch parsing error
+      return callback(err);
+    }
+
+    // no error propagate just data
+    callback(null, parsed);
+  })
+}
+```
+
+# The module system and its pattern
+
+Modules are bricks for structuring non-trivial application, but also the main mechanism to enforce hiding information by keeping private all the function and variable that are not explicitly marked to be exported.
+
+## The revealing module pattern
+
+Once of the major problem in Javascript is an absence of namespacing. A popular technique to solve this issue is called `the revealing module pattern`: 
+
+```js
+const module = (() => {
+  const privateFoo = () => {};
+  const privateBar = [];
+
+  const exported = {
+    publicFoo: 'dataFoo',
+    publicBar: 'dataBar',
+  }
+
+  return export
+}())
+```
+
+We have a private scope and exporting only the parts that are meant to be public. As we'll see at the moment, the idea behind this pattern is used as a base for a Node.js module system.
+
+## Node.js modules explained
+
+CommonJS is a group with the aim to standardize the Javascript ecosystem, and one of their most popular proposal is `CommonJS module system`. Node.js built its module system on the top of this specification, with the addition of some custom extensions.
+
+### A homemade module loader
+
+To explain how Node.js modules work let's built a similar system from scratch. The code mimics a subset of functionality of original `require`:
+
+```js
+function loadModule(filename, module, require) {
+  const wrappedSrc = `function(module, module, require) {
+    ${fs.readFileSync(filename, 'utf8')}
+  }(module, module.exports, require)`;
+
+  eval(wrappedSrc);
+}
+```
+
+Bear in mind, that this code is only for example, feature such as `eval()` or `vm` [module](https://nodejs.org/api/vm.html) can be easily used in a wrong way or with a wrong input to inject attack. They should be used always with extreme care.
+
+Now implementation of our `require()` function:
+
+```js
+function require(moduleName) {
+  console.log(`Require invoked for module: ${moduleName}`);
+  const id = require.resolve(moduleName); // [1]
+
+  if (require.cache[id]) { // [2]
+    return require.cache[id].exports;
+  }
+
+  // module metadata
+  const module = { // [3]
+    exports: {},
+    id
+  };
+  // update the cache
+  require.cache[id] = module; // [4]
+
+  // load the module
+  loadModule(id, module, require); // [5]
+
+  // return exported variables
+  return module.exports; // [6]
+}
+
+require.cache = {};
+require.resolve = function(moduleName) {
+  // resolve a full module id from the moduleName
+}
+```
+
+What our homemade module system does is explain as follows:
+
+1. Module name is accepted as input, and the very first thing that we do is resolve the full path of module, and receive module `id`. It's implementing by special resolving algorithm of `require.resolve()`
+2. If the module has already been loaded it should be available in the cache.
+3. If the module hasn't loaded yet, we set up environment for the first load. The property `module.exports` will be used to export public API.
+4. The `module` object is cached.
+5. The `loadModule()` code reads from its file, and the code is evaluated. We provide the module with `module` object that we just created, and a reference to `require()` function. The module exports its public API by manipulation or replacing the `module.exports` object.
+6. Finally the content of `module.exports` is returned from caller.
+
+### Defining a modules
+
+By looking how us `require()` works be are able to define a module:
+
+```js
+// module.js
+// load another module-dependency
+const dependency = require('./anotherModule');
+
+// private section
+function privateFoo() {}
+
+// the exported API
+module.exports.run = function publicBar() {
+  privateFoo()
+}
+```
+
+The essential concept to remember that everything in the module is private unless it's assigned to `module.exports`
+
+### Defining globals 
+
+It's still possible to define a global variable, in fact, module system exposes a special variable `global`, which can be used for this purpose
+
+### "module.exports" VS "exports"
+
+A common source of confusion is the difference between using `module.exports` and `exports` to expose the public API. The code of our custom `require` function should again clear any doubts.
+
+The variable `exports` is just a reference to initial value of `module.exports`, essentially it's an empty object before the module is loaded. This means that we can only attach new properties referencing by `exports` variable:
+
+```js
+exports.hello = () => { console.log('Hello') };
+```
+
+Reassigning the `exports` variable doesn't have any sense, because it doesn't change content of `module.exports`. That's how object in Javascript works. The following code therefore is wrong:
+
+```js
+exports.hello = () => { console.log('Hello') };
+```
+
+If we want to export something other than an object literal, we can reassigning `module.exports` as follow:
+
+```js
+module.exports = () => { console.log('Hello') };
+```
+
+### The "require" function is synchronous
+
+We should take into account that our homemade `require` is synchronous. In fact, it returns the module contents using simple direct style therefore no callback is required. This is true for original Node.js `require` function too. As a consequence any assignments to `module.exports` must be synchronous. The following code is incorrect:
+
+```js
+setTimeout(() => {
+  module.exports = () => {}
+}, 100);
+```
+
+This is one of the important reasons why Node.js libraries offer synchronous APIs as alternative to asynchronous ones.
+
+### The resolving algorithm
+
+Node.js solver the `dependency hell` elegantly by loading different version of module depending on where the module is loaded from. As we saw the `resolve()` function takes a module name (`moduleName` in our loader) as input, and it returns the full path of module. This path is used to load its code and to identify the module uniquely.
+
+The resolving algorithm can be divided into the following three major branches:
+* file modules
+* core modules
+* package modules
+
+The resolving algorithm can be be found at [official spec](https://nodejs.org/api/modules.html#modules_all_together).
+
+The `node_modules` directory is where `npm` installs the dependencies of each package. Based on the algorithm, each package can have its own private dependencies. Consider the following structure:
+
+```
+myApp
+├── foo.js
+└── node_modules
+    ├── depA
+    │   └── index.js
+    ├── depB
+    │   ├── bar.js
+    │   └── node_modules
+    │       └── depA
+    │           └── index.js
+    └── depC
+        ├── foobar.js
+        └── node_modules
+            └── depA
+            └── index.js
+```
+
+Following rules of resolving algorithm, using `require('depA')` will load a different file depending on the module that requires it:
+
+* Calling `require('depA')` from `/myApp/foo.js` will load `/myApp/node_modules/depA/index.js`
+* Calling `require('depA')` from `/myApp/node_modules/depB/bar.js` will load `/myApp/node_modules/depB/node_modules/depA/index.js`
+* Calling `require('depA')` from `/myApp/node_modules/depC/foobar.js` will load `/myApp/node_modules/depc/node_modules/depA/index.js`
+
+###
