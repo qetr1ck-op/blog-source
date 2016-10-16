@@ -1,9 +1,8 @@
-title: "git pull" versus "git pull --rebase"
+title: git pull VS git pull --rebase
 tags:
   - Git
 date: 2014-10-16 22:05:58
 ---
-
 
 <!--toc-->
 <!--more-->
@@ -15,7 +14,7 @@ date: 2014-10-16 22:05:58
 `git pull --rebase` = `git fetch` + `git rebase`
 For more detail info how `git pull` and `git rabase` differs continue reading.
 
-#  Long answer: `git merge` and `git rebase`
+#  Long answer: "git merge" and "git rebase"
 
 Suppose originally there were a 3 commits, `A`, `B`, `C`:
 
