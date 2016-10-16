@@ -21,7 +21,7 @@ The aim of this book is to guide you through this emerging world of patterns, te
 <!--toc-->
 
 # Chapter 1: Welcome to the Node.js platform
-# The Node.js philosophy
+## The Node.js philosophy
 
 Some of these principles arise from the technology itself, some of them are enabled by its ecosystem, some are just trends in community, some directly comes from its creator, another are influenced by the Unix culture.
 
@@ -30,13 +30,13 @@ Some of these principles arise from the technology itself, some of them are enab
 * Small surface area
 * Simplicity and pragmatism
 
-# I/O is slow
+## I/O is slow
 
 I/O is definitely the slowest among the fundamental operations of a computer. Accessing to RAM is in the order of nanoseconds, while accessing data on disk the network is in order of milliseconds. For the bandwidth is the same story. RAM has a transfer rate consistently in the order of GB/s, while disk and network varies from MB/s to, optimistically, GB/s.
 
 On the top of that, we also have to consider the human factor. Often input of an application comes from a real person, so the speed or frequency of I/O doesn't only depend on technical aspects.
 
-## Blocking I/O
+### Blocking I/O
 
 In traditional blocking I/O programming the function call corresponding to an I/O request will block the execution of the thread until the operation completes.
 
@@ -53,7 +53,7 @@ It's trivial to notice how web-server which is using blocking I/O will not be ab
 
 The preceding image emphasis on the amount of time each thread is idle, waiting for new data to be received from associated connection. Also we need to consider how much time of I/O can possibly block a request, for example, while interacting with database or with filesystem.
 
-## Non-blocking I/O with "busy-waiting"
+### Non-blocking I/O with "busy-waiting"
 
 In this operation mode, the system call always returns immediately without waiting for data to be read or written. If no result are available at the moment of call, the function will simply return a predefined constant, indicating that there is no data available to return at the moment.
 
@@ -84,7 +84,7 @@ while(!resources.isEmpty()) {
 
 With this technique it's already possible to achieve handling different resources in the same thread, but still it isn't efficient.
 
-## Event demultiplexing
+### Event demultiplexing
 
 Luckily, most modern operation systems provide a mechanism to handle concurrent, non-blocking resources in efficient way. It's a `synchronous event demultiplexing` or `event notification interface` - it's collect and queues I/O events that come from set of watched resources, and block until new events are available for process.
 
@@ -120,7 +120,7 @@ It's interesting that with this pattern, we can now handle several I/O operation
 
 {% image fancybox center images/webserver-event-demultiplexer.png %}
 
-# The reactor pattern
+## The reactor pattern
 
 The main idea behind it is to have a handler (which in Node.js is represented by `callback` function) associated with each I/O operation, which will be invoked as soon as an event is produces and processed by `event loop`:
 
@@ -141,13 +141,13 @@ A Node.js application will exit automatically when there are no more pending ope
 
 > `Pattern Reactor` handles I/O by blocking until new events are available from a set of observable resources and then reacts by dispatching each event with associated handler.
 
-# The non-blocking I/O engine of Node.js-libuv
+## The non-blocking I/O engine of Node.js-libuv
 
 Each operation system has its own interface for the `event demultiplexer`. Besides that, each I/O operation can behave quite differently depending on type of resource, even within the same OS. All this inconsistencies required a higher abstraction for `event demultiplexer`.
 
 This is exactly why Node.js core created a C library called `libuv` with objective to make Node.js compatible with all the major platform and normalize the non-blocking behavior of the different types of resource.
 
-# The building blocks of Node.js platform
+## The building blocks of Node.js platform
 
 The `reactor pattern` and `libuv` are the basic building blocks but we need the following three other components to build the full platform:
 
@@ -161,11 +161,11 @@ The `reactor pattern` and `libuv` are the basic building blocks but we need the 
 
 In this chapter, we'll use two of the most important asynchronous patterns: `callback` and `event-emitter`
 
-# The callback pattern
+## The callback pattern
 
 Callbacks are materialization of the handlers of the `reactor pattern`. Callback is a function that is invoked to propagate the result of an operation and this is exactly what we need when we dealing with asynchronous operation. Another ideal construct for implementing callbacks is `closure`
 
-## The continue-passing style
+### The continue-passing style
 
 > In Javascript, a callback is a function that is passed as an argument to another function and is invoked with the result when operation is complete.
 
@@ -201,7 +201,7 @@ console.log('after');
 // after
 ```
 
-## Asynchronous continue-passing style
+### Asynchronous continue-passing style
 
 Lets consider a case where the `add()` function is asynchronous:
 
@@ -225,11 +225,11 @@ Since `setTimeout()` triggers an asynchronous operation, it won't wait for the c
 
 The execution will start from the `event loop` so it will have a fresh stack. Thanks to `closure` it's trivial to maintain the context of the caller in asynchronous function.
 
-## Synchronous or asynchronous? 
+### Synchronous or asynchronous? 
  
 The following is an analysis of these two paradigms and their pitfalls.
 
-### An unpredictable function
+#### An unpredictable function
 
 One of the most dangerous situation is to have API that behaves synchronously under certain conditions and asynchronous under others:
 
@@ -251,7 +251,7 @@ function inconsistentRead(filename, callback) {
 }
 ```
 
-### Unleashing Zalgo
+#### Unleashing Zalgo
 
 Now lets see how to use an unpredictable function, such as to easily break an application:
 
@@ -297,7 +297,7 @@ You can see the callback of the second operation is never invoked. Lets see why:
 1. During the creation of `reader1`, our `inconsistentRead()` function behaves asynchronously, because there isn't cached result. Therefore, we have all time in the world to register our listener, as it will invoked later in another cycle of `event loop`, when the read operation is complete.
 2. Then the `reader2` is created when requested file is in the cache. In this case the inner call of `inconsistentRead()` will be synchronous. So its call back will be invoked immediately, which mean that listener of `reader2` will be invoked synchronously as well. However, we registering the listeners after creation of `reader2`, so they will never be invoked!
 
-## Using synchronous APIs
+### Using synchronous APIs
 
 One suitable fix for our `inconsistentRead()` function is to make it totally synchronous:
 
@@ -335,7 +335,7 @@ function createFileReader(filename) {
 }
 ```
 
-## Using asynchronous operation with deferred execution
+### Using asynchronous operation with deferred execution
 
 The trick here is to schedule the synchronous callback invocation to be executed "in the future", instead of being run immediately in the same event loop cycle. In Node.js this is possible using `process.nextTick()`, which defers the execution of a function until next the event loop cycle. This function is a very simple, it takes a callback and pushes it to the top of event queue, in front of any pending I/O event, and returns control immediately. So callback will run be invoked as soon as the event loop runs again.
 
@@ -366,11 +366,11 @@ Another API for deferring the execution is `setImmediate()`. While their purpose
 > Pattern:
 > We guarantee that a callback is invoked asynchronously be deferring it execution using `process.nextTick()`
 
-## Node.js callback convention
+### Node.js callback convention
 
 CPS APIs and callbacks follows a set of specific convention.
 
-### Callback come last
+#### Callback come last
 
 In all core Node.js methods, the standard convention is that when a function accept callback as input, this has to be passed as last parameter:
 
@@ -378,7 +378,7 @@ In all core Node.js methods, the standard convention is that when a function acc
 fs.readFile(filename[, options], callback)
 ```
 
-### Error comes first
+#### Error comes first
 
 In Node.js, any errors produced by a CPS function is always passed as first argument of the callback, and any actual result is passed starting from the second argument. It the operation is succeeds without errors, the first error will be `null` or `undefined`:
 
@@ -392,7 +392,7 @@ fs.readFile('foo.txt', 'utf8', (err, data) => {
 })
 ```
 
-### Propagation errors
+#### Propagation errors
 
 Propagation errors in synchronous, direct function is done with well-known `throw` statement.
 
@@ -420,11 +420,11 @@ function readJson(filename, callback) {
 }
 ```
 
-# The module system and its pattern
+## The module system and its pattern
 
 Modules are bricks for structuring non-trivial application, but also the main mechanism to enforce hiding information by keeping private all the function and variable that are not explicitly marked to be exported.
 
-## The revealing module pattern
+### The revealing module pattern
 
 Once of the major problem in Javascript is an absence of namespacing. A popular technique to solve this issue is called `the revealing module pattern`: 
 
@@ -444,11 +444,11 @@ const module = (() => {
 
 We have a private scope and exporting only the parts that are meant to be public. As we'll see at the moment, the idea behind this pattern is used as a base for a Node.js module system.
 
-## Node.js modules explained
+### Node.js modules explained
 
 CommonJS is a group with the aim to standardize the Javascript ecosystem, and one of their most popular proposal is `CommonJS module system`. Node.js built its module system on the top of this specification, with the addition of some custom extensions.
 
-### A homemade module loader
+#### A homemade module loader
 
 To explain how Node.js modules work let's built a similar system from scratch. The code mimics a subset of functionality of original `require`:
 
@@ -505,7 +505,7 @@ What our homemade module system does is explain as follows:
 5. The `loadModule()` code reads from its file, and the code is evaluated. We provide the module with `module` object that we just created, and a reference to `require()` function. The module exports its public API by manipulation or replacing the `module.exports` object.
 6. Finally the content of `module.exports` is returned from caller.
 
-### Defining a modules
+#### Defining a modules
 
 By looking how us `require()` works be are able to define a module:
 
@@ -525,11 +525,11 @@ module.exports.run = function publicBar() {
 
 The essential concept to remember that everything in the module is private unless it's assigned to `module.exports`
 
-### Defining globals 
+#### Defining globals 
 
 It's still possible to define a global variable, in fact, module system exposes a special variable `global`, which can be used for this purpose
 
-### "module.exports" VS "exports"
+#### "module.exports" VS "exports"
 
 A common source of confusion is the difference between using `module.exports` and `exports` to expose the public API. The code of our custom `require` function should again clear any doubts.
 
@@ -551,7 +551,7 @@ If we want to export something other than an object literal, we can reassigning 
 module.exports = () => { console.log('Hello') };
 ```
 
-### The "require" function is synchronous
+#### The "require" function is synchronous
 
 We should take into account that our homemade `require` is synchronous. In fact, it returns the module contents using simple direct style therefore no callback is required. This is true for original Node.js `require` function too. As a consequence any assignments to `module.exports` must be synchronous. The following code is incorrect:
 
@@ -563,7 +563,7 @@ setTimeout(() => {
 
 This is one of the important reasons why Node.js libraries offer synchronous APIs as alternative to asynchronous ones.
 
-### The resolving algorithm
+#### The resolving algorithm
 
 Node.js solver the `dependency hell` elegantly by loading different version of module depending on where the module is loaded from. As we saw the `resolve()` function takes a module name (`moduleName` in our loader) as input, and it returns the full path of module. This path is used to load its code and to identify the module uniquely.
 
@@ -600,4 +600,467 @@ Following rules of resolving algorithm, using `require('depA')` will load a diff
 * Calling `require('depA')` from `/myApp/node_modules/depB/bar.js` will load `/myApp/node_modules/depB/node_modules/depA/index.js`
 * Calling `require('depA')` from `/myApp/node_modules/depC/foobar.js` will load `/myApp/node_modules/depc/node_modules/depA/index.js`
 
-###
+#### The module cache
+
+Each module is only loaded and evaluated the first time it's required, since any subsequent call of `require()` will return the cached version. Again, it should be clear by looking at the code of homemade `require()` function.
+
+The module cache is exposed via the `require.cache` reference, so it's possible to directly access it if needed.
+
+### Module definition patterns
+
+The module system besides being a mechanism for loading dependencies, is also a tool for defining APIs. To aim is to maximize information hading and API usability, with balancing with other software quality such as `code reuse` and `extensibility`.
+
+#### Named exports
+
+The most basic method for exposing public API is using `named exports`, which consist to assignment all the public values to object referenced by `exports` or `module.exports`. Most of the Node.js core modules use this pattern.
+
+```js
+// file logger.js
+exports.info = (msg) = {
+  console.log(`info: ${msg}`)
+};
+
+exports.verbose = (msg) = {
+  console.log(`verbose: ${msg}`)
+};
+
+// file main.js
+const logger = require('./logger');
+
+logger.info('Info massage');
+logger.verbose('Verbose massage');
+```
+
+#### Exporting a function
+
+One of the most popular module definition pattern consists of reassigning of the whole `module.exports` variable to the function. The main goal to provide a clear entry point for the module, making it simpler to understand and use. It also honors the principle of `small area surface`. This way of defining modules also is known as the `substack pattern`.
+
+```js
+// file logger.js
+module.exports = (msg) = {
+  console.log(`info: ${msg}`)
+};
+```
+
+A possible extension for this pattern is using the exported function as namespace for other public APIs. This is a very powerful technique, because it still gives clarity of a single entry point.
+
+```js
+// the same file logger.js
+module.exports.verbose = (msg) = {
+  console.log(`verbose: ${msg}`)
+};
+
+// file main.js
+const logger = require('./logger');
+
+logger('Info massage');
+logger.verbose('Verbose massage');
+```
+
+> Pattern:
+> Substack or Single Responsibility Principle (SRP)
+> Expose the main functionality of a module by exporting only one function. Use the exported function as a namespace to expose any auxiliary functionality
+
+#### Exporting a constructor
+
+The difference is with this approach we allow user to create a new instance using the constructor with ability to extend its prototype and forge new classes.
+
+```js
+// file logger.js
+class Logger {
+  constructor(name) {
+    this.name = name;
+  }
+
+  log(msg) {
+    console.log(`[${this.name}] ${msg}`)
+  }
+
+  info(msg) {
+    console.log(`info: ${msg}`)
+  }
+
+  verbose(msg) {
+    console.log(`info: ${msg}`)
+  }
+}
+
+module.exports = Logger;
+```
+
+A variation of this pattern consists of applying a security check against invocation that doesn't use `new` directive. This a little trick allows us to use our module as `factory`:
+
+```js
+function LoggerFactory(name) {
+  if (!this instanceof Logger) {
+    return new Logger(name)
+  }
+  return new Logger(name);
+}
+```
+
+A much cleaner approach is offered by ES6 `new.targer` which is available starting from Node.js v6. The syntax expose the `new.targer` which is called `meta property`, made available inside all the function, end evaluates to true at runtime if the function was called using the `new` directive.
+
+```js
+function LoggerFactory(name) {
+  if (!new.target) {
+    return new Logger(name);
+  }
+  return new Logger(name);
+}
+```
+
+#### Exporting an instance
+
+We can leverage the caching mechanism of `require()` to define stateful instance with a state created from a constructor or factory, shared across different modules:
+
+```js
+// file logger.js
+class Logger {
+  constructor(name) {
+    this.name = name;
+    this.count = 0;
+  }
+
+  log(msg) {
+    this.count++;
+    console.log(`[${this.name}] ${msg}`)
+  }
+}
+
+module.exports = new Logger('default');
+
+// file main.js
+const logger = require('./logger.js');
+logger.log('test the singleton');
+```
+
+This is much like a `singleton pattern`, however it doesn't guarantee the uniqueness of the instance across the whole application, as it happens with traditional singleton pattern. When analyzing the resolving algorithm, we have seen in fact, that a module might be installed multiple times inside the dependency tree of an application.
+
+#### Modifying other modules or the global scope
+
+A module can even export nothing. We should not forger that module can modify the global scope and the object in it, including other modules in the cache. In general it's considering as a bad practice.
+
+> Pattern:
+> Monkey patching is when module can modify other modules or object in global scope. It change the existing objects at runtime to change or extend their behavior or apply temporary fixes
+
+How we can add a new function to another module:
+
+```js
+// file patcher.js
+require('./logger').customMessage = () => console.log('this is a new functionality');
+
+// main.js
+require('./patcher');
+
+const logger = require('./logger');
+logger.customMessage();
+```
+
+The technique is dangerous, because it affects the state of entire app.
+
+## The observer pattern
+
+Together with the `reactor`, `callbacks` and `modules`, the `observer pattern` is one of the pillars of the platform and is used by mane Node.js core and user-land modules.
+
+> Pattern Observer:
+> Defines an object (subject), which can notify a set of observers (listeners) when change is occur.
+
+The main difference from the callback pattern is that the `subject` can notify multiple observers, while a traditional `CPS` will propagate its result to only one listener, the callback.
+
+### The EventEmitter class
+
+The observer pattern built into core and it's available through the `EventEmitter` class. It allows to register one or multiple function as `listeners`, which will be notified when a particular event type is fired. The following explains the concept:
+
+{% image fancybox center images/event-emitter.png %}
+
+How to require `EventEmitter` from core `events` module:
+
+```js
+const EventEmitter = require('events');
+const eeInstance = new EventEmitter;
+```
+
+The API is in [official Node.js specification](https://nodejs.org/api/events.html#events_class_eventemitter).
+
+We can already see that there is a big difference between a listener and a traditional Node.js callback, in particular, the first argument isn't an error, but any data which is passed to `emit()` at the moment of invocation.
+
+### Creating and using EventEmitter
+
+The following code shows a function that uses `EventEmitter` to notify its subscribers in real time when a particular pattern is found in a list of files:
+
+```js
+const EventEmitter = require('events');
+const fs = require('fs');
+
+function findPattern(files, regexp) {
+  const emitter = new EventEmitter;
+
+  files.forEach(file => {
+    fs.readFile(file, 'utf8', (err, content) => {
+      let match;
+
+      if (err) {
+        emitter.emit('error', err);
+      }
+
+      emitter.emit('fileread', file); 
+
+      if (match = content.match(regexp)) {
+        match.forEach(elem => emitter.emit('found', file, elem))        
+      }
+    })
+  })
+
+  return emitter;
+}
+```
+
+Lets see how `findPattern` can be used:
+
+```js
+findPattern(
+  ['data1.txt', 'data2.txt'],
+  /foo \w+/g
+)
+  .on('fileread', file => console.log(`${file} was read`))
+  .on('found', (file, match) => console.log(`matched ${match} in file ${file}`))
+  .on('error', err => console.log(`Error: ${err}`))
+```
+
+### Extends from EventEmitter class
+
+To demonstrate the pattern lets implement the functionality of the `findPattern()`:
+
+```js
+const EventEmitter = require('events');
+const fs = require('fs');
+
+class FindPattern extends EventEmitter {
+  constructor(regexp) {
+    super();
+    this.regexp = regexp;
+    this.files = [];
+  }
+
+  addFile(file) {
+    this.files.push(file);
+
+    return this;
+  }
+
+  find() {
+    this.files.forEach(file => {
+      fs.readFile(file, 'utf8', (err, content) => {
+        let match;
+
+        if (err) {
+          this.emit('error', err);
+        }
+
+        this.emit('fileread', content); 
+
+        if (match = content.match(this.regexp)) {
+          match.forEach(elem => this.emit('found', file, elem); )        
+        }
+      })
+    })
+    return this;
+  }
+}
+```
+
+The `FindPattern` prototype extends `EventEmitter`. In this way it becomes a fully-fledged observable class. The usage:
+
+```js
+const findPatternObj = new FindPattern(/hello \w+/g);
+
+findPatternObj
+  .addFile('data1.txt')
+  .addFile('data2.txt')
+  .on('fileread', file => console.log(`${file} was read`))
+  .on('found', (file, match) => console.log(`matched ${match} in file ${file}`))
+  .on('error', err => console.log(`Error: ${err}`))
+```
+
+This is a pretty common pattern in the Node.js ecosystem, for example, the `Server` object of the core HTTP module defines methods such as `listen()`, `close()`, `setTimeout()` and internally it inherits from the `EventEmitter` function. It allows to produce events such as `request` when a new connection is received, or `connection` when a new connection is established, or `close` when server is shut down.
+
+### Combining callbacks with EventEmitter
+
+There are also circumstances where `EventEmitter` can be combining with a `callback`. One example of this pattern is offered by the `node-glob` module, which performs a glob-style searching. The function `glob(pattern, [options], callback)` takes a `callback` that is invoked with the list of all files which are matched by the providing pattern. At the same time it returns `EventEmitter` that provides an interface to report over the state of the process:
+
+```js
+const glob = require('glob');
+
+glob('*.txt', (err, files) => console.log(`Founded files: ${JSON.stringify(files)}`))
+  .on('match', match => console.log(`Matched files: ${match}`))
+```
+
+# Chapter 3: Asynchronous control flow patterns with callbacks
+
+One of the common mistake is to fail into the trap of the callback hell and see how the code is growing horizontally rather than vertically, with the nesting which makes even simple routine hard to read and maintain.
+
+In this chapter we we'll see how it's actually possible to tame callbacks and write clean, manageable asynchronous code with the aid of some patterns.
+
+## Creating a simple web spider
+
+To explain the problem we'll create a little CLI application that takes a web URL as input and downloads its contents locally into file.
+
+```js
+// file spider.js
+const request = require('request');
+const fs = require('fs');
+const mkdirp = require('mkdirp');
+const path = require('path');
+const chalk = require('chalk');
+
+const utils = require('./utils');
+
+function spider(url, cb) {
+  const filePath = utils.urlToFilePath(url);
+  const fileName = utils.urlToFileName(url);
+  let isFileExists = false;
+
+  fs.stat(filePath, (err, stats) => { // [1]
+    if (stats) {
+      cb(null, fileName, isFileExists = true);
+    } else {
+      request(url, (err, response, body) => { // [2]
+        if (err) {
+          cb(err);
+        } else {
+          mkdirp(filePath, err => { // [3]
+            if (err) {
+              cb(err);
+            } else {
+              fs.writeFile(path.join(filePath, fileName), body, err => { // [3]
+                if (err) {
+                  cb(err);
+                } else {
+                  cb(null, fileName, isFileExists);
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+spider(process.argv[2], (err, fileName, fileExists) => {
+  if (err) {
+    console.log(chalk.red(`Error: ${err}`));
+  } else if (fileExists) {
+    console.log(chalk.blue(`File: ${fileName} exists`));
+  } else {
+    console.log(chalk.green(`File: ${fileName} is downloaded`));
+
+  }
+})
+
+// file utils.js
+const slugifyUrl = require('slugify-url');
+
+exports.urlToFilePath = urlToFilePath;
+exports.urlToFileName = urlToFileName;
+
+function urlToFilePath(url) { // http://example.com/bar
+  const slashChar = '/';
+
+  return slugifyUrl(url, { slashChar }); // example.com/bar
+}
+
+function urlToFileName(url) { // http://example.com/bar
+  const slashChar = '/';
+  const parsedUrl = slugifyUrl(url, { slashChar }).split('/');
+
+  return parsedUrl[parsedUrl.length - 1]; // bar
+}
+```
+
+The preceding functions execute the following tasks:
+
+1. Check if the URL was already downloaded by verifying that corresponding file hasn't already created.
+2. If the file is not found, it would download content of provided URL
+3. Than it crates recursively directories
+4. Finally, it writes the body of HTTP response to file system
+
+## The callback hell
+
+We can surely notice that even though the algorithm was straightforward, the resulting code has several level of indentation and it's very hard to read. Implementing a similar function in `direct style` would more straightforward, and it would be very few chances to make it look so wrong. However, using `CPS` is another story, and making bad use of closure may lead to to incredible bad code.
+
+That's known as `callback hell` or `piramid of domm`. The typical structure of code affected by the problem looks like the following:
+
+```js
+asyncFoo(err => {
+  asyncBar(err2 => {
+    asyncFooBar(err3 => {
+      // ...
+    })
+  })
+})
+```
+
+Another problem is caused by overlapping of the variable names used in each scope. Some people try to avoid it with variation of variables `error, err, err2`.
+
+Also we should keep in mind that closure can create memory leaks that are not so easy to identify. We shouldn't forget that any context referenced by an active closure is retained from garbage collector.
+
+# Applying the callback discipline
+
+Basic principles that can help to keep the nesting level low and improve the organization of our code in general:
+
+* you must exit as soon as possible. Use `return`, `continue` or `break`, depending on context to immediately exit the current statement
+* create a named function for callbacks. Will keep our code shallow and better look for stack trace
+* modularize the code. Create a small, reusable function whenever it's possible
+
+After applying the following recommendation our `spider()` would look as following:
+
+```js
+function spider(url, cb) {
+  const filePath = utils.urlToFilePath(url);
+  const fileName = utils.urlToFileName(url);
+  let isFileExists = false;
+
+  fs.stat(filePath, (err, stats) => {
+    if (stats) {
+      return cb(null, fileName, isFileExists = true); // [!]
+    } else {
+      download(url, filePath, fileName, isFileExists, cb)
+    }
+  })
+}
+
+function download(url, filePath, fileName, isFileExists, cb) {
+  request(url, (err, response, body) => {
+    if (err) {
+      return cb(err); // [!]
+    } else {
+      saveFile(filePath, fileName, body, isFileExists, cb) // [!]
+    }
+  })
+}
+
+function saveFile(filePath, fileName, content, isFileExists, cb) {
+  mkdirp(filePath, err => {
+    if (err) {
+      return cb(err); // [!]
+    } else {
+      writeContent(filePath, fileName, content, isFileExists, cb);
+    }
+  })
+}
+
+function writeContent(filePath, fileName, content, isFileExists, cb) {
+  fs.writeFile(path.join(filePath, fileName), content, err => {
+    if (err) {
+      return cb(err); // [!]
+    } else {
+      return cb(null, fileName, isFileExists); // [!]
+    }
+  })
+}
+```
+
+## Sequential execution
+
