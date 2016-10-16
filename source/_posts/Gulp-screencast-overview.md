@@ -44,7 +44,7 @@ What is Gulp?
   4. Strategies for finish async operations
   5. `gulp.series` and `gulp.parallel`
 
-- [Migrate to v4](https://www.liquidlight.co.uk/blog/article/how-do-i-update-to-gulp-4/)
+- [Have to install v4 before it's officially released](https://demisx.github.io/gulp4/2015/01/15/install-gulp4.html)
 - [Code examples](https://github.com/iliakan/gulp-screencast/tree/master/02-basics)
 
 # Streams Vinyl-FS
