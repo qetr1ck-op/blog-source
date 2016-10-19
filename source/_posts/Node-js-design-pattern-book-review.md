@@ -908,11 +908,11 @@ To explain the problem we'll create a little CLI application that takes a web UR
 
 ```js
 // file spider.js
-const request = require('request');
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const path = require('path');
-const chalk = require('chalk');
+const request = require('request'); // HTTP request client
+const mkdirp = require('mkdirp'); // Recursively mkdir, like mkdir -p
+const chalk = require('chalk'); // Terminal string styling done right.
 
 const utils = require('./utils');
 
@@ -960,6 +960,9 @@ spider(process.argv[2], (err, fileName, fileExists) => {
 })
 
 // file utils.js
+/*
+* Converts urls to simplified strings
+*/
 const slugifyUrl = require('slugify-url');
 
 exports.urlToFilePath = urlToFilePath;
@@ -1025,9 +1028,8 @@ function spider(url, cb) {
   fs.stat(filePath, (err, stats) => {
     if (stats) {
       return cb(null, fileName, isFileExists = true); // [!]
-    } else {
-      download(url, filePath, fileName, isFileExists, cb)
     }
+    download(url, filePath, fileName, isFileExists, cb);
   })
 }
 
@@ -1036,7 +1038,7 @@ function download(url, filePath, fileName, isFileExists, cb) {
     if (err) {
       return cb(err); // [!]
     } else {
-      saveFile(filePath, fileName, body, isFileExists, cb) // [!]
+      saveFile(filePath, fileName, body, isFileExists, cb); // [!]
     }
   })
 }
@@ -1063,4 +1065,180 @@ function writeContent(filePath, fileName, content, isFileExists, cb) {
 ```
 
 ## Sequential execution
+ 
+Executing a set of task in sequence means running them one at time, one ofter other. The order of execution matters. The concept:
 
+{% image fancybox center images/sequential-execution.png %}
+
+There are different variation of this flow:
+
+* `execution a set of known task in sequence`, without chaining and propagate the result
+* using output of task as the input to the next task, also known as `chain`, `pipe`, or `waterfall`
+* iterating over a collection while running an asynchronous task on each element, one ofter other
+
+### Execution a set of known task in sequence
+
+We've already met a sequential execution while implementing the `spider()` function. Taking that code as guideline we can generalize the solution into the following pattern:
+
+```js
+function task1(cb) {
+  asyncOperation(() => task2(cb))
+}
+
+function task2(cb) {
+  asyncOperation(() => task3(cb))
+}
+
+function task3(cb) {
+  asyncOperation(() => cb()) // finally executes the callback
+}
+
+function asyncOperation(cb) { // emulates asynchronous operation
+  setTimeout(() => cb());
+}
+
+task1(() => console.log('task 1, 2 and 3 executed'));
+```
+### Sequential iteration with crawling of links
+
+What if we want to invoke an asynchronous operation for each file in a collection?
+
+With new feature, downloading all the links contained in the web-page recursively. To do that, we are going to extract all links from the page and than trigger our web spider on each of them recursively and in sequence.
+
+The new version of `spider()` is as following:
+
+```js
+function spider(url, nesting, callback) {
+  const filename = utilities.urlToFilename(url);
+  fs.readFile(filename, 'utf8', (err, body) => {
+    if(err) {
+      if(err.code ! == 'ENOENT') {
+        return callback(err);
+      } 
+      return download(url, filename, (err, body) => {
+        if(err) {
+          return callback(err);
+        }
+        spiderLinks(url, body, nesting, callback);
+      });
+    }
+
+    spiderLinks(url, body, nesting, callback);
+  });
+}
+
+function spiderLink(url, body, nesting, cb) {
+  if (nesting === 0) {
+    return process.nextTick(cb);
+  }
+  // require('get-urls')
+  const links = utils.getUrls(body); // [1]
+
+  function iterate(index) { // [2]
+    if (index === links.length) {
+      return cb();
+    }
+
+    spider(links[index], nesting - 1, err => { // [3]
+      if (err) {
+        return cb(err);
+      }
+      iterate(index - 1);
+    })
+  }
+  iterate(0); // [4]
+}
+```
+
+The important steps to understand:
+
+1. Obtain the list of all links on the page using the `utils.getUrls()`. This links should return only with the same hostname
+2. Iterate through links via local function `iterate()`. The first thing it checks if the `index` is equal to the length of `links`, in which case it immediately invokes the `cb()` as it means it proceeds all items
+3. At this point everything is ready to processing the links. It invokes the `spider()` function by decreasing the nesting level and invoking the next step of iteration then the operation is complete
+4. It's a bootstrapping the iteration by `iterate(0)`
+
+### The pattern "sequential iteration" 
+
+It can be generalize as follow:
+
+```js
+function iterate(index) {
+  if (index === tasks.length) {
+    return finish();
+  }
+
+  const task = tasks[index];
+  task(function() {
+    iterate(index + 1);
+  })
+}
+
+function finish() {
+  // iteration completed
+}
+
+iterate(0);
+```
+
+It's important to notice that these type of algorithm become really recursive if `task()` is an asynchronous operation. In such a case there might be a risk of hitting the maximum call stack limit.
+
+> Pattern sequential iterator:
+> execute a list of tasks in sequence by creating a function `iterate()` which invokes the next available task in the collection and makes sure to invoke next step of iteration when the current task is completed
+
+## Parallel execution 
+
+There is some situation when the order of execution of the set of asynchronous tasks is not important and we want just to be notified when all these running tasks are completed.
+
+{% image fancybox center images/parallel-execution.png %}
+# 
+We realize that even thought we have one thread we can still achieve `concurrency`, thanks to not-blocking nature of Node.js. In fact, the word `parallel` is used improperly in this case, as it doesn't mean that the task run simultaneously, but rather their execution is carried out by an underlying non-blocking API and invoked by the event loop.
+
+As we know, a task gives control back to the event loop when it request a new asynchronous operation, allowing the event loop to execute another task. The proper word is to use for this kind of flow is `concurrency`, but we still use parallel for simplicity sake.
+
+The following diagram shows how two asynchronous tasks can run in parallel in a Node.js program:
+
+{% image fancybox center images/parallel-execution-diagram.png %}
+
+We have `Main` function that executes two asynchronous tasks:
+
+1. The `Main` function triggers the execution of `Task1` and `Task2`. As they are asynchronous operations the immediately return control to `Main`, which then returns to `event loop`
+2. When the asynchronous operation of `Task1` is completed, the `event loop` gives control to it. When `task1` completes the internal synchronous operation processing as well, it notifies the `Main`
+3. The same as described in p2 but now with `event loop` triggers the `Task2`. At this point `Main` function knows that `Task1` and `Task2` are completed, so it can continue the execution or return the result of the operation to another callback.
+
+### Execution with "spiderLinks"
+
+So far application is executing the recursive download of the linked pages in a sequential fashion. We can easily improve performance of this process by downloading all the linked pages in parallel:
+
+```js
+function spiderLink(url, body, nesting, cb) {
+  if (nesting === 0) {
+    return process.nextTick(cb);
+  }
+  const links = utils.getUrls(body);
+
+  if (links.length === 0) {
+    return process.nextTick(cb)
+  }
+
+  let completed = 0;
+  let hasErrors = false;
+
+  function done(err) {
+    if (err) {
+      hasErrors = true;
+      return cb(err);
+    }
+    if (++completed === links.length && !hasErrors) {
+      return cb()
+    }
+  }
+
+  links.forEach(link => {
+    spider(link, nesting - 1, done);
+  })
+}
+```
+
+The trick to make our application to wait for all the task to complete is to invoke the `spider()` with a special callback `done()`. The `done()` increases a counter when a `spider()` task completes. When the number of completed downloads reaches the size of `links[]`, the final callback is invoked.
+
+### The pattern "unlimited parallel execution"
