@@ -1242,3 +1242,28 @@ function spiderLink(url, body, nesting, cb) {
 The trick to make our application to wait for all the task to complete is to invoke the `spider()` with a special callback `done()`. The `done()` increases a counter when a `spider()` task completes. When the number of completed downloads reaches the size of `links[]`, the final callback is invoked.
 
 ### The pattern "unlimited parallel execution"
+
+We can represent a generic version of the pattern:
+
+```js
+const tasks = [ /*...*/ ];
+let completed = 0;
+
+tasks.forEach(task => {
+  task(() => {
+    if (++competed === tasks.length) {
+      finish();  
+    }
+  })
+})
+
+function finish() {
+  // all tasks are completed
+}
+
+```
+
+> Pattern unlimited parallel execution
+> Run a set of asynchronous tasks in parallel by spawning them all at once, and then waiting for all of them to complete by counting the number of the times their callback are invoked
+
+### Limited parallel execution
