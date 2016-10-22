@@ -1267,3 +1267,112 @@ function finish() {
 > Run a set of asynchronous tasks in parallel by spawning them all at once, and then waiting for all of them to complete by counting the number of the times their callback are invoked
 
 ### Limited parallel execution
+
+Imagine having thousands of files to read, URLs to access, or DB queries run in parallel. A common problem in such situation is running out of memory. In all such situation its a good idea to limit the number of tasks that can run in the same time. The following diagram show a situation where we have five tasks that run in parallel with an concurrency limit of 2:
+
+{% image fancybox center images/concurency-limit.png %}
+
+The algorithm to execute a set of given tasks in parallel with limited concurrency:
+
+```js
+const tasks = [ /*...*/ ];
+let concurrency = 0;
+let running = 0;
+let completed = 0;
+let index = 0;
+
+function next() {
+  while(running < concurrency && index < tasks.length) {
+    const task = tasks[index];
+
+    running++;
+    task(() => {
+      if (completed === tasks.length) {
+        return finish();
+      }
+      completed++;
+      running--;
+      next();
+    })
+  }
+}
+
+next();
+
+function finish() {
+  // all tasks are completed
+}
+
+```
+
+### "TaskQueue" to rescue
+
+We are now going to implement a simple class which will combine a queue algorithm we presented before:
+
+```js
+class TaskQueue {
+  constructor(concurrency) {
+    this.concurrency = concurrency;
+    this.running = 0;
+    this.queue = [];
+  }
+
+  pushTask(taks) {
+    this.queue.push(task);
+    this.next();
+  }
+
+  next() {
+    while(this.running < this.concurrency && this.queue.length) {
+      const task = this.queue.shift();
+
+      this.running++;
+      task(() => {
+        this.running--;
+        this.next();
+      })
+    }
+  }
+}
+```
+
+Now we can update our `spiderLink()` to execute tasks in a limited parallel flow:
+
+```js
+const TaskQueue = require('./task-queue');
+const downloadQueue = new TaskQueue(2);
+
+function spiderLink(url, body, nesting, cb) {
+  if (nesting === 0) {
+    return process.nextTick(cb);
+  }
+  const links = utils.getUrls(body);
+
+  if (links.length === 0) {
+    return process.nextTick(cb)
+  }
+
+  let completed = 0;
+  let hasErrors = false;
+
+  links.forEach(link => {
+    downloadQueue.pushTask(done => {
+      spider(link, nesting - 1, done);
+    })
+  })
+}
+```
+
+# Chapter 4: Asynchronous Control Flow with ES6 and beyond
+
+We are going to explore some of the most famous alternatives, `promises`, `generators` and an innovative syntax of ES7 the `async await`.
+
+Historically, there have been many different implementation of promise libraries, and most of them aren't compatible between each other. The JS community worked hard to sort out this limitation and these efforts leads to creation of `Promise/A+` spec.
+
+The several poplar libraries which implement the `Promise/A+` spec:
+
+* Bluebird
+* Q
+* RSVP
+* When.js
+* ES6 promises
