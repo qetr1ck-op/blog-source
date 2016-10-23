@@ -1009,7 +1009,7 @@ Another problem is caused by overlapping of the variable names used in each scop
 
 Also we should keep in mind that closure can create memory leaks that are not so easy to identify. We shouldn't forget that any context referenced by an active closure is retained from garbage collector.
 
-# Applying the callback discipline
+## Applying the callback discipline
 
 Basic principles that can help to keep the nesting level low and improve the organization of our code in general:
 
@@ -1376,3 +1376,225 @@ The several poplar libraries which implement the `Promise/A+` spec:
 * RSVP
 * When.js
 * ES6 promises
+
+## Promisifying a Node.js style function
+
+In JS not all the asynchronous functions and libraries support promises out-of-box. We can convert a typical callback-based function into one that returns a promise, this process is also known as `promisification`:
+
+```js
+module.exports.promisify = function(fn) {
+  return function promisified(...callArgs) {
+    return new Promise((resolve, reject) => { //[1]
+      callArgs.push((err, result, ...restResults) => { //[2]
+        if (err) {
+          return reject(err); //[3]
+        }
+        console.log(callArgs)
+        if (callArgs.length <= 2) { //[4]
+          resolve(result);
+        } else {
+          resolve([result, ...restResults]);
+        }
+      });
+
+      // the same as fs.apply(null, callArgs)
+      fn(...callArgs); //[5]
+    });
+  }
+};
+```
+
+This is how it works:
+
+1. The `promisified()` creates a new promise using `Promise` constructor and immediately return it to caller
+2. We make sure to pass a special callback to `fn()`. As we know that the callback always comes last, we append it to the arguments (`args`) provided to the `promisified()`
+3. In the special callback if we receive an error we immediately reject an error
+4. If no error, we resolve the promise with a value or an array of values, depending how many results are passing to callback
+5. Finally, we simply invoke the `fs()` with the list of arguments we have built
+
+Another approach is to use one of the ready-production npm packages, for example [tini-promisify](https://www.npmjs.com/package/tiny-promisify)
+
+## Sequential execution 
+
+We are now ready to convert our web spider application to use promises:
+
+```js
+const utilities = require('utilities');
+const promisify = utilities.promisify;
+
+// const fs = require(fs);
+const request = promisify(require('request'));
+const makedirp = promisify(require('makedirp'));
+const readFile = promisify(require(fs.readFile));
+const writeFile = promisify(require(fs.writeFile));
+
+function spider(url, nesting) {
+  const filePath = utils.urlToFilePath(url);
+  const fileName = utils.urlToFileName(url);
+
+  return readFile(path.join(filePath, fileName), 'utf8')
+    .then(body => spiderLink(url, body, nesting))
+    .catch((err) => {
+      if (err) {
+        if (err.code === 'ENOENT') { 
+          return download(url, fileName);
+        }
+      }
+    })
+    .then(body => {
+      spiderLink(url, body, nesting)
+    })
+}
+
+function download(url, filename) {
+  let body = body;
+
+  return request(url)
+    .then(resp => {
+      body = resp.body;
+      return mkdirp(path.dirname(url));
+    })
+    .then(() => writeFile(filename, body))
+    .then(() => {
+      console.log(`Download and saved ${fileName} from ${url}`);
+      return body;
+    })
+}
+```
+
+Also we modify its invocation as follow:
+
+```js
+spider(url, 5)
+  .then(() => console.log(chalk.green(`Download and saved from ${url}`)))
+  .catch((err) => console.log(chalk.red(`Error: ${err}`)));
+```
+
+If we look again at code we have written so far, we would be pleasantly surprised by the fact that we haven't include any error propagation logic, as we would be forced to do with callbacks. This is clearly a huge advantage, as it reduced boilerplate in our code.
+
+## Sequential iteration 
+
+So far it was shown how simple and elegant is to implement sequential execution flow using promises. However code involves only the `execution of a well known set of asynchronous operation`. So, we missing peace that will complete our exploration of sequential execution flow with implementation of `asynchronous iteration` using promises
+
+```js
+function spiderLink(url, body, nesting) {
+  const links = utils.getUrls(body);
+  let promise = Promise.resolve();
+  
+  if (nesting === 0) {
+    return promise;
+  }
+
+  links.forEach(link => {
+    promise = promise.then(() => spider(link, nesting--;))
+  })
+
+  return promise;
+}
+```
+
+To iterate asynchronously over links we had dynamically build a chain of promises:
+
+1. Starting with an "empty" promise, resolving to `undefined`. This is a starting point to build our chain
+2. Then, in the loop, we're updating the `promise` variable with a new promise which is invoked from `then()` on the previous promise in the chain. This is actually our asynchronous iteration pattern using promises.
+
+Let's extract a pattern for a sequential execution using promises:
+
+```js
+const tasks = [/*...*/];
+let promise = Promise.resolve();
+
+tasks.forEach(task => {
+  promise = promise.then(() => task());
+})
+
+// an alternative with "reduce()"
+/*
+tasks.reduce((prev, task) => {
+  return prev.then(() => task());
+}, Promise.resolve())
+*/
+
+promise.then(() => /*all task are completed*/)
+```
+
+> The pattern: sequential iteration with promises
+> Dynamically builds a chain of promises in a loop
+
+## Parallel execution
+
+Another execution flow is become trivial with promises is the parallel execution flow using `Promise.all()`. This static method creates promise which fulfills only when all the promises received as input are fulfilled:
+
+```js
+function spiderLink(url, body, nesting) {
+  const links = utils.getUrls(body);
+  
+  if (nesting === 0) {
+    Promise.resolve()
+  }
+
+  let promises = links.map(link => spider(link, --nesting));
+
+  return Promise.all(promises);
+}
+```
+
+### Limited parallel execution
+
+In fact, the pattern we've implemented in `TaskQueue` class can be easily adapted to support tasks that return a promise. This can be achieve by modifying `next()`:
+
+```js
+next() {
+  while(this.running < this.concurrency && this.queue.length) {
+    const task = this.queue.shift();
+
+    this.running++;
+    
+    task().then(() => {
+      completed++;
+      running--;
+      this.next();
+    })
+  }
+}
+```
+
+Then we can modify the `spideLinks()` to achieve limit of concurrency:
+
+```js
+const TaskQueue = require('./task-queue');
+const downloadQueue = new TaskQueue(2);
+
+function spiderLink(url, body, nesting) {
+  if (nesting === 0 || links.length === 0) {
+    return Promise.resolve;
+  }
+  const links = utils.getUrls(body);
+
+  let completed = 0;
+  let hasErrors = false;
+
+  return Promise((resolve, reject) => {
+    let completed = 0;
+    let error = false;
+
+    links.forEach(link => {
+      let task = () => {
+        return spider(link, --nesting)
+          .then(() => {
+            if (++completed === links.length) {
+              resolve()
+            }
+          })
+          .catch((err) => {
+            if (!error) {
+              error = true;
+              reject();
+            }
+          })
+      };
+      downloadQueue.pushTask(task)
+    })
+  })
+}
+```
