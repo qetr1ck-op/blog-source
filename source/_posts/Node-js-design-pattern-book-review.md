@@ -1377,7 +1377,8 @@ The several poplar libraries which implement the `Promise/A+` spec:
 * When.js
 * ES6 promises
 
-## Promisifying a Node.js style function
+## ES6 Promises techniques
+### Promisifying a Node.js style function
 
 In JS not all the asynchronous functions and libraries support promises out-of-box. We can convert a typical callback-based function into one that returns a promise, this process is also known as `promisification`:
 
@@ -1414,7 +1415,7 @@ This is how it works:
 
 Another approach is to use one of the ready-production npm packages, for example [tini-promisify](https://www.npmjs.com/package/tiny-promisify)
 
-## Sequential execution 
+### Sequential execution 
 
 We are now ready to convert our web spider application to use promises:
 
@@ -1472,7 +1473,7 @@ spider(url, 5)
 
 If we look again at code we have written so far, we would be pleasantly surprised by the fact that we haven't include any error propagation logic, as we would be forced to do with callbacks. This is clearly a huge advantage, as it reduced boilerplate in our code.
 
-## Sequential iteration 
+### Sequential iteration 
 
 So far it was shown how simple and elegant is to implement sequential execution flow using promises. However code involves only the `execution of a well known set of asynchronous operation`. So, we missing peace that will complete our exploration of sequential execution flow with implementation of `asynchronous iteration` using promises
 
@@ -1521,7 +1522,7 @@ promise.then(() => /*all task are completed*/)
 > The pattern: sequential iteration with promises
 > Dynamically builds a chain of promises in a loop
 
-## Parallel execution
+### Parallel execution
 
 Another execution flow is become trivial with promises is the parallel execution flow using `Promise.all()`. This static method creates promise which fulfills only when all the promises received as input are fulfilled:
 
@@ -1539,7 +1540,7 @@ function spiderLink(url, body, nesting) {
 }
 ```
 
-### Limited parallel execution
+#### Limited parallel execution
 
 In fact, the pattern we've implemented in `TaskQueue` class can be easily adapted to support tasks that return a promise. This can be achieve by modifying `next()`:
 
@@ -1598,3 +1599,47 @@ function spiderLink(url, body, nesting) {
   })
 }
 ```
+
+#### Exposing callbacks and promises in public APIs
+
+Now let's imagine that we want to build a public library that performs asynchronous operations. Do we need to create CPS API or a promise-oriented one?
+
+The first approach is used by popular libraries such as `request`, `redis` and `mysql`, consists of offering a simply API that is only based on callbacks and leaves the developer the option to promisify the exposed functionality of needed. Some of these libraries provides helpers to achieve a such behavior.
+
+The second approach is more transparent. It offers the developers a callback-oriented API, but it makes the callback argument optional. When the callback is not passed, the function will immediately return a `Promise` object. This approach gives possibility to choose at call time what interface to adopt, without any needs to promisify the functionality in advance. Many libraries, such as `mongoose` or `sequelize`, support this approach.
+
+A dummy module that executes division asynchronously:
+
+```js
+//divider.js
+module.exports = (divident, divisor, cb) {
+  return new Promise(resolve, reject) => {
+    process.nextTich(() => {
+      const result = divident / divisor;
+
+      if (!Number.isInteger(result)) {
+        const err = new Error('Invalid operands');
+
+        if (cb) return cb(err);
+        reject(err);
+      }
+      if (cb) return cb(null, result);
+      resolve(result);
+    })
+  }
+}
+
+//main.js
+const divider = require('./divider')
+divider(10, 0, (err, res) => {
+  if (err) return console.error(err);
+
+  console.log(res);
+});
+
+divider(10, 2)
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+```
+
+## Generators
