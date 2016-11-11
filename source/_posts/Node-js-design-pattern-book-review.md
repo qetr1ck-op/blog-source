@@ -1643,3 +1643,46 @@ divider(10, 2)
 ```
 
 ## Generators
+
+In fact, in a normal function we can only have one entry point which corresponds to the invocation of function itself. A generator is similar to a function, but in addition, it can be suspended (using the `yield` statement) and then resumed at a later time.
+
+### Asynchronous control flow with generators
+
+To demonstrate how generator will help us with this by creating a special function that accepts a generator as an argument and allows us to use asynchronous code inside the generator. The function take care to resume the execution of the generator when the asynchronous operation is complete:
+
+```js
+function asyncFlow(generatorFn) {
+  const generator = generatorFn(cb);
+  generator.next();
+
+  // special callback to resume/stop the generator
+  // resume by passing back the result receiving in the cb function
+  function cb(err, ...params) {
+    if (err) {
+      return generator.throw(err);
+    }
+
+    generator.next(params);
+  }
+}
+```
+
+To demonstrate the power of this simple function with new module:
+
+```js
+// clone.js
+const fs = require('fs');
+const path = require('path');
+
+asyncFlow(function* (cb) {
+  const filename = path.basename(__filename);
+  const content = yield fs.readFile(filename, 'utf8', cb);
+
+  yield fs.writeFile(`clone_of_${filename}`, content, cb);
+  console.log('clone created');
+})
+```
+
+Remarkable with help of `asyncFlow()` we were able to write asynchronous code using the linear approach, as we using blocking function! The callback passed to each asynchronous function will in turn resume the generator as soon as a asynchronous operation is complete.
+
+There are two other variation of these technique, one involves to use promises and other use `thunks`
