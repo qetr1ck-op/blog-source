@@ -1398,7 +1398,7 @@ module.exports.promisify = function(fn) {
         }
       });
 
-      // the same as fs.apply(null, callArgs)
+      // the same as fn.apply(null, callArgs)
       fn(...callArgs); //[5]
     });
   }
@@ -1657,12 +1657,12 @@ function asyncFlow(generatorFn) {
 
   // special callback to resume/stop the generator
   // resume by passing back the result receiving in the cb function
-  function cb(err, ...params) {
+  function cb(err, ...result) {
     if (err) {
       return generator.throw(err);
     }
 
-    generator.next(params);
+    generator.next(result);
   }
 }
 ```
@@ -1685,4 +1685,306 @@ asyncFlow(function* (cb) {
 
 Remarkable with help of `asyncFlow()` we were able to write asynchronous code using the linear approach, as we using blocking function! The callback passed to each asynchronous function will in turn resume the generator as soon as a asynchronous operation is complete.
 
-There are two other variation of these technique, one involves to use promises and other use `thunks`
+There are two other variation of these technique, one involves to use `promises` and other use `thunks`.
+
+A `thunk` used in the generator based control flow it's just a function which partially applies all the arguments of original function except its callback. An example of thunkified version of `fs.readFile()`:
+
+```js
+function readFileThunk(filename, options) {
+  return function(cb) {
+    fs.readFile(filename, options, cb);
+  }
+}
+```
+
+Both promises and thunks allow us to create generators that do not need a callback argument. Thunkfied version of `asynkFlow()`:
+
+```js
+const fs = require('fs');
+const path = require('path');
+
+asyncFlowWithThunks(function* () {
+  const filename = path.basename(__filename);
+  const content = yield readFileThunk(filename, 'utf8');
+
+  yield writeFileThunk(`clone_of_${filename}`, content);
+  console.log('clone created');
+})
+
+function readFileThunk(filename, options) {
+  return function(cb) {
+    fs.readFile(filename, options, cb);
+  }
+}
+
+function writeFileThunk(filename, constent) {
+  return function(cb) {
+    fs.writeFile(filename, constent, cb);
+  }
+}
+
+
+function asyncFlow(generatorFn) {
+  const generator = generatorFn();
+  const thunk = generator.next().value;
+  thunk && thunk(cb);
+  
+  function cb(err, ...result) {
+    let thunk;
+
+    if (err) {
+      return generator.throw(err);
+    }
+
+    thunk = generator.next(result).value;
+    thunk && thunk(cb);
+  }
+}
+```
+
+In the same way we could implement a version with promises:
+
+```js
+const fs = require('fs');
+const path = require('path');
+
+asyncFlowWithPromises(function* () {
+  const filename = path.basename(__filename);
+  const content = yield readFilePromise(filename, 'utf8');
+
+  yield writeFilePromise(`clone_of_${filename}`, content);
+  console.log('clone created');
+})
+
+function readFilePromise(filename, options) {
+  const readFile = promisify(fs.readFile);
+  return (cb) => {
+    fs.readFile(filename, options, cb);
+  };
+}
+
+function writeFilePromise(filename, content) {
+  const readFile = promisify(fs.writeFile);
+  return (cb) => {
+    fs.writeFile(filename, content, cb);
+  };
+}
+
+function promisify(fn) {
+  return function promisified(...callArgs) {
+    return new Promise((resolve, reject) => { 
+      callArgs.push((err, result, ...restResults) => { 
+        if (err) {
+          return reject(err); 
+        }
+        console.log(callArgs)
+        if (callArgs.length <= 2) { 
+          resolve(result);
+        } else {
+          resolve([result, ...restResults]);
+        }
+      });
+      
+      fn(...callArgs); 
+    });
+  }
+}
+
+function asyncFlow(generatorFn) {
+  const generator = generatorFn();
+  const thunk = generator.next().value;
+  thunk && thunk(cb);
+  
+  function cb(err, ...result) {
+    let thunk;
+
+    if (err) {
+      return generator.throw(err);
+    }
+
+    thunk = generator.next(result).value;
+    thunk && thunk(cb);
+  }
+}
+```
+
+Generator based control flow using "co"
+
+In this section we chose to use [co](https://www.npmjs.com/package/co). It supports several types of yieldables:
+
+* thunks
+* promises
+* array (parallel execution)
+* object (parallel execution)
+* generators (delegation)
+* generator function (delegation)
+
+To convert Node.js style function to thunks, we are going to library [thunkify](https://www.npmjs.com/package/thunkify)
+
+### Sequential execution
+
+Load and convert all dependencies:
+
+```js
+// spider.js
+const thunkify = require('thunkify');
+const co = require('co');
+const path = require('path');
+
+const request = thunkify(require('request'));
+const fs = require('fs');
+const mkdirp = thunkify(require('mkdirp'));
+const readFile = thunkify(fs.readFile);
+const writeFile = thunkify(fs.writeFile);
+const nextTick = thunkify(process.nextTick);
+```
+
+Is interesting to point out if we decided to use the promisified version of our function instead of their thunkified alternatives, so code would be remain exactly the same, thanks to the fact that `co` supports both promises and thunks yiedlable objects.
+
+Now implementation of `download()` and `spider()` becomes trivial:
+
+```js
+function* download(url, filename) {
+  console.log(`download ${url}`);
+  const response = yield request(url);
+  const body = response[1];
+
+  yield mkdirp(path.dirname(filename));
+  yield writeFile(filename, body);
+  console.log(`downloaded and saved file ${filename}`);
+
+  return body;
+}
+
+function* spider(url, nesting) {
+  const filename = utilities.urlToFilename(url);
+  let body;
+
+  try {
+    body = yield readFile(url, 'utf8');
+  } catch(e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+    body = yield download(url, filename);
+  }
+  yield spiderLink(url, body, nesting);
+}
+```
+
+The interesting detail to notice that we're able to use a `try...catch` and propagate error with `throw`! Another remarkable line is where we use `yield download()` which is not a promise nor a thunk, but just another generator. This is possible thanks to `co`.
+
+Converting `spiderLinks()` becomes trivial as well:
+
+```js
+function spiderLinks(url, body, nesting) {
+  if (nesting === 0) {
+    return nextTick();
+  }
+
+  const links = utilities.getPageLinks(body);
+  links.forEach(link => {
+    yield spider(link, nesting - 1);
+  })
+}
+```
+
+The is no pattern to show for sequential iteration, generators and `co` are doing the all dirty work for us, so we're able to write asynchronous iteration as we were using blocking, direct APIs.
+
+Now an important entry point:
+
+```js
+co(function* () {
+  const nesting = 1;
+  try {
+    yield spider(process.argv[2], nesting);
+  } catch(e) {
+    console.log(e);
+  }
+})
+```
+
+The whole implementation: 
+
+```js
+const thunkify = require('thunkify');
+const co = require('co');
+const path = require('path');
+
+const request = thunkify(require('request'));
+const fs = require('fs');
+const mkdirp = thunkify(require('mkdirp'));
+const readFile = thunkify(fs.readFile);
+const writeFile = thunkify(fs.writeFile);
+const nextTick = thunkify(process.nextTick);
+
+const utilities = require('./utils');
+
+co(function* () {
+  const nesting = 1;
+  try {
+    yield spider(process.argv[2], nesting);
+  } catch(e) {
+    console.log(e);
+  }
+})
+
+function* download(url, filename) {
+  console.log(`download ${url}`);
+  const response = yield request(url);
+  const body = response[1];
+
+  yield mkdirp(path.dirname(filename));
+  yield writeFile(filename, body);
+  console.log(`downloaded and saved file ${filename}`);
+
+  return body;
+}
+
+function* spider(url, nesting) {
+  const filename = utilities.urlToFileName(url);
+  let body;
+
+  try {
+    body = yield readFile(filename, 'utf8');
+  } catch(e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
+    body = yield download(url, filename);
+  }
+  yield spiderLinks(filename, body, nesting);
+}
+
+function* spiderLinks(url, body, nesting) {
+  if (nesting === 0) {
+    return nextTick();
+  }
+
+  const links = utilities.getUrls(body);
+
+  for (var i = 0; i < links.length; i++) {
+    yield spider(links[i], nesting - 1);
+  }
+}
+```
+
+### Parallel execution
+
+The bad news about generators is that they are good to write sequential algorithm, they can't be used to parallelize the execution of set of tasks.
+
+Luckily, for the specific case of the unlimited parallel execution, `co` already allows us to obtain it natively by simpling yielding an array of promises, thunks, etc.
+
+```js
+function* spiderLinks(url, body, nesting) {
+  if (nesting === 0) {
+    return nextTick();
+  }
+
+  const links = utilities.getUrls(body);
+  const tasks = links.map(link => spider(link, nesting - 1));
+  yield tasks;
+}
+```
+
+What we just did was just to collect all the download tasks, which are essentially generators, and then yield on the resulting array. All these task will be executed by `co` in parallel and then execution will be resumed when all tasks finish running.
