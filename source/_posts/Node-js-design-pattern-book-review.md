@@ -986,7 +986,7 @@ The preceding functions execute the following tasks:
 
 1. Check if the URL was already downloaded by verifying that corresponding file hasn't already created.
 2. If the file is not found, it would download content of provided URL
-3. Than it crates recursively directories
+3. Then it creates recursively directories
 4. Finally, it writes the body of HTTP response to file system
 
 ## The callback hell
@@ -1190,10 +1190,12 @@ It's important to notice that these type of algorithm become really recursive if
 There is some situation when the order of execution of the set of asynchronous tasks is not important and we want just to be notified when all these running tasks are completed.
 
 {% image fancybox center images/parallel-execution.png %}
-# 
+
 We realize that even thought we have one thread we can still achieve `concurrency`, thanks to not-blocking nature of Node.js. In fact, the word `parallel` is used improperly in this case, as it doesn't mean that the task run simultaneously, but rather their execution is carried out by an underlying non-blocking API and invoked by the event loop.
 
 As we know, a task gives control back to the event loop when it request a new asynchronous operation, allowing the event loop to execute another task. The proper word is to use for this kind of flow is `concurrency`, but we still use parallel for simplicity sake.
+
+[Concurrency vs Parallelism](http://stackoverflow.com/questions/1050222/concurrency-vs-parallelism-what-is-the-difference)
 
 The following diagram shows how two asynchronous tasks can run in parallel in a Node.js program:
 
@@ -1988,3 +1990,101 @@ function* spiderLinks(url, body, nesting) {
 ```
 
 What we just did was just to collect all the download tasks, which are essentially generators, and then yield on the resulting array. All these task will be executed by `co` in parallel and then execution will be resumed when all tasks finish running.
+
+### Limited parallel execution
+
+The main straightforward approach for me is to use [co-limiter](https://www.npmjs.com/package/co-limiter)
+
+```js
+const co = require('co');
+const wait = require('co-wait');
+const limiter = require('co-limiter');
+
+const limit = limiter(2);
+
+const job = function *() {
+  console.log('Doing something...');
+  yield wait(1000);
+}
+
+for (let i = 0; i < 10; i++) {
+  co(function *() {
+    yield limit(job());
+  })();
+}
+```
+
+## "async...await" with Babel
+
+Preparation:
+
+```bash
+# install babel cli
+$ npm install -D babel-cli
+# extension to support "async...await" parsing
+$ npm install -D babel-plugin-syntax-async-functions
+babel-plugin-transform-async-to-generator
+# run the example
+$ node_modules\.bin\babel-node --plugins
+"syntax-async-functions,transform-async-to-generator" index.js
+```
+
+The problem is that generator function are designed to deal mostly as iterators and their usage with asynchronous operations feel a bit cumbersome. It might be hard to understand, leading to code that hard to read and maintain.
+
+The `async` function specification aims to dramatically improve the language model for waiting asynchronous code by introducing `async` and `await` directives:
+
+```js
+const promisify = require('tiny-promisify');
+const request = promisify(require('request'));
+
+function getPage(url) {
+  return request(url).then(res => {
+    return res.body;
+  });
+}
+
+async function main() {
+  const html = await getPage('http://example.com');
+  console.log(html);
+}
+main();
+
+console.log('loading...');
+```
+
+## Comparison Table
+
+* Plain JS
+  - Pros:
+    + Does not require any additional libraries or technology
+    + Offer the best performance
+    + Provides the best compatibility with 3-th party libraries
+    + Allows creation of ad hoc and more advanced algorithms
+  - Cons:
+    + Require extra code and relatively complex algorithms
+* Promises
+  - Pros:
+    + Simplify the most common control flow patters
+    + Robust error handling
+    + Part of ES6 spec
+  - Cons:
+    + Require promisify callback-based APIs
+    + A small performance hit
+* Generators:
+  - Pros:
+    + Makes non-blocking code looks like a blocking one
+    + Simplify error handling
+    + Part of ES6 spec
+  - Cons:
+    + Require a complementary control flow library
+    + Require callback or promises to implement non-sequential flows
+    + Require thunkify or promisify nongenerator-based APIs
+* Async await
+  - Pros:
+    + Makes a non-blocking code looks like blocking
+    + Clean and intuitive syntax
+    + Future part of spec
+  - Cons:
+    + Not yet a standard
+    + Require transpilers such as Babel
+  - 
