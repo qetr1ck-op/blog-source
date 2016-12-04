@@ -17,18 +17,12 @@
         <a class="header-title-link" href="<%- url_for(' ') %>"><%= config.title %></a>
     </h1>
     <% if (theme.header && theme.header.right_link) { %>
-        <% if (theme.header.right_link.url && url_for(theme.header.right_link.url).indexOf(config.url) < 0 && url_for(theme.header.right_link.url).indexOf(':') >= 0) { %>
-            <a  class="<%= (theme.header.right_link.icon ? 'header-right-icon ' : 'header-right-picture ') %><% if (theme.header.right_link.class) { %><%= theme.header.right_link.class %><% } %>"
-                href="<%- url_for(theme.header.right_link.url) %>" target="_blank">
-        <% } else if (theme.header.right_link.url) { %>
-            <a  class="<%= (theme.header.right_link.icon ? 'header-right-icon ' : 'header-right-picture ') %><% if (theme.header.right_link.class) { %><%= theme.header.right_link.class %><% } %>"
-                href="<% if (theme.header.right_link.url.indexOf("/") === 0) { %><%- url_for(theme.header.right_link.url.substr(1)) %><% } else { %><%- url_for(theme.header.right_link.url) %><% } %>">
-        <% } %>
-        <% if (theme.header.right_link.icon) { %>
-            <i class="fa fa-lg fa-<%= theme.header.right_link.icon %>"></i>
-        <% } else if (authorPicture) { %>
-            <img class="header-picture" src="<%= authorPicture %>"/>
-        <% } %>
-        </a>
+        <div id="search-custom">
+            <div class="search-custom__form-group">
+                <i class="fa fa-search search-custom__search-button" aria-hidden="true"></i>
+                <input type="text" class="search-custom__form-control hidden" placeholder="Search">
+            </div>
+            <div class="search-custom__result"></div>
+        </div>
     <% } %>
 </header>

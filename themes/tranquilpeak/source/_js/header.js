@@ -55,6 +55,8 @@
       // Checks if the user has scrolled enough down and has past the navbar
       if ((scrollTop > this.lastScrollTop) && (scrollTop > this.headerHeight)) {
         this.$header.addClass(this.headerUpCSSClass);
+        search.hideMatches();
+
       }
       else if (scrollTop + $(window).height() < $(document).height()) {
         this.$header.removeClass(this.headerUpCSSClass);

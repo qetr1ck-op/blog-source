@@ -48,7 +48,7 @@ sidebar:
             url: /#search
             icon: search
             # `st-search-show-outputs` classes are used to open swiftype search window
-            class: st-search-show-outputs
+            class: foo
         about:
             title: global.about
             url: /#about
@@ -95,7 +95,7 @@ sidebar:
 # DON'T edit `header`, `right_link`, `url`, `icon` and `class` variable name
 header:
     right_link:
-         url: /#search
+         url: /
          icon: search
          class: st-search-show-outputs
 
@@ -122,7 +122,7 @@ author:
 # 2: Display medium sidebar on large and medium screen and header bar on small screen and medium sidebar is swiped
 # 3: Display header bar on all screens and large sidebar is swiped
 # 4: Display header bar on all screens and medium sidebar is swiped
-sidebar_behavior: 2
+sidebar_behavior: 3
 # Hide sidebar on all article page to let article take full width to improve reading, and enjoy wide images and cover images. (true: enable, false: disable)
 clear_reading: true
 # Head title displayed at the top of the table of contents.
@@ -159,7 +159,7 @@ google_analytics_id:
 # Your Gravatar email. Overwrite `author.picture` everywhere in the blog
 gravatar_email: orestprustayko@gmail.com
 # Your swiftype install key
-swiftype_install_key: yjp7PCgxKmcfHTQ63jfa
+swiftype_install_key:
 # Your Facebook user ids used to connect your blog with your facebook user accounts (Facebook Insights). Separate ids with comma. e.g : 9830047,1003342
 fb_admin_ids:
 # Your Facebook app id used to connect your blog with your facebook app account (Facebook Insights). E.g : 9841307

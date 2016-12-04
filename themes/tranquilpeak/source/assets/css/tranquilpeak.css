@@ -2040,6 +2040,61 @@ a.tag--small,
     height: 100%;
     margin-top: 0; }
 
+#search-custom {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  width: 230px; }
+  #search-custom .search-custom__form-group {
+    position: relative; }
+    #search-custom .search-custom__form-group .search-custom__form-control {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 14px;
+      color: #555555;
+      background-color: #ffffff;
+      background-image: none;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+      -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+      transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; }
+      #search-custom .search-custom__form-group .search-custom__form-control:focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6); }
+      #search-custom .search-custom__form-group .search-custom__form-control.hidden {
+        display: none;
+        opacity: 0; }
+    #search-custom .search-custom__form-group .search-custom__search-button {
+      position: absolute;
+      top: 6px;
+      right: 5px;
+      cursor: pointer; }
+  #search-custom .search-custom__result {
+    max-height: 50vh;
+    margin-top: 5px;
+    font-size: 14px;
+    border-radius: 4px;
+    overflow: auto;
+    overflow-x: hidden;
+    background: #fbfbfb; }
+    #search-custom .search-custom__result .search-result-list {
+      padding-left: 10px; }
+      #search-custom .search-custom__result .search-result-list li {
+        list-style: none; }
+        #search-custom .search-custom__result .search-result-list li:not(:last-child) {
+          border-bottom: 1px solid #eef2f8; }
+        #search-custom .search-custom__result .search-result-list li em.search-result {
+          border-bottom: 1px dashed #bdbdbd;
+          font-weight: bold;
+          font-style: initial; }
+
 pre > code {
   background: #f7f8f8;
   color: #333; }
