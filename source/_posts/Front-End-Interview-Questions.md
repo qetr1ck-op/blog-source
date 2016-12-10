@@ -21,9 +21,9 @@ To rock the interview to achieve what you deserve and to improve your concepts a
 
 **Answer:** JavaScript has two distinct values for nothing, `null` and `undefined`. Also there are `undeclared` variables which don’t even exist.
 
-**Explanation:**
+**Explanation:** 
 
-```javascript
+```js
 var declaredVariable = 1;
 
 (function scoppedVariables() {
@@ -31,11 +31,9 @@ var declaredVariable = 1;
   var declaredVariable = 2;
 })();
 
-undeclaredVariable; // 1
-declaredVariable; // 1
+undeclaredVariable;
+declaredVariable;
 ```
-
-Note: this will not work in `strict mode`. 
 
 A variable is `undeclared` when it does not use the var keyword. It gets created on the global object, thus it operates in a different space as the declared variables.
 
@@ -43,161 +41,52 @@ A variable is `undeclared` when it does not use the var keyword. It gets created
 
 `null` means empty or non-existent value which is used by programmers to indicate “no value”. `null` is a primitive value and you can assign `null` to any variable. You cannot add properties to it. Sometimes people wrongly assume that it is an object, because `typeof null` returns "object".
 
-> What are the differences between `==` and `===`?
+> What are the differences between `==` and `===`? To what type `==` operands will be converted to if they have 
+different types?
 
 **Answer:** The simplest way of saying that, `==` will not check types and `===` will check whether both sides are of same type. So, `==` under the hood converts to number type if they have not the same type and then do the comparison.
 
 `===` compares the types and values. Hence, if both sides are not same type, answer is always false. For example, if you are comparing two strings, they must have identical character sets. For other primitives (number, boolean) must share the same value.
 
+> Example. Will it work with `use strict` directive?
+
+```javascript
+(function(){
+  var a = b = 3;
+})();
+
+console.log(typeof a !== 'undefined');
+console.log(typeof b !== 'undefined');
+```
+
+**Answer:** `false true` because `b` is declared as global variable. Won't work.
+
+> As `[]` is `true`, `[] == true` should also be `true`, right?
+
+**Answer:** Not.
+
+You are right about first part, `[]`, empty array is an object and object is always truthy. 
+
+However, special case about `==` (not-strict equal) is that it will do some implicit coercion.
+
+1. Since left and right side of the equality are two different types, JavaScript can't compare them directl.
+2. JavaScript implementation will try to convert `[]` by using `toPrimitive` (of JavaScript implementation). since `[].valueOf` is not primitive will use `toString` and will get `""`.
+3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
+4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
+
 > Why `typeof bar === object` isn't  right? How can this pitfall be avoided?
 
 **Answer:** Use `Object.prototype.toString.call(<object>)` or use Duck Typing.
 
-> Rapid fire table of primitive type conversions
-
-| Question                                    | Answer                                                                                                                    |
-|---------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| "" + 1 + 0                                  | "10"                                                                                                                      |
-| "" - 1 + 0                                  | -1                                                                                                                        |
-| true + false                                | 1                                                                                                                         |
-| "2" * "3"                                   | 6                                                                                                                         |
-| 6 / "3"                                     | 3                                                                                                                         |
-| 4 + 5 + "px"                                | "9px"                                                                                                                     |
-| "$" + 4 + 5                                 | "$45"                                                                                                                     |
-| "4" - 2                                     | 2                                                                                                                         |
-| "4px" - 2                                   | NaN                                                                                                                       |
-| 7 / 0                                       | Infinity                                                                                                                  |
-| " -9\n" + 5                                 | " -9\n5"                                                                                                                  |
-| " -9\n" - 5                                 | -14                                                                                                                       |
-| 5 && 2                                      | 2                                                                                                                         |
-| 2 && 5                                      | 5                                                                                                                                    
-
-> Rapid fire table of truth/false
-
-| Question                 | Answer                                                                                                                          |
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| typeof []                | Object. Actually Array is derived from Object.,If you want to check array use Array.isArray(arr) or {}.toString.call([])        |
-| var a = (2, 3, 5); a?    | 5. The comma operator evaluates each of its operands (from left to right) and returns the value of the last operand             |
-| var baz = pony.foo       | let {foo: baz} = pony                                                                                                           |
-| Math.max([2,3,4,5])      | NaN                                                                                                                             |
-| 'false' === false        | false. Because, it's a string with length greater than 0. Only empty string is false                                            |
-| ' ' === false            | true. It's an array object (array is child of object)                                                                           |
-| {} === true              | true. It's an object. An object without any property is an object can't be                                                      |
-| new String('') === false | false.Passing empty string to the string constructor, will create an String object. More precisely a instance of String object. |
-| !!`new Boolean(false)`   | true, As it creates an instance of the Boolean object which is an object. Object is truthy.                                     |
-
 > What is `NaN`? What is its type? How can you reliably test if a value is equal to `NaN`?
 
-**Answer:** “not a number”, "number", `NaN` compared to anything – even itself! to `false`. Use `Number.isNaN`
+**Answer:** "not a number", "number", `NaN` compared to anything – even itself! to `false`. Use `Number.isNaN`
 
 **Explanation:** The NaN property represents a value that is “not a number”. This special value results from an operation that could not be performed either because one of the operands was non-numeric (e.g., "abc" / 4), or because the result of the operation is non-numeric (e.g., an attempt to divide by zero).
 
 ES6 offers a new `Number.isNaN()` function, which is a different and more reliable than the old global `isNaN()` function.
 
-### Scope and hoisting
-
-> Example. What is the result? How to fix?
-
-**Answer:** `fooz` function expression isn't hoisted. Change to function declaration. The result should be `foo, foz, foq, fox`
-
-```javascript
-fox();
-foo();
-foq();
-foz();
-
-function fox() {
-  setTimeout(() => {
-    console.log('foox')
-  })
-}
-
-function foo() {
-  console.log('foo');
-}
-
-function foq() {
-  Promise.resolve().then(() => {
-    console.log('fooq');
-  })
-}
-
-const foz = function () {
-  console.log('fooz');
-}
-```
-
-> Example. With `use strict` directive?
-
-```
-(function(){
-  var a = b = 3;
-})();
-
-console.log("(typeof a !== 'undefined'));
-console.log("(typeof b !== 'undefined'));
-```
-
-**Answer:** `false true` because `b` is declared as global variable. Won't work.
-
-**Explanation:** Since both a and b are defined within the enclosing scope of the function, and since the line they are on begins with the var keyword, most JavaScript developers would expect `typeof a` and `typeof b` to both be `undefined` in the above example.
-
-However, that is not the case. The issue here is that most developers incorrectly understand the statement `var a = b = 3;` to be shorthand for:
-
-```
-var b = 3;
-var a = b;
-```
-
-But in fact, `var a = b = 3;` is actually shorthand for:
-
-```
-b = 3;
-var a = b;
-```
-
-Note that, in strict mode (i.e., with `use strict`), the statement `var a = b = 3`; will generate a runtime error of `ReferenceError: b is not defined`.
-
-> Example. What if you don't have declared "function a".
-
-```
-var a = 1; 
-function b() { 
-    a = 10; 
-    return; 
-    function a() {} 
-} 
-b(); 
-console.log(a);   
-```
-
-**Answer:** `1`. Without `function a` the result is `10`
-
-* function declaration `function a(){ }` is hoisted first and it behaves like `var a = function () { };`. Hence in local scope variable `a` is created.
-* If you have two variables with same name (one in global another in local), local variable always get precedence over global variable.
-* When you set `a = 10;`, you are setting the local variable `a`, not the global one. Hence, the value of global variable remain same and you get, `1` in the log.
-* Extra: If you didnt have a function named as "a", you will see 10 in the log.
-
-> Example
-
-```
-function foo(){
-    function bar() {
-        return 3;
-    }
-    return bar();
-    function bar() {
-        return 8;
-    }
-}
-foo();
-```
-
-**Answer:** 8
-
-As function declaration is get hoisted. the first bar is at the top and second bar after the return will also be hoisted. Since there is already a bar (first function declaration), the second one will replace the first one. As there could be one function for a single name and the last one stays. Hence, when you executing bar, you are executed the second one (after hoisting) and you get.
-
-> What is the significance, and what are the benefits, of including "use strict" at the beginning of a JavaScript source file?
+> What is the significance, and what are the benefits, of including `'use strict'` at the beginning of a JavaScript source file?
 
 **Answer:** `'use strict'` is a way to enforce stricter parsing and error handling on your code at runtime. Code errors that would otherwise have been ignored or would have failed silently will now generate errors or throw exceptions.
 
@@ -213,42 +102,94 @@ As function declaration is get hoisted. the first bar is at the top and second b
 
 * Throws error on invalid usage of delete. The delete operator (used to remove properties from objects) cannot be used on non-configurable properties of the object. Non-strict code will fail silently when an attempt is made to delete a non-configurable property, whereas strict mode will throw an error in such a case.
 
-### Closure and Functions
+### Scope and hoisting, closure and functions
+
+> Example. What is the result will be an error?
+
+```js
+say('World');
+
+const phrase = 'Hello';
+
+function say(name) {
+  console.log(`${name}, ${phrase}!`);
+}
+```
+
+**Answer:** 'undefined, World!'
+
+> Example. What is the result? What if to remove `var value = false`?
+
+```js
+var value = 0;
+
+function f() {
+  if (1) {
+    value = true;
+  } else {
+    var value = false;
+  }
+
+  console.log(value);
+}
+
+f();
+```
+
+**Answer:** `true`, after remove line of code, will be changed global variable and the result will be the same.
+
+> Example. What is the result? How to fix?
+
+```javascript
+fn1();
+fn2();
+fn3();
+fn4();
+
+function fn1() {
+  setTimeout(() => {
+    console.log('fn1')
+  })
+}
+
+function fn2() {
+  console.log('fn2');
+}
+
+function fn3() {
+  Promise.resolve().then(() => {
+    console.log('fn3');
+  })
+}
+
+const fn4 = function () {
+  console.log('fn4');
+}
+```
+
+**Answer:** `fn4` function expression isn't hoisted. Change to function declaration. The result should be `fn2, fn4, fn3, fn1`
 
 > What is a closure? What is a practical use for a closure? Provide an example. 
 
 **Answer:** Closure is a function with all accessible variables in lexical environment. Main usage is encapsulating data from outer usage.
 
-**Explanation:** 
+> Example. What is the result? How to make them independent?
 
-A closure is an inner function that has access to the variables in the outer (enclosing) function’s scope chain. The closure has access to variables in three scopes; specifically: (1) variable in its own scope, (2) variables in the enclosing function’s scope, and (3) global variables.
+```js
+let initCount = 1;
 
-```
-let globalVar = 'foo';
+function makeCounter() {
+  return () => initCount++
+}
 
-(function outerFunc(outerArg) {
-  let outerVar = 'a';
-  
-  (function innerFunc(innerArg) {
-    let innerVar = 'b';
-    
-    console.log(
-      `outerArg = ${outerArg}
-      outerVar = ${outerVar}
-      innerArg = ${innerArg}
-      innerVar = ${innerVar}
-      globalVar = ${globalVar}`
-    );
-    
-  })(456);
-})(123);
-/*
-outerArg = 123
-innerArg = 456
-outerVar = a
-innerVar = b
-globalVar = xyz
-*/
+let counter = makeCounter();
+let counter2 = makeCounter();
+
+console.log( counter() ); // ?
+console.log( counter() ); // ?
+
+console.log( counter2() ); // ?
+console.log( counter2() ); // ?
 ```
 
 > Closures Inside in loop with `setTimeout`.
@@ -271,9 +212,10 @@ for(var i = 0; i < 10; i++) {
 2. So, the loop finishes and before setTimeout get the chance to execute. However, anonymous functions keep a reference to `i` by creating a closure. 
 3. Since, the loop is already finished, the value `i` has been set to `10`.
 
-**Solution:** You can fix it by avoiding closure. Just create a `IIFE` (Immediately Invoked Function Expression), it will create its own scope and you can pass i to the function. In that case i will be a local variable (will not refer to i in the closure) and value of the i in every loop will be preserved.
+You can fix it by avoiding closure. Just create a `IIFE` (Immediately Invoked Function Expression), it will create its own scope and you can pass i to the function. In that case i will be a local variable (will not refer to i in the closure) and value of the i in every loop will be preserved.
 
-```
+```js
+// ES5
 for(var i = 0; i < 10; i++) {
     setTimeout((function(i) {
       console.log(i);
@@ -285,11 +227,8 @@ for(var i = 0; i < 10; i++) {
 for(var i = 0; i < 10; i++) {
   setTimeout(console.log.bind(console, i), 10);
 }
-```
 
-**ES6 Solution:**
-
-```
+// ES6
 for(let i = 0; i < 10; i++) {
   setTimeout(() => {
     console.log(i);  
@@ -301,25 +240,21 @@ for(let i = 0; i < 10; i++) {
 
 **Answer:** First convert `arguments` to an array with `rest` operator, after that simply use `Array.prototype.includes`.
 
-``` javascript
-function isTwoPassed(...params) {
+``` js
+// ES5
+function isFooPassed(){
+  return Array.prototype.indexOf.call(arguments, 'foo') > 0;
+}
+
+// ES6
+function isFooPassed(...params) {
   return params.includes('foo');
 }
-/*
-ES5 way
-function isTwoPassed(){
-  var args = Array.prototype.slice.call(arguments);
-  return args.indexOf(2) != -1;
-}
-*/
-
-isTwoPassed(1,4); //false
-isTowPassed(5,3,1,2); //true
 ```
 
 > How could you use "Math.max" to find the max value in an array?
 
-```
+```js
 Math.max(...arr);  
 
 //ES5 way
@@ -330,20 +265,15 @@ Math.max(...arr);
 
 **Answer:** Just get the arguments, convert it to an array and unshift whatever prefix you want to set. Finally, use apply to pass all the arguments to console.
 
-```
+```js
+// ES5
 function log(){
   var args = Array.prototype.slice.call(arguments);
   args.unshift('(app)');
   console.log.apply(console, args);
 }
 
-log('my message'); //(app) my message
-log('my message', 'your message'); //(app) my message your message 
-```
-
-**ES6 Answer:** 
-
-```
+// ES6 
 function log(...params){
   console.log(['(app)', ...params]);
 }
@@ -351,20 +281,46 @@ function log(...params){
 
 > Cashing / Memoization. How could you implement cache to save calculation time for a recursive fibonacci function?
 
-Question: How could you cache execution of any function?
+```js
+const fibonacci = (() => {
+  const memo = {};
 
-TODO: https://www.sitepoint.com/implementing-memoization-in-javascript/
-http://www.thatjsdude.com/interview/js2.html#memoization
+  function f(n) {
+    let value;
+
+    if (memo[n]) {
+      value = memo[n];
+    } else {
+      if (n === 0 || n === 1)
+        value = n;
+      else
+        value = f(n - 1) + f(n - 2);
+
+      memo[n] = value;
+    }
+
+    return value;
+  }
+
+  return f;
+})();
+```
+
+**Explanation:** 
+
+Memoization is a programming technique which attempts to increase a function’s performance by caching its previously computed results. Because JavaScript objects behave like associative arrays, they are ideal candidates to act as caches. Each time a memoized function is called, its parameters are used to index the cache. If the data is present, then it can be returned, without executing the entire function.  However, if the data is not cached, then the function is executed, and the result is added to the cache.
+
+In the following example, the original Fibonacci function is rewritten to include memoization. In the example, a self-executing anonymous function returns an inner function, f(), which is used as the Fibonacci function. When f() is returned, its closure allows it to continue to access the “memo” object, which stores all of its previous results. Each time f() is executed, it first checks to see if a result exists for the current value of “n”. If it does, then the cached value is returned. Otherwise, the original Fibonacci code is executed. Note that “memo” is defined outside of f() so that it can retain its value over multiple function calls. Recall that the original recursive function was called over 40 billion times to compute the 50th Fibonacci number. By implementing memoization, this number drops to 99.
 
 > Why wrapping the entire content of a JavaScript source file in IIFE?
 
+```js
+(function($) { /*...*/ } )(jQuery);
+```
+
 **Answer:** This technique creates a closure around the entire contents of the file which, perhaps most importantly, creates a private namespace and thereby helps avoid potential name clashes between different JavaScript modules and libraries.
 
-**Explanation:** Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable. This is often used, for example, in jQuery plugins. jQuery allows you to disable the $ reference to the jQuery namespace, using jQuery.noConflict(). If this has been done, your code can still use $ employing this closure technique, as follows:
-
-```
-(function($) { /* jQuery plugin code referencing $ */ } )(jQuery);
-```
+**Explanation:** Another feature of this technique is to allow for an easily referenceable (presumably shorter) alias for a global variable.
 
 > Explain why the following doesn't work as an IIFE: `function foo(){ }();`
 
@@ -408,44 +364,17 @@ Also will work with `!` and `+` operators:
 
 **Answer:** At the time of execution of every function, JavaScript engine sets a property to the function called `this` which refer to the current execution context. `this` is always refer to an object and depends on how function is called:
 
-1. In the global context or inside a function this refers to the `window`/`global` object. In ES6 or with `use strict` directive it's `undefined`
+1. In the global context or inside a function this refers to the `window`/`global` object. In ES6 module or with `use strict` directive it's `undefined`
 2. While executing a method in the context of an object, the object becomes the value of `this`
 3. If you use a constructor (by using `new` keyword) to create an object, the value of `this` will refer to the newly created object.
 4. Set the value of `this` to any arbitrary object by passing the object as the first parameter of `bind`, `call` or `apply`
-5. Use `arrow function` for use parent lexical scope.
+5. Use `arrow function` for use parent LexicalEnvironment.
 
-> `call` / `apply` VS `bind`. If you want to use an arbitrary object as value of this, how will you do that?
+> Why we need `call` or `apply` VS `bind`. If you want to use an arbitrary object as value of this, how will you do that?
 
-**Answer:** There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function` with parent lexical scope.
+**Answer:** To use an arbitrary object as value of this.
 
-For example, I have a method named deductMontlyFee in the object `monica` and by default value of this would be `monica` inside the method.
-
-```
-const monica = {
-  name: 'Monica Geller',
-  total: 400,
-  deductMontlyFee(fee){
-     this.total = this.total - fee;
-     return `${this.name} remaining balance is ${this.total}`; 
-  }
-}
-```
-
-If I bind the deductMontlyFee of `monica` with another object `rachel` and pass `rachel` as first parameter of the bind function, `rachel` would be the value of this:
-
-```
-const rachel = {name: 'Rachel Green', total: 1500};
-const rachelFeeDeductor = monica.deductMonthlyFee.bind(rachel, 200);
-
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1300"
-rachelFeeDeductor(); //"Rachel Green remaining balance is 1100"
-```
-
-With `apply`:
-
-```
-monica.deductMonthlyFee.apply(rachel, 200);
-```
+There are at least four different ways to doing this by using `bind`, `call`, `apply` and `arrow function`.
 
 [call & apply VS bind, the simplest explanation](http://qetr1ck-op.github.io/2016/08/06/call-apply-VS-bind-the-simplest-explanation/)
 
@@ -479,70 +408,149 @@ function isEqual(a, b) {
 }
 ```
 
+> Extend Core Object through prototype. Example 1. How could you write a method on instance of a date which will give you next day?
 
-> Object comparison, toString, valueOf. As "[]" is true, "[] == true" should also be "true", right?
+**Answer:** You need to declare a method on the prototype of Date object. To get access to the current value of the instance of the date use `this`
 
-**Answer:** Not.
-
-You are right about first part, `[]`, empty array is an object and object is always truthy. 
-
-However, special case about `==` (not-strict equal) is that it will do some implicit coercion.
-
-1. Since left and right side of the equality are two different types, JavaScript can't compare them directl.
-2. JavaScript implementation will try to convert `[]` by using `toPrimitive` (of JavaScript implementation). since `[].valueOf` is not primitive will use `toString` and will get `""`.
-3. Now you are comparing `"" == 1` and still left and right is not same type. Hence left side will be converted again to a number and empty string will be `0`.
-4. Finally, they are of same type, you are comparing `0 === 1` which will be `false`.
-
-> Extend Core Object through prototype. Examples
-
-**Question:** How could you write a method on instance of a date which will give you next day?
-
-**Answer:** I have to declare a method on the prototype of Date object. To get access to the current value of the instance of the date, i will use `this`
-
-```
-Date.prototype.nextDay = function(){
+```js
+Date.prototype.nextDay = function () {
   return new Date(this.setDate(this.getDate() + 1));
-}
+} 
 
-var date = new Date(); 
+const date = new Date(); 
 date; //Fri May 16 2014 20:47:14 GMT-0500 (Central Daylight Time)
 date.nextDay();//Sat May 17 2014 20:47:14 GMT-0500 (Central Daylight Time)
 ```
 
-**Question:** If i have a var `str = 'hello world'`, how could i get `str.reverse()` return `'dlrow olleh'`?
-
-**Answer:** You have to extend the core String Object
-
-```
-String.prototype.reverse = function(){
-  return this.split('').reverse().join(''); // or better [...this].reverse().join('');
-}
-
-var str = 'hello world';
-str.reverse();//"dlrow olleh"
-```
-
-**Question:** How could you make this work `[1,2,3,4,5].duplicator()` to return `[1,2,3,4,5,1,2,3,4,5]` ?
+> Example 2. How could you make this work `[1,2,3,4,5].duplicator()` to return `[1,2,3,4,5,1,2,3,4,5]`?
 
 **Answer:** We need to add a method in the prototype of Array object.
 
-```
+```js
+// ES5
 Array.prototype.duplicator = function(){
-  return this.concat(this); // or better [...this, ...this];
+  return this.concat(this);
 }
 
-[1,2,3,4,5].duplicator(); // [1,2,3,4,5,1,2,3,4,5]
+Array.prototype.duplicator = function() {
+  return [...this, ...this];
+} 
 ```
+
+> In what order are logging properties in the object?
+
+```js
+var codes = {
+  // keys of country: name of country
+  "7": "Russian Federation",
+  "38": "Ukraine",
+  "1": "USA",
+  "57": "Norway"
+};
+
+for (var code in codes) console.log(code); // ?
+```
+
+**Answer:** `1, 7, 38, 57`
+
+**Explanation:**
+If name of property is non-numeric string, such keys allways moving in the order in which they assinged. On the other hand, if the name of the property - a number or a numeric string, then all modern browsers such properties are sorted for internal optimization.
+
+> Why using `for...in` for Array iteration is wrong?
+
+**Answer:** Array indexes are just enumerable properties with integer names and are otherwise identical to general `Object` properties. There is no guarantee that `for...in` will return the indexes in any particular order. The `for...in` loop statement will return all enumerable properties, including those with non–integer names and those that are inherited.
+
+Another point is that `for (var i = 0; i < arr.length; i++)` is up to 10-100x time faster.
 
 ### OOP
 
-> Prototypal inheritance. Provide example with classical approach and with OOLO.
+> How prototype inheritance works? Are you aware of classical approach and with OOLO.
 
 **Answer:** In most languages, there are classes and objects. Classes inherit from other classes. In JavaScript, the inheritance is prototype-based. That means that there are no classes. Instead, an object inherits from another object. The main point is that one object can be `prototype` of another object. That means if property isn’t found in the object - than it takes from `prototype` object. In JavaScript this implementation is at the language level.
 
 **Explanation:** [OOP in prototype style](http://qetr1ck-op.github.io/2014/09/15/OOP-in-prototype-style/)
 
-> Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
+> Example. Make a subclass from parent class `Animal`
+
+```js
+// parent class or abstract class
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+Animal.prototype.run = function() {
+  console.log(`${this.name} run!`);
+}
+
+function Rabbit() {
+  /*...*/
+}
+
+/*...*/
+```
+
+**Answer:**
+
+```js
+function Animal(name) {
+  this.name = name;
+  this.speed = 0;
+}
+
+Animal.prototype.run = function() {
+  console.log(`${this.name} run!`);
+}
+
+function Rabbit() {
+  Animal.apply(this, arguments)
+}
+
+Rabbit.prototype = Object.create(Animal.prototype);
+
+// optionally
+Rabbit.prototype.constructor = Rabbit;
+
+Rabbit.prototype.run = function() {
+  // optionally
+  Animal.prototype.run.apply(this);
+  console.log(`${this.name} jumps!`);
+};
+
+var rabbit = new Rabbit('white rabbit');
+rabbit.run();
+```
+
+> Rewrite previous example to ES6 classes.
+
+**Answer:**
+
+```js
+class Animal {
+  constructor(name) {
+    this.name = name;
+    this.speed = 0;
+  }
+  run() {
+    console.log(`${this.name} run!`);
+  }
+}
+
+class Rabbit extends Animal {
+  constructor(name) {
+    super(name)
+  }
+  run() {
+    super.run();
+    console.log(`${this.name} jumps`);
+  };
+}
+
+var rabbit = new Rabbit('white rabbit');
+rabbit.run();
+```
+
+> Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`? What `new` operator do?
 
 **Answer:** In the example below we define a new "class" called Person with an empty constructor. Invoke function `Person()` will return `undefined`. On the other hand invoking `new Person` will return an empty object `{}`.
 
@@ -559,42 +567,13 @@ And the spec says, the `new` operator uses the internal `[[Construct]]` method, 
 3. Calls the function `Person` with `this` set to the new object, and with the supplied `arguments`.
 4. If calling the function `Person` returns an object, this object is the result of the expression. Otherwise the newly created object is the result of the expression.
 
-An equivalent implementation of what the new operator does, can be expressed like this with ES5 `Object.create`:
+> `new F` vs `Object.create`
 
-```javascript
-function NEW(f) {
-  var obj, ret, proto;
+**Answer:** `new F` is `Object.create(F.prototype)` with additionally running the constructor function. And giving the constructor the chance to return the actual object that should be the result of the expression instead of this. So basically `Object.create` doesn't execute the constructor.
 
-  // Check if `f.prototype` is an object, not a primitive
-  proto = Object(f.prototype) === f.prototype ? f.prototype : Object.prototype;
+**Explanation:**
 
-  // Create an object that inherits from `proto`
-  obj = Object.create(proto);
-
-  // Apply the function setting `obj` as the `this` value
-  ret = f.apply(obj, Array.prototype.slice.call(arguments, 1));
-
-  if (Object(ret) === ret) { // the result is an object?
-    return ret;
-  }
-  return obj;
-}
-
-// Example usage:
-function Foo (arg) {
-  this.prop = arg;
-}
-Foo.prototype.inherited = 'baz';
-
-var obj = NEW(Foo, 'bar');
-obj.prop;          // 'bar'
-obj.inherited;     // 'baz'
-obj instanceof Foo // true
-```
-
-> Why we need `Object.create` and how it works. And `new F` VS `Object.create`.
-
-**Answer:** `Object.create` methods allows you to easily implement differential inheritance, where objects can directly inherit from other objects.
+`Object.create` methods allows you to easily implement differential inheritance, where objects can directly inherit from other objects.
 
 ```javascript
 var userB = {
@@ -615,11 +594,7 @@ var bob = Object.create(userB, { // object descriptor
 });
 ```
 
-**Explanation:**
-
-`new F` is `Object.create(F.prototype)` with additionally running the constructor function. And giving the constructor the chance to return the actual object that should be the result of the expression instead of this. So basically `Object.create` doesn't execute the constructor.
-
-### DOM / Events
+### DOM
 
 > Is there are a difference `window` VS `document`?
 
@@ -678,14 +653,14 @@ Attributes are in the HTML itself, rather than in the DOM. They are very similar
 * `querySelector` you will pass css style selector and this will return first matched element in the DOM.
 * `querySelectorAll` will return a non-live nodelist by using depth-first pre order traversal of all the matched elements. Non-live means, any changes after selecting the elements will not be reflected.
 
-There are two more options but I dont use them frequently-
+There are two more options but don't used frequently:
 
 * `getElementsByName` returns the list of elements by the provided name of the html tag
 * `getElementsByTagNameNS` returns elements with particular tag name within the provided namespace
 
-**Answer:** Fastest way to Query DOM: 
+> Fastest way to Query DOM: 
 
-If you have an ID of an element `getElmentById` is the fastest way to select an element. However, you should not have so many ID in you document to avoid style repetition. `getElementsByClassName` is the second quickest way to select an element.
+**Answer:** If you have an ID of an element `getElmentById` is the fastest way to select an element. However, you should not have so many ID in you document to avoid style repetition. `getElementsByClassName` is the second quickest way to select an element.
 
 Here is the list. As we go downwards through the list, it takes more time to select elements.
 
@@ -709,7 +684,7 @@ Here is the list. As we go downwards through the list, it takes more time to sel
 
 Both are inherited from `Object`. However `array` has different `prototype` object than `nodeList`. `forEach`, `map`, etc are on `array.prototype` which doesn't exist in the `NodeList.prototype` object:
 
-```javascript
+```js
 myArray --> Array.prototype --> Object.prototype --> null
 
 myNodeList --> NodeList.prototype --> Object.prototype --> null
@@ -717,7 +692,8 @@ myNodeList --> NodeList.prototype --> Object.prototype --> null
 
 **Answer:** Convert `NodeList` to an `array`. After that you will have access to all `array.prototype` methods.
 
-```javascript
+```js
+// ES5
 var myNodeList = document.querySelectorAll('.my-class');
 var nodesArray = Array.prototype.slice.call(myNodeList);
 
@@ -725,11 +701,8 @@ var nodesArray = Array.prototype.slice.call(myNodeList);
 nodesArray.forEach(function(el, idx){
   console.log(idx, el);
 });
-```
 
-**Answer ES6:**
-
-```javascript
+// ES6
 const myNodeList = document.querySelectorAll('.my-class');
 
 // Spread operator
@@ -867,7 +840,6 @@ document.body.appendChild(fragment);
 
 This effectively means you have to call it from an inline script block - And that will prevent the browser from processing parts of the page that follow. Scripts and Images will not be downloaded until the writing block is finished.
 
-
 > What is reflow? What causes reflow? How could you reduce reflow?
 
 **Answer:** When you change size or position of an element in the page, all the elements after it has to change their position according to the changes you made. For example, if you change height on an element, all the elements under it has to move down in the page to accomodate a change in height. Hence, flow of the elements in the page is changed and this is called *reflow*.
@@ -903,6 +875,36 @@ How it happens:
 * change background color
 * change text color
 * visibility hidden
+
+> What is `defer` and `async` attribute does in a script tag?
+
+**Answer:** HTML parser will ignore `defer` and `async` keyword for inline script (script that does not have a src attribute).
+
+* with `<script async src="...">` browser downloads the file during HTML parsing and will pause the HTML parser to execute it when it has finished downloading
+* with `<script defer src="...">` browser downloads the file during HTML parsing and will only execute it after the parser has completed. defer scripts are also guarenteed to execute in the order that they appear in the document.
+
+```html
+<script src="1.js" async></script>
+<script src="2.js" async></script>
+```
+
+**Examples**: 
+
+```html
+//1
+<script src="big.js"></script>
+<script src="small.js"></script>
+
+//2
+<script async src="big.js"></script>
+<script async src="small.js"></script>
+
+//3
+<script defer src="big.js"></script>
+<script defer src="small.js"></script>
+```
+
+### Events
 
 > What is event bubble? How does event flows (event phases)?
 
@@ -1097,7 +1099,7 @@ Use `Node.js` v4.x.x or greater as they have decent ES6 support baked in, thanks
 
 Use `babel-node` with any version of node, as it transpiles modules into ES5
 
-> Assignment Destructuring, the Rapid Table
+> Assignment Destructing, the Rapid Table
 
 > Spread Operator and Rest Parameters
 
@@ -1130,34 +1132,6 @@ Use `babel-node` with any version of node, as it transpiles modules into ES5
 TODO with https://ponyfoo.com/articles/es6
 
 ## JavaScript: advance
-
-> What is `defer` and `async` attribute does in a script tag?
-
-**Answer:** HTML parser will ignore `defer` and `async` keyword for inline script (script that does not have a src attribute).
-
-* with `<script async src="...">` browser downloads the file during HTML parsing and will pause the HTML parser to execute it when it has finished downloading
-* with `<script defer src="...">` browser downloads the file during HTML parsing and will only execute it after the parser has completed. defer scripts are also guarenteed to execute in the order that they appear in the document.
-
-```html
-<script src="1.js" async></script>
-<script src="2.js" async></script>
-```
-
-**Examples**: 
-
-```html
-//1
-<script src="big.js"></script>
-<script src="small.js"></script>
-
-//2
-<script async src="big.js"></script>
-<script async src="small.js"></script>
-
-//3
-<script defer src="big.js"></script>
-<script defer src="small.js"></script>
-```
 
 > What do you think of AMD vs CommonJS and ES6 modules?
 
@@ -1227,24 +1201,57 @@ In a loop, the queue is polled for the next message (each poll referred to as a 
 
 Take this little bit of JavaScript:
 
+```js
+console.log('script start')
+
+const interval = setInterval(() => {  
+  console.log('setInterval')
+}, 0)
+
+setTimeout(() => {  
+  console.log('setTimeout 1')
+  Promise.resolve().then(() => {
+    console.log('promise 3')
+  }).then(() => {
+    console.log('promise 4')
+  }).then(() => {
+    setTimeout(() => {
+      console.log('setTimeout 2')
+      Promise.resolve().then(() => {
+        console.log('promise 5')
+      }).then(() => {
+        console.log('promise 6')
+      }).then(() => {
+        clearInterval(interval)
+      })
+    }, 0)
+  })
+}, 0)
+
+Promise.resolve().then(() => {  
+  console.log('promise 1')
+}).then(() => {
+  console.log('promise 2')
+})
+console.log('script end')
 ```
-console.log('script start');
 
-setTimeout(function() {
-  console.log('setTimeout');
-}, 0);
+**Answer:** 
 
-Promise.resolve().then(function() {
-  console.log('promise1');
-}).then(function() {
-  console.log('promise2');
-});
-
-console.log('script end');
+```js
+script start  
+promise 1  
+promise 2  
+setInterval  
+setTimeout 1  
+promise 3  
+promise 4  
+setInterval  
+setTimeout 2  
+setInterval  
+promise 5  
+promise 6  
 ```
-
-**Answer:** The correct answer: `script start, script end, promise1, promise2, setTimeout`, but it's pretty wild out there in terms of browser support.
-
 To understand this you need to know how the event loop handles macrotasks and microtasks.
 
 macrotasks: `setTimeout`, `setInterval`, `setImmediate`, I/O, UI rendering
@@ -1273,9 +1280,9 @@ FP Pros: Using the functional paradigm, programmers avoid any shared state or si
 FP Cons: Over exploitation of FP features such as point-free style and large compositions can potentially reduce readability because the resulting code is often more abstractly specified, more terse, and less concrete.
 More people are familiar with OO and imperative programming than functional programming, so even common idioms in functional programming can be confusing to new team members.
 
-> What does “favor object composition over class inheritance” mean?
+> What does "favor object composition over class inheritance" mean?
 
-This is a quote from “Design Patterns: Elements of Reusable Object-Oriented Software”. 
+This is a quote from "Design Patterns: Elements of Reusable Object-Oriented Software". 
 
 Object composition is a way to combine simple objects or data types into more complex ones. It means that code reuse should be achieved by assembling smaller units of functionality into new objects instead of inheriting from classes and creating object taxonomies.
 
@@ -1409,7 +1416,7 @@ Canvas is rendered pixel by pixel. In canvas, once the graphic is drawn, it is f
 
 Canvas:
 
-* Pixel based (Dynamic .png)
+* Pixel based
 * Single HTML element.(Inspect element in Developer tool. You can see only canvas tag)
 * Modified through script only
 * Event model/user interaction is granular (x,y)
@@ -1439,7 +1446,7 @@ You can save to `localStorage` and `sessionStorage` only primitives, for object 
 
 **Answer:** There are a [number of answers](https://www.sitepoint.com/web-site-optimization-steps/) to this question: File concatenation, file compression, CDN Hosting, offloading assets, re-organizing and refining code, etc.
 
-> What are three ways to reduce page load time?
+> What are ways to reduce page load time?
 
 **Answer:** Again there are [many answers](https://blog.crazyegg.com/2013/12/11/speed-up-your-website/) here: Reduce image sizes, remove unnecessary widgets, HTTP compression, put CSS at the top and script references at the bottom or in external files, reduce lookups, minimize redirects, caching, etc.
 
@@ -1547,7 +1554,7 @@ element.on(‘$destroy’, function () {
 
 To cleanup the timeout, just `.cancel()` it:
 
-```
+```js
 var customTimeout = $timeout(function () {
   // arbitrary code
 }, 55);
@@ -1557,7 +1564,7 @@ $timeout.cancel(customTimeout);
 
 The same applies to `$interval()`. To disable a watch, just call it:
 
-```
+```js
 var deregisterWatchFn = $rootScope.$watch(‘someGloballyAvailableProperty’, function (newVal) {
   if (newVal) {
     // we invoke that deregistration function, to disable the watch
@@ -1617,7 +1624,7 @@ Commonly, not all of the functions are needed. In most circumstances, developers
 
 More [here](https://www.toptal.com/angular-js/angular-js-demystifying-directives).
 
-> How does interpolation, e.g. `{{ someModel }}`, actually works?
+> How does interpolation, e.g. `{% raw %}{{ someModel }}{% endraw %}`, actually works?
 
 During the compilation process the `compiler` uses the `$interpolate` service to see if text nodes and element attributes contain interpolation markup with embedded expressions.
 
